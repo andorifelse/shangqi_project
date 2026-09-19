@@ -1,0 +1,181 @@
+coordinate:
+  scale: 1.0
+  ground_z: 0.0
+  T_world_from_gs:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+vehicle:
+  asset: ../example_assets/vehicle.glb
+  pose:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  dimensions:
+  - 4.2
+  - 1.8
+  - 1.6
+  mesh_pose:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  mesh_scale: 1.0
+cameras:
+  front:
+    name: front
+    parent: base_link
+    pose:
+    - 2.15
+    - 0
+    - 1
+    - 0
+    - 0.55
+    - 0
+    model: fisheye
+    width: 320
+    height: 240
+    K:
+    - 110.0
+    - 0
+    - 159.5
+    - 0
+    - 110.0
+    - 119.5
+    - 0
+    - 0
+    - 1
+    D:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    max_angle: 1.55
+  rear:
+    name: rear
+    parent: base_link
+    pose:
+    - -2.15
+    - 0
+    - 1
+    - 0
+    - 0.55
+    - 3.141592653589793
+    model: fisheye
+    width: 320
+    height: 240
+    K:
+    - 110.0
+    - 0
+    - 159.5
+    - 0
+    - 110.0
+    - 119.5
+    - 0
+    - 0
+    - 1
+    D:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    max_angle: 1.55
+  left:
+    name: left
+    parent: base_link
+    pose:
+    - 0
+    - 0.95
+    - 1.05
+    - 0
+    - 0.55
+    - 1.5707963267948966
+    model: fisheye
+    width: 320
+    height: 240
+    K:
+    - 110.0
+    - 0
+    - 159.5
+    - 0
+    - 110.0
+    - 119.5
+    - 0
+    - 0
+    - 1
+    D:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    max_angle: 1.55
+  right:
+    name: right
+    parent: base_link
+    pose:
+    - 0
+    - -0.95
+    - 1.05
+    - 0
+    - 0.55
+    - -1.5707963267948966
+    model: fisheye
+    width: 320
+    height: 240
+    K:
+    - 110.0
+    - 0
+    - 159.5
+    - 0
+    - 110.0
+    - 119.5
+    - 0
+    - 0
+    - 1
+    D:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    max_angle: 1.55
+boards:
+  board_001:
+    id: board_001
+    rows: 6
+    columns: 8
+    square_size: 0.15
+    pose:
+    - 3.0
+    - 0
+    - 0.025
+    - 0
+    - 0
+    - 0
+bev:
+  x_min: -5.0
+  x_max: 5.0
+  y_min: -5.0
+  y_max: 5.0
+  width: 512
+  height: 512
+schema_version: 1
+scene:
+  gaussian_file: ../example_assets/test_room.ply

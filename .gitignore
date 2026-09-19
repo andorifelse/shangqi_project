@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+avm_sim_ws/build/
+avm_sim_ws/install/
+avm_sim_ws/log/
+outputs/
+assets/*
+!assets/README.md
+
+
+**/build/
+**/dist/
+
+demo_example.mp4
+项目需求.docx

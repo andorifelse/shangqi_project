@@ -1,0 +1,9 @@
+viser==1.1.1
+numpy>=2.0,<3
+scipy>=1.14,<2
+opencv-python-headless>=4.10,<6
+plyfile>=1.1,<2
+trimesh>=4,<6
+PyYAML>=6,<7
+pytest>=8,<10
+

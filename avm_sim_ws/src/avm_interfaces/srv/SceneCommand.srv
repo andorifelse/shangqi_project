@@ -1,0 +1,8 @@
+# Schema-validated JSON command, atomic at the scene manager.
+string command_json
+int64 expected_revision
+---
+bool success
+string error
+int64 revision
+

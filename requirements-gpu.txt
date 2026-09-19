@@ -1,0 +1,3 @@
+# Install a matching CUDA PyTorch build first; see INSTALL.md.
+gsplat==1.5.3
+ninja
