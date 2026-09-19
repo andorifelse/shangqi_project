@@ -7,6 +7,10 @@ from .pipeline import SensorPipeline
 
 
 def _work(requests, responses, backend: str) -> None:
+    # The parent owns process shutdown. Ignoring SIGINT keeps Ctrl+C from
+    # interrupting NumPy work before SensorWorker.close() can stop us cleanly.
+    import signal
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
     pipeline = SensorPipeline(backend)
     while True:
         request = requests.get()

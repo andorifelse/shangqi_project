@@ -1,6 +1,6 @@
 # 运行验证记录
 
-日期：2026-09-17。主机：Windows 11 / Python 3.12.4 / RTX 4060 Laptop 8GB。
+首次记录：2026-09-17，Windows 11 / Python 3.12.4 / RTX 4060 Laptop 8GB。Linux 复验：2026-09-19，Ubuntu 22.04 / Python 3.13.5 standalone。
 
 ## 实际执行
 
@@ -19,9 +19,21 @@
 | Python packaging | 五个 setup.py check、wheel build 与 compileall 成功；bringup 安装包包含 launch/YAML/PLY/GLB；不等同于 colcon |
 | AVM Preview | 已在浏览器展开查看由四路图像生成的 BEV |
 | CPU 四路 + AVM | tools/render_smoke.py 成功写五张 PNG |
-| pytest | 当前记录 22 passed, 1 skipped；最终结果以重新执行为准 |
+| pytest | Ubuntu 22.04 / Python 3.10：22 passed, 1 skipped |
 | CUDA smoke | 实际运行 --backend gsplat，明确失败：未安装 torch |
-| ROS2 / colcon | 未运行：本机没有 ROS2、WSL 发行版或 Linux 环境 |
+| ROS2 / colcon | Humble 六个 package 构建成功；launch、四路图像、CameraInfo、AVM stamp 与 TF 通过 |
+
+## Ubuntu 22.04 standalone 复验
+
+在 `/home/wzc/shangqi_project` 建立隔离 `.venv` 后实际执行：
+
+- `tools/check_environment.py`：Viser 1.1.1、NumPy 2.5.3、SciPy 1.18.1、OpenCV 5.0.0.93 等核心依赖导入成功。
+- Python 3.13 standalone 的 Viser server 生命周期用例退出异常；改用 Humble 对应的系统 Python 3.10 后完整测试为 22 passed、1 skipped，GPU 用例按环境变量设计跳过。
+- `tools/render_smoke.py` 成功输出四路图像和 AVM，CPU 批次 1.880 s，覆盖率 0.954025。
+- 完整 CPU 编辑器已在 `127.0.0.1:8080` 启动，浏览器确认场景、Camera Preview、AVM Preview 和 Rendering 控件存在。
+- `setup_ros_env.sh` 建立 Python 3.10 `.venv-ros`，六个 ROS package 完成 colcon build；launch 默认 CPU。
+- `verify_ros_runtime.py` 实际通过：四路 RGB、CameraInfo、AVM 同时间戳和 TF 均正常。
+- 修复 Humble setup 与 Bash `nounset` 的兼容性；Ctrl+C 时四个节点均干净退出。
 
 原始环境与包版本可用 tools/check_environment.py 重现，写入 outputs/environment.json。没有为绕过验证而模拟 ROS 节点或伪造 GPU 成功。
 
@@ -64,4 +76,4 @@
 
 ## 下一次必须进行的验收
 
-在 Ubuntu 24.04/Jazzy 上执行 INSTALL.md 中的 build、launch、tf2_echo、topic hz 与 CameraInfo 检查；在 CUDA 主机执行 native render_smoke 与 AVM_TEST_GPU=1 pytest。结果通过后再更新此记录，不把当前静态检查等同于实际 ROS/CUDA 验收。
+在 CUDA 可用环境执行 native render_smoke 与 `AVM_TEST_GPU=1 pytest`，并使用真实资产做长期运行、topic hz 和性能验收。Ubuntu 24.04/Jazzy 保留为兼容复验目标。

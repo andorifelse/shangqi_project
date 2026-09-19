@@ -2,32 +2,36 @@
 
 已实现并在本机运行一个可交互原型：3DGS PLY + Viser 编辑器、车辆/棋盘格/4–6 路相机、6DoF 数值与 Gizmo、场景保存加载、真实相机射线生成四路鱼眼图像，以及由这四路图像生成的 BEV/AVM。
 
-**当前验收范围：Windows standalone + CPU 几何参考渲染。** Ubuntu 24.04 / ROS 2 Jazzy 架构、节点、TF 和 launch 已提供；本机没有 ROS 2/WSL，CUDA backend 缺 PyTorch 和编译环境，因此两条目标路径仍须在配置好的主机验收。未宣称达到实时 30 FPS 或真实资产保真度。
+**当前验收范围：Ubuntu 22.04 / ROS 2 Humble 与 Windows standalone + CPU 几何参考渲染。** Humble 的六包构建、launch、四路 Image/CameraInfo、AVM 同时间戳和 TF 已在本机通过；Ubuntu 24.04 / ROS 2 Jazzy 仍受构建脚本支持但未实机验收，CUDA backend 也尚待配置。未宣称达到实时 30 FPS 或真实资产保真度。
 
 ## 立即运行
 
-在项目根目录 PowerShell：
+Ubuntu 22.04，在项目根目录：
 
-```powershell
-.\.venv\Scripts\python.exe -X utf8 tools/run_demo.py
+```bash
+/usr/bin/python3 -m venv .venv
+.venv/bin/python -m pip install --index-url https://pypi.org/simple -r requirements.txt
+.venv/bin/python tools/run_demo.py
 ```
 
 打开 [本地编辑器](http://127.0.0.1:8080)。首次会生成 example_assets 测试 PLY 和车辆 GLB。安装步骤见 [INSTALL.md](INSTALL.md)。
 
-```powershell
+```bash
 # 只启动编辑器，不启动传感器
-.\.venv\Scripts\python.exe -X utf8 tools/run_demo.py --no-render
+.venv/bin/python tools/run_demo.py --no-render
 
 # 指定保存过的配置
-.\.venv\Scripts\python.exe -X utf8 tools/run_demo.py --scene outputs/scene.yaml
+.venv/bin/python tools/run_demo.py --scene outputs/scene.yaml
 
 # 更换真实 Gaussian PLY
-.\.venv\Scripts\python.exe -X utf8 tools/run_demo.py --ply assets/factory.ply
+.venv/bin/python tools/run_demo.py --ply assets/factory.ply
 
 # 全部本地测试、独立四路与 AVM 出图
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -X utf8 tools/render_smoke.py
+.venv/bin/python -m pytest -q
+.venv/bin/python tools/render_smoke.py
 ```
+
+Windows 仍可使用 `.\.venv\Scripts\python.exe -X utf8 tools/run_demo.py`。
 
 独立输出位于 outputs/smoke/front.png、rear.png、left.png、right.png、avm.png，性能数据在 metrics.json。这些图像来自 SensorPipeline，与浏览器视口无关。
 
@@ -45,16 +49,22 @@
 
 ## ROS 2 启动
 
-先按 INSTALL.md 安装 Jazzy 并构建，然后：
+Ubuntu 22.04 安装 ROS 2 Humble 后，初始化 rosdep，并让脚本建立基于系统 Python 3.10 的独立 `.venv-ros`：
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-source .venv/bin/activate
+sudo rosdep init  # 仅首次；已经初始化时跳过
+rosdep update
+bash tools/setup_ros_env.sh
+
+source /opt/ros/humble/setup.bash
+source .venv-ros/bin/activate
 source avm_sim_ws/install/setup.bash
-ros2 launch avm_bringup avm_sim.launch.py backend:=cpu
+ros2 launch avm_bringup avm_sim.launch.py
 # 配好 CUDA 后运行原生 gsplat
 ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 ```
+
+`tools/setup_ros_env.sh` 在 Ubuntu 22.04 自动选择 Humble，在 Ubuntu 24.04 自动选择 Jazzy。`tools/build_ros.sh` 也不再硬编码发行版。不要使用 Conda Python 构建 apt 安装的 `rclpy`。
 
 可设置 scene:=/absolute/path/scene.yaml、port:=8080、host:=127.0.0.1。默认只监听本机。
 
@@ -75,7 +85,7 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 | --- | --- |
 | M1 | 六个 ROS package、Gaussian PLY、米制 Sim(3)、Viser；已实际运行与浏览器旋转缩放 |
 | M2 | 车辆/板/相机增删、选择、XYZ/RPY、Gizmo；已验证数值、平移和旋转回写 |
-| M3 | YAML 原子保存/加载、父子位姿、TF 描述；本地测试通过，ROS /tf 尚未实机验收 |
+| M3 | YAML 原子保存/加载、父子位姿、TF 描述；Humble 下测试和 ROS /tf 验收通过 |
 | M4 | pinhole CPU 射线渲染已测位姿变化；原生 gsplat adapter 已写，CUDA 未验收 |
 | M5 | 四路 fisheye 与 ftheta CPU 射线；OpenCV 投影对照通过；native ftheta 待实现 |
 | M6 | checkerboard 射线平面相交、纹理采样、深度遮挡；本地通过 |
@@ -86,8 +96,8 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 
 ## 已知问题与未完成工作
 
-- ROS 2 Jazzy 的 colcon build、节点通信、launch、真实 /tf 和 CameraInfo 尚未在目标系统运行。这是当前最主要的验收缺口。
-- 本机已安装 gsplat Python 包用于核对源码，但未安装 PyTorch，也无 CUDA C++ 编译器链；--backend gsplat 会明确报错。CPU backend 可以正常使用。
+- ROS 2 Humble 已完成 colcon build、节点通信、launch、真实 /tf 和 CameraInfo 验收；Jazzy 尚未实机复验。
+- 当前环境未安装 PyTorch/gsplat，且自动化运行环境不能访问 GPU 设备；`--backend gsplat` 会明确报错。CPU backend 可以正常使用。
 - CPU 参考路径针对小测试场景，数万/百万 Gaussian 会很慢；每批四路 320×240 + 512×512 AVM 的实测约 2.7–3.6 秒。它是按射线计算的近似体渲染，未追求与 CUDA rasterizer 像素一致。
 - ftheta 当前走 CPU，并使用归一化 theta 多项式；厂商六系数 pixel-space FTheta 参数适配未实现。fisheye 有效域限制小于 180° 完整 FOV，宽角使用 ftheta 参考路径。
 - 原生 gsplat 只读取 DC 颜色；PLY 的高阶球谐尚未参与渲染，无法重现视角相关反光。
@@ -101,4 +111,4 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 
 ## 下一阶段
 
-先在 Ubuntu 24.04 + Jazzy 上完成 colcon、TF、Image/CameraInfo 和 exact-stamp 拼接验收，再接入真实 PLY、GLB 与四路标定参数。随后进行 CUDA 原生渲染数值对照、动态物体遮挡精化、GPU overlay/BEV 优化，并测量实际 FPS、延迟与显存。暂不扩展外围业务功能。
+接下来接入真实 PLY、GLB 与四路标定参数，并进行 CUDA 原生渲染数值对照、动态物体遮挡精化、GPU overlay/BEV 优化，测量实际 FPS、延迟与显存。Ubuntu 24.04/Jazzy 保留后续兼容复验。暂不扩展外围业务功能。

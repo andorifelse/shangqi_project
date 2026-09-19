@@ -10,7 +10,8 @@ def generate_launch_description():
     scene=LaunchConfiguration("scene")
     return LaunchDescription([
         DeclareLaunchArgument("scene",default_value=PathJoinSubstitution([FindPackageShare("avm_bringup"),"config","scene.yaml"])),
-        DeclareLaunchArgument("backend",default_value="gsplat"),
+        # CPU is the portable default. Select gsplat explicitly after CUDA validation.
+        DeclareLaunchArgument("backend",default_value="cpu"),
         DeclareLaunchArgument("render_hz",default_value="2.0"),
         DeclareLaunchArgument("port",default_value="8080"),
         DeclareLaunchArgument("host",default_value="127.0.0.1"),

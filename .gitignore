@@ -1,4 +1,5 @@
 .venv/
+.venv-ros/
 __pycache__/
 .pytest_cache/
 *.egg-info/
@@ -14,4 +15,4 @@ assets/*
 **/dist/
 
 demo_example.mp4
-ÏîÄ¿ÐèÇó.docx
+é¡¹ç›®éœ€æ±‚.docx
