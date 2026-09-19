@@ -49,6 +49,8 @@ T_world_optical = T_world_base × T_base_camera_link × T_link_optical。车辆�
 
 Sim(3)：p_world = scale × R × p_gs + t；协方差同步转换 scale² R Sigma R^T。T_world_from_gs 只允许刚体变换，scale 单独为正数。ground_z 是 world 水平地面，不跟随车辆滚转。
 
+环境与车辆可分别来自独立 3DGS PLY。环境使用 `coordinate.scale / T_world_from_gs` 映射到 world；车辆先用 `asset_scale / asset_pose` 映射到 `base_link`，再用动态 `vehicle.pose` 映射到 world。合成时位置、Gaussian 四元数和协方差同步变换，然后作为一个 Gaussian 集合交给 CPU 或 gsplat 后端，因此车辆参与相机遮挡。原始车辆 PLY 会被缓存，拖动车辆不重复读取文件；当前后端仍需重建合成 renderer/GPU buffer。
+
 Checkerboard 在自身 XY 平面，中心为 pose 原点，法线局部 +Z，可双面显示。rows/columns 指方格数，不是内部角点数；width=columns×square_size，height=rows×square_size。尺寸由这些独立参数唯一决定。
 
 ## 相机、深度与 AVM

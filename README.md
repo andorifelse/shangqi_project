@@ -45,7 +45,25 @@ Windows 仍可使用 `.\.venv\Scripts\python.exe -X utf8 tools/run_demo.py`。
 6. Scene files 输入服务器本地路径；Save Scene / Load Scene 保存加载。Load Gaussian PLY 导入 3DGS；Set vehicle asset 设置 GLB/GLTF。
 7. 展开 Camera Preview 和 AVM Preview。CPU 模式编辑后约数秒刷新一次；3D 视口保持独立交互。Rendering 可暂停传感器计算。
 
-示例 [scene.yaml](avm_sim_ws/src/avm_bringup/config/scene.yaml) 使用相对资产路径，可整体复制。YAML pose 角度是弧度，与 UI 度数不同。真实资产需要设置 coordinate.scale / T_world_from_gs / ground_z，以及车辆 mesh_pose / mesh_scale；不会隐式归一化尺度。
+示例 [scene.yaml](avm_sim_ws/src/avm_bringup/config/scene.yaml) 使用相对资产路径，可整体复制。YAML pose 角度是弧度，与 UI 度数不同。真实资产需要设置 coordinate.scale / T_world_from_gs / ground_z，以及车辆 asset_pose / asset_scale；不会隐式归一化尺度。
+
+真实车辆 3DGS 场景可自动生成：
+
+```bash
+.venv-ros/bin/python tools/create_vehicle_3dgs_scene.py
+# 输出 outputs/vehicle_3dgs_scene.yaml
+
+# 未配置 CUDA 时只检查编辑器显示
+.venv-ros/bin/python tools/run_demo.py --no-render --scene outputs/vehicle_3dgs_scene.yaml
+
+# 配置并验证 gsplat 后启动真实传感器
+ros2 launch avm_bringup avm_sim.launch.py \
+  scene:=/home/wzc/shangqi_project/outputs/vehicle_3dgs_scene.yaml backend:=gsplat
+```
+
+车辆 PLY 作为独立 Gaussian 对象挂在 `base_link` 下，与环境 Gaussian 合成参与 CPU/gsplat 传感器渲染和深度遮挡。当前 McLaren 资产按车长 4.2 m 得到 `asset_scale=2.390873671`，`asset_pose` 将原始 +Y 前向旋转到项目 +X 并将最低点放到地面。
+
+真实环境 1,097,138 个 Gaussian，加上车辆 192,336 个；CPU 参考后端不适合该规模。未配置 GPU 前使用 `--no-render` 检查场景，不要用真实场景启动默认 CPU 传感器。
 
 ## ROS 2 启动
 
@@ -101,12 +119,12 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 - CPU 参考路径针对小测试场景，数万/百万 Gaussian 会很慢；每批四路 320×240 + 512×512 AVM 的实测约 2.7–3.6 秒。它是按射线计算的近似体渲染，未追求与 CUDA rasterizer 像素一致。
 - ftheta 当前走 CPU，并使用归一化 theta 多项式；厂商六系数 pixel-space FTheta 参数适配未实现。fisheye 有效域限制小于 180° 完整 FOV，宽角使用 ftheta 参考路径。
 - 原生 gsplat 只读取 DC 颜色；PLY 的高阶球谐尚未参与渲染，无法重现视角相关反光。
-- 车辆 mesh 在编辑器显示；传感器目前未加入车辆 mesh 的遮挡/材质渲染（棋盘格已经加入）。镜头应放在车体外。GLTF 的外部纹理应和文件一起保存。
+- 车辆 3DGS PLY 会进入编辑器和传感器合成渲染；GLB/GLTF 车辆仍只用于编辑器显示，不参与 Gaussian 传感器遮挡。镜头应放在车体外。
 - Gaussian expected depth 的体渲染特性导致透明区域、近地棋盘格边缘可能有遮挡偏差；棋盘格贴地过近时 Viser 中也可能被 Gaussian 视觉遮盖。可通过真实物理摆放调整 Z。
 - AVM 是平面假设，立体物体会拉伸/重影；无 seam/exposure/multiband，中心盲区保持暗色。测试场景约 95.4% 范围有源图覆盖，非精度指标。
 - GUI 的相机 frustum 是方向提示，不表示鱼眼的完整非线性有效边界。对象选择为列表，Viser 内置 scene tree 可查真实层级。
 - 目前 overlay、AVM 和 ROS/GUI 编码在 CPU，CUDA 后处理与端到端零拷贝尚未实现。独立 worker 保留替换边界。
-- 未做真实相机内外参、真实训练 PLY、真实车模的精度与性能验证；示例均为明确标记的测试数据。
+- 已验证真实车辆 PLY 的格式、缩放与坐标转换，但尚未完成 CUDA 像素结果和真实相机内外参精度验收。
 - 用户管理、日志中心、报告、AI 生成、版本管理、自动标定与批量标定按本轮要求不实现。
 
 ## 下一阶段

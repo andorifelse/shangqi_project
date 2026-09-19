@@ -13,6 +13,11 @@ def test_gaussian_load_sim3(tmp_path):
     np.testing.assert_allclose(b.means, transform_points(t, a.means * 2), atol=1e-6)
     np.testing.assert_allclose(b.covariances,
         4 * (t[:3, :3] @ a.covariances @ t[:3, :3].T), atol=1e-6)
+    c = a.transformed(2., t)
+    np.testing.assert_allclose(c.means, b.means, atol=1e-6)
+    np.testing.assert_allclose(c.covariances, b.covariances, atol=1e-6)
+    combined = GaussianScene.concatenate(a, c)
+    assert len(combined.means) == 2 * len(a.means)
     assert (np.linalg.eigvalsh(b.covariances) > 0).all()
 
 
@@ -24,4 +29,3 @@ def test_transform_conventions():
     np.testing.assert_allclose(inverse(t) @ t, np.eye(4), atol=1e-14)
     with pytest.raises(ValueError):
         GaussianScene.load("unused.ply", -1)
-

@@ -17,7 +17,7 @@ class SceneFiles:
             server.gui.add_button("Load Scene").on_click(lambda _: self.events.put({"action":"load","path":self.path.value}))
             self.ply = server.gui.add_text("Gaussian PLY path", "")
             server.gui.add_button("Load Gaussian PLY").on_click(lambda _: self.events.put({"action":"gaussian","path":self.ply.value}))
-            self.glb = server.gui.add_text("Vehicle GLB / GLTF path", "")
+            self.glb = server.gui.add_text("Vehicle GLB / GLTF / 3DGS PLY path", "")
             server.gui.add_button("Set vehicle asset").on_click(lambda _: self.events.put({
                 "action":"properties","id":"base_link","properties":{"asset":str(Path(self.glb.value).expanduser().resolve())}}))
         self.tick()
@@ -27,8 +27,12 @@ class SceneFiles:
             command = self.events.get()
             try:
                 if command["action"] == "properties" and "asset" in command["properties"]:
-                    import trimesh
-                    trimesh.load_scene(command["properties"]["asset"])
+                    asset = command["properties"]["asset"]
+                    if Path(asset).suffix.lower() == ".ply":
+                        GaussianScene.load(asset)
+                    else:
+                        import trimesh
+                        trimesh.load_scene(asset)
                 if command["action"] == "gaussian":
                     command["path"] = str(Path(command["path"]).expanduser().resolve())
                     GaussianScene.load(command["path"])

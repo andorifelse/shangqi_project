@@ -12,9 +12,14 @@ class Vehicle:
     asset: str = ""
     pose: list[float] = field(default_factory=lambda: [0.] * 6)
     dimensions: list[float] = field(default_factory=lambda: [4.2, 1.8, 1.6])
-    # Mesh authoring coordinates -> base_link. Never implicitly recenter private assets.
-    mesh_pose: list[float] = field(default_factory=lambda: [0.] * 6)
-    mesh_scale: float = 1.
+    # Asset authoring coordinates -> base_link. Applies to meshes and 3DGS PLY.
+    # Private assets are never implicitly recentered or normalized.
+    asset_pose: list[float] = field(default_factory=lambda: [0.] * 6)
+    asset_scale: float = 1.
+
+    @property
+    def is_gaussian(self) -> bool:
+        return Path(self.asset).suffix.lower() == ".ply"
 
 
 @dataclass
@@ -86,8 +91,8 @@ class Scene:
         validate_rigid(np.asarray(self.coordinate.T_world_from_gs))
         if self.vehicle:
             pose_matrix(self.vehicle.pose)
-            pose_matrix(self.vehicle.mesh_pose)
-            if not np.isfinite([*self.vehicle.dimensions, self.vehicle.mesh_scale]).all() or min(*self.vehicle.dimensions, self.vehicle.mesh_scale) <= 0:
+            pose_matrix(self.vehicle.asset_pose)
+            if not np.isfinite([*self.vehicle.dimensions, self.vehicle.asset_scale]).all() or min(*self.vehicle.dimensions, self.vehicle.asset_scale) <= 0:
                 raise ValueError("Vehicle dimensions and scale must be positive")
         if len(self.cameras) > 6:
             raise ValueError("MVP supports up to 6 cameras")
@@ -154,10 +159,16 @@ class Scene:
     @classmethod
     def from_dict(cls, data: dict) -> "Scene":
         data = dict(data)
+        vehicle_data = dict(data["vehicle"]) if data.get("vehicle") else None
+        if vehicle_data is not None:
+            # Schema v1 compatibility: mesh_* used to describe the only vehicle
+            # asset type. They now apply equally to meshes and Gaussian PLY.
+            vehicle_data.setdefault("asset_pose", vehicle_data.pop("mesh_pose", [0.] * 6))
+            vehicle_data.setdefault("asset_scale", vehicle_data.pop("mesh_scale", 1.))
         scene = cls(
             gaussian_file=data.get("gaussian_file", ""),
             coordinate=Coordinate(**data.get("coordinate", {})),
-            vehicle=Vehicle(**data["vehicle"]) if data.get("vehicle") else None,
+            vehicle=Vehicle(**vehicle_data) if vehicle_data is not None else None,
             cameras={n: Camera(**c) for n, c in data.get("cameras", {}).items()},
             boards={n: Board(**b) for n, b in data.get("boards", {}).items()},
             bev=Bev(**data.get("bev", {})), schema_version=data.get("schema_version", 1))

@@ -31,14 +31,14 @@ vehicle:
   - 4.2
   - 1.8
   - 1.6
-  mesh_pose:
+  asset_pose:
   - 0.0
   - 0.0
   - 0.0
   - 0.0
   - 0.0
   - 0.0
-  mesh_scale: 1.0
+  asset_scale: 1.0
 cameras:
   front:
     name: front

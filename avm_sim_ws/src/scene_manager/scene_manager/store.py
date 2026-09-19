@@ -66,7 +66,7 @@ class SceneStore:
                 allowed = {
                     Camera: {"model", "width", "height", "K", "D", "max_angle"},
                     Board: {"rows", "columns", "square_size"},
-                    Vehicle: {"asset", "dimensions", "mesh_pose", "mesh_scale"}
+                    Vehicle: {"asset", "dimensions", "asset_pose", "asset_scale"}
                 }[type(obj)]
                 for key, value in command["properties"].items():
                     if key not in allowed:

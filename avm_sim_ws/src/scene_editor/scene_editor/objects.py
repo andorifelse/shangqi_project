@@ -5,6 +5,7 @@ import numpy as np
 import trimesh
 from scene_manager.models import Scene, Board
 from scene_manager.transforms import pose_matrix, wxyz_from_matrix, T_LINK_OPTICAL
+from gs_renderer.gaussian import GaussianScene
 
 
 def board_mesh(board: Board) -> trimesh.Trimesh:
@@ -30,8 +31,8 @@ class ObjectView:
 
     def sync(self, scene: Scene) -> None:
         signature = repr((scene.vehicle.asset if scene.vehicle else None,
-            scene.vehicle.mesh_pose if scene.vehicle else None,
-            scene.vehicle.mesh_scale if scene.vehicle else None,
+            scene.vehicle.asset_pose if scene.vehicle else None,
+            scene.vehicle.asset_scale if scene.vehicle else None,
             scene.vehicle.dimensions if scene.vehicle else None,
             [(n,c.parent,c.width,c.height,c.K) for n,c in scene.cameras.items()],
             [(n,b.rows,b.columns,b.square_size) for n,b in scene.boards.items()]))
@@ -44,14 +45,24 @@ class ObjectView:
                 self.frames["base_link"] = frame
                 self.handles.append(frame)
                 vehicle = scene.vehicle
-                if vehicle.asset:
+                t = pose_matrix(vehicle.asset_pose)
+                if vehicle.asset and vehicle.is_gaussian:
+                    gs = GaussianScene.load(vehicle.asset, vehicle.asset_scale, t)
+                    handle = self.server.scene.add_gaussian_splats(
+                        "/objects/base_link/gaussian", centers=gs.means,
+                        covariances=gs.covariances, rgbs=gs.colors,
+                        opacities=gs.opacities[:, None])
+                elif vehicle.asset:
                     mesh = trimesh.load_scene(str(Path(vehicle.asset))).to_mesh()
+                    handle = self.server.scene.add_mesh_trimesh(
+                        "/objects/base_link/mesh", mesh, scale=vehicle.asset_scale,
+                        wxyz=wxyz_from_matrix(t), position=t[:3, 3])
                 else:
                     mesh = trimesh.creation.box(extents=vehicle.dimensions)
                     mesh.apply_translation([0,0,vehicle.dimensions[2]/2])
-                t = pose_matrix(vehicle.mesh_pose)
-                handle = self.server.scene.add_mesh_trimesh("/objects/base_link/mesh", mesh,
-                    scale=vehicle.mesh_scale, wxyz=wxyz_from_matrix(t), position=t[:3,3])
+                    handle = self.server.scene.add_mesh_trimesh(
+                        "/objects/base_link/mesh", mesh, scale=vehicle.asset_scale,
+                        wxyz=wxyz_from_matrix(t), position=t[:3, 3])
                 handle.on_click(lambda _: self.on_select("base_link"))
                 self.handles.append(handle)
             for name, camera in scene.cameras.items():

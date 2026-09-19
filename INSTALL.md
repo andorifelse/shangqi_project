@@ -135,5 +135,6 @@ Ubuntu 22.04/Humble 已通过上述 Python 验证脚本：四路 RGB、CameraInf
 - 训练 Gaussian PLY 需 x/y/z、f_dc_0..2、opacity、scale_0..2、rot_0..3。opacity 为 logit，scale 为 log 标准差，rot 为 WXYZ。普通 XYZ 点云会被拒绝。
 - PLY 可为 ASCII 或 binary，均通过 plyfile 读取。
 - scene.gaussian_file、vehicle.asset 相对于 YAML 文件；保存到不同目录会重写相对路径。
-- vehicle GLB/GLTF 作者坐标不一定为 Z-up，请在 vehicle.mesh_pose / mesh_scale 配置；业务 pose 始终按统一米制。
+- vehicle PLY、GLB/GLTF 的作者坐标通过 `vehicle.asset_pose / asset_scale` 映射到 `base_link`；业务 `vehicle.pose` 始终是米制 world 位姿。旧 YAML 的 `mesh_pose / mesh_scale` 会自动迁移。
+- 运行 `python tools/create_vehicle_3dgs_scene.py` 可为当前 McLaren PLY 自动计算 4.2 m 缩放、Y→X 旋转和落地高度。
 - camera、board 不写入 PLY，也不需要重新训练。

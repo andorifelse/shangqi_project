@@ -20,13 +20,37 @@ class GaussianScene:
     quats: np.ndarray
     scales: np.ndarray
 
+    def transformed(self, scale: float = 1.,
+                    transform: np.ndarray | None = None) -> "GaussianScene":
+        """Return a Sim(3)-transformed copy without re-reading the PLY."""
+        if not np.isfinite(scale) or scale <= 0:
+            raise ValueError("Gaussian coordinate scale must be positive")
+        t = np.eye(4) if transform is None else np.asarray(transform, dtype=float)
+        validate_rigid(t)
+        rotations = Rotation.from_quat(self.quats[:, [1, 2, 3, 0]]).as_matrix()
+        rotations = t[:3, :3] @ rotations
+        covariance = scale**2 * (t[:3, :3] @ self.covariances @ t[:3, :3].T)
+        quats = Rotation.from_matrix(rotations).as_quat()[:, [3, 0, 1, 2]]
+        arrays = (
+            transform_points(t, self.means * scale), covariance,
+            self.colors.copy(), self.opacities.copy(), quats, self.scales * scale)
+        return GaussianScene(*(np.asarray(a, dtype=np.float32) for a in arrays))
+
+    @classmethod
+    def concatenate(cls, *scenes: "GaussianScene") -> "GaussianScene":
+        """Combine independently transformed Gaussian objects for one render."""
+        scenes = tuple(scene for scene in scenes if len(scene.means))
+        if not scenes:
+            raise ValueError("At least one non-empty Gaussian scene is required")
+        fields = ("means", "covariances", "colors", "opacities", "quats", "scales")
+        return cls(*(np.concatenate([getattr(scene, field) for scene in scenes], axis=0)
+                     for field in fields))
+
     @classmethod
     def load(cls, path: str | Path, scale: float = 1.,
              transform: np.ndarray | None = None) -> "GaussianScene":
         if not np.isfinite(scale) or scale <= 0:
             raise ValueError("Gaussian coordinate scale must be positive")
-        t = np.eye(4) if transform is None else np.asarray(transform, dtype=float)
-        validate_rigid(t)
         vertex = PlyData.read(str(path))["vertex"].data
         required = ["x", "y", "z", "opacity", *[f"f_dc_{i}" for i in range(3)],
                     *[f"scale_{i}" for i in range(3)], *[f"rot_{i}" for i in range(4)]]
@@ -41,15 +65,13 @@ class GaussianScene:
             raise ValueError("Empty scene or zero Gaussian quaternion")
         q /= norms
         rotations = Rotation.from_quat(q[:, [1, 2, 3, 0]]).as_matrix()
-        rotations = t[:3, :3] @ rotations
-        scales = np.exp(np.clip(get([f"scale_{i}" for i in range(3)]), -20, 10)) * scale
+        scales = np.exp(np.clip(get([f"scale_{i}" for i in range(3)]), -20, 10))
         covariance = (rotations * scales[:, None, :] ** 2) @ rotations.transpose(0, 2, 1)
         colors = np.clip(0.5 + SH_C0 * get([f"f_dc_{i}" for i in range(3)]), 0, 1)
         opacity = expit(np.asarray(vertex["opacity"], dtype=float))
-        means = transform_points(t, means * scale)
         q = Rotation.from_matrix(rotations).as_quat()[:, [3, 0, 1, 2]]
         arrays = [means, covariance, colors, opacity, q, scales]
         if not all(np.isfinite(a).all() for a in arrays):
             raise ValueError("Gaussian PLY contains non-finite data")
-        return cls(*(a.astype(np.float32) for a in arrays))
-
+        raw = cls(*(a.astype(np.float32) for a in arrays))
+        return raw.transformed(scale, transform)

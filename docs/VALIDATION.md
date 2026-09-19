@@ -34,6 +34,9 @@
 - `setup_ros_env.sh` 建立 Python 3.10 `.venv-ros`，六个 ROS package 完成 colcon build；launch 默认 CPU。
 - `verify_ros_runtime.py` 实际通过：四路 RGB、CameraInfo、AVM 同时间戳和 TF 均正常。
 - 修复 Humble setup 与 Bash `nounset` 的兼容性；Ctrl+C 时四个节点均干净退出。
+- 真实 McLaren PLY（192,336 Gaussian）由现有 loader 成功读取；按 4.2 m 车长计算 scale=2.390873671，完成 +Y→+X 和落地变换，并在 Viser 中作为 `base_link` 子节点实际显示。
+- 环境与车辆 Gaussian 合成、动态车辆位姿和旧 `mesh_*` YAML 迁移加入回归测试；当前结果 24 passed, 1 skipped。
+- 真实环境 1,097,138 Gaussian + 车辆 192,336 Gaussian 尚未运行 CPU 传感器，避免把不适用的参考后端当作性能路径；等待 CUDA/gsplat 验收。
 
 原始环境与包版本可用 tools/check_environment.py 重现，写入 outputs/environment.json。没有为绕过验证而模拟 ROS 节点或伪造 GPU 成功。
 

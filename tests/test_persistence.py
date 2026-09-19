@@ -27,3 +27,13 @@ def test_tf_chain_matches_camera(tmp_path):
     t = frames["base_link"].transform @ frames["camera_front_link"].transform @ frames["camera_front_optical"].transform
     np.testing.assert_allclose(t, scene.camera_optical_pose("front"), atol=1e-12)
     assert frames["board_001"].parent == "world"
+
+
+def test_legacy_mesh_transform_names_migrate(tmp_path):
+    scene = default_scene(tmp_path)
+    data = scene.to_dict()
+    data["vehicle"]["mesh_pose"] = data["vehicle"].pop("asset_pose")
+    data["vehicle"]["mesh_scale"] = data["vehicle"].pop("asset_scale")
+    migrated = type(scene).from_dict(data)
+    assert migrated.vehicle.asset_pose == [0.] * 6
+    assert migrated.vehicle.asset_scale == 1.
