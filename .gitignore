@@ -9,7 +9,7 @@ avm_sim_ws/log/
 outputs/
 assets/*
 !assets/README.md
-
+.vscode/
 
 **/build/
 **/dist/
