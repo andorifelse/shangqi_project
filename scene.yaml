@@ -19,7 +19,7 @@ coordinate:
     - 0.0
     - 1.0
 vehicle:
-  asset: assets/vehicle_3dgs_calibration_board_2026-09-19/vehicle_mclaren_A2_256views_60k.ply
+  asset: avm_sim_ws/src/avm_bringup/example_assets/vehicle.glb
   pose:
   - 0.0
   - 0.0
@@ -39,8 +39,136 @@ vehicle:
   - 0.0
   - 0.0
   asset_scale: 1.0
-cameras: {}
-boards: {}
+cameras:
+  front:
+    name: front
+    parent: base_link
+    pose:
+    - 2.15
+    - 0
+    - 1
+    - 0
+    - 0.55
+    - 0
+    model: fisheye
+    width: 320
+    height: 240
+    K:
+    - 110.0
+    - 0
+    - 159.5
+    - 0
+    - 110.0
+    - 119.5
+    - 0
+    - 0
+    - 1
+    D:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    max_angle: 1.55
+  rear:
+    name: rear
+    parent: base_link
+    pose:
+    - -2.15
+    - 0
+    - 1
+    - 0
+    - 0.55
+    - 3.141592653589793
+    model: fisheye
+    width: 320
+    height: 240
+    K:
+    - 110.0
+    - 0
+    - 159.5
+    - 0
+    - 110.0
+    - 119.5
+    - 0
+    - 0
+    - 1
+    D:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    max_angle: 1.55
+  left:
+    name: left
+    parent: base_link
+    pose:
+    - 0
+    - 0.95
+    - 1.05
+    - 0
+    - 0.55
+    - 1.5707963267948966
+    model: fisheye
+    width: 320
+    height: 240
+    K:
+    - 110.0
+    - 0
+    - 159.5
+    - 0
+    - 110.0
+    - 119.5
+    - 0
+    - 0
+    - 1
+    D:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    max_angle: 1.55
+  right:
+    name: right
+    parent: base_link
+    pose:
+    - 0
+    - -0.95
+    - 1.05
+    - 0
+    - 0.55
+    - -1.5707963267948966
+    model: fisheye
+    width: 320
+    height: 240
+    K:
+    - 110.0
+    - 0
+    - 159.5
+    - 0
+    - 110.0
+    - 119.5
+    - 0
+    - 0
+    - 1
+    D:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    max_angle: 1.55
+boards:
+  board_001:
+    id: board_001
+    rows: 6
+    columns: 8
+    square_size: 0.15
+    pose:
+    - 3.0
+    - 0
+    - 0.025
+    - 0
+    - 0
+    - 0
 bev:
   x_min: -5.0
   x_max: 5.0
@@ -50,4 +178,4 @@ bev:
   height: 512
 schema_version: 1
 scene:
-  gaussian_file: assets/point_cloud_pgsr_depth.ply
+  gaussian_file: avm_sim_ws/src/avm_bringup/example_assets/test_room.ply

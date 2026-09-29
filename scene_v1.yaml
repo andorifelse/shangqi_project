@@ -1,0 +1,53 @@
+coordinate:
+  scale: 1.0
+  ground_z: 0.0
+  T_world_from_gs:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 1.0
+    - 0.6 # adjust this to change the z postion of scene
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+vehicle:
+  asset: assets/vehicle_3dgs_calibration_board_2026-09-19/vehicle_mclaren_A2_256views_60k.ply
+  pose:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  dimensions:
+  - 4.2
+  - 1.8
+  - 1.6
+  asset_pose:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  asset_scale: 2.0 # adjust this to change the scale of vehicle
+cameras: {}
+boards: {}
+bev:
+  x_min: -5.0
+  x_max: 5.0
+  y_min: -5.0
+  y_max: 5.0
+  width: 512
+  height: 512
+schema_version: 1
+scene:
+  gaussian_file: assets/point_cloud_pgsr_depth.ply
