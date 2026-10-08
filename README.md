@@ -2,7 +2,7 @@
 
 已实现并在本机运行一个可交互原型：3DGS PLY + Viser 编辑器、车辆/棋盘格/4–6 路相机、6DoF 数值与 Gizmo、场景保存加载、真实相机射线生成四路鱼眼图像，以及由这四路图像生成的 BEV/AVM。
 
-**当前验收范围：Ubuntu 22.04 / ROS 2 Humble 与 Windows standalone + CPU 几何参考渲染。** Humble 的六包构建、launch、四路 Image/CameraInfo、AVM 同时间戳和 TF 已在本机通过；Ubuntu 24.04 / ROS 2 Jazzy 仍受构建脚本支持但未实机验收，CUDA backend 也尚待配置。未宣称达到实时 30 FPS 或真实资产保真度。
+**当前验收范围：Ubuntu 22.04 / ROS 2 Humble CPU 与 gsplat CUDA 渲染。** Humble 的六包构建、真实场景 GPU launch、四路 Image/CameraInfo、AVM 同时间戳和 TF 已在本机通过；Ubuntu 24.04 / ROS 2 Jazzy 仍受构建脚本支持但未实机验收。尚未达到实时 30 FPS 或完成真实标定精度验收。
 
 ## 立即运行
 
@@ -104,7 +104,7 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 | M1 | 六个 ROS package、Gaussian PLY、米制 Sim(3)、Viser；已实际运行与浏览器旋转缩放 |
 | M2 | 车辆/板/相机增删、选择、XYZ/RPY、Gizmo；已验证数值、平移和旋转回写 |
 | M3 | YAML 原子保存/加载、父子位姿、TF 描述；Humble 下测试和 ROS /tf 验收通过 |
-| M4 | pinhole CPU 射线渲染已测位姿变化；原生 gsplat adapter 已写，CUDA 未验收 |
+| M4 | pinhole CPU 位姿变化测试通过；gsplat CUDA 四路 fisheye 与真实场景 ROS smoke 通过 |
 | M5 | 四路 fisheye 与 ftheta CPU 射线；OpenCV 投影对照通过；native ftheta 待实现 |
 | M6 | checkerboard 射线平面相交、纹理采样、深度遮挡；本地通过 |
 | M7 | 四路图像地面投影、重叠融合、AVM；本地出图通过 |
@@ -115,7 +115,7 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 ## 已知问题与未完成工作
 
 - ROS 2 Humble 已完成 colcon build、节点通信、launch、真实 /tf 和 CameraInfo 验收；Jazzy 尚未实机复验。
-- 当前环境未安装 PyTorch/gsplat，且自动化运行环境不能访问 GPU 设备；`--backend gsplat` 会明确报错。CPU backend 可以正常使用。
+- 当前 `.venv-ros` 已安装 PyTorch 2.7.1+cu118 / gsplat 1.5.3；RTX 4060 已通过 GPU smoke 与真实场景 ROS 验证。运行 `bash tools/run_gpu_ros.sh` 可启动真实场景。
 - CPU 参考路径针对小测试场景，数万/百万 Gaussian 会很慢；每批四路 320×240 + 512×512 AVM 的实测约 2.7–3.6 秒。它是按射线计算的近似体渲染，未追求与 CUDA rasterizer 像素一致。
 - ftheta 当前走 CPU，并使用归一化 theta 多项式；厂商六系数 pixel-space FTheta 参数适配未实现。fisheye 有效域限制小于 180° 完整 FOV，宽角使用 ftheta 参考路径。
 - 原生 gsplat 只读取 DC 颜色；PLY 的高阶球谐尚未参与渲染，无法重现视角相关反光。
@@ -124,9 +124,9 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 - AVM 是平面假设，立体物体会拉伸/重影；无 seam/exposure/multiband，中心盲区保持暗色。测试场景约 95.4% 范围有源图覆盖，非精度指标。
 - GUI 的相机 frustum 是方向提示，不表示鱼眼的完整非线性有效边界。对象选择为列表，Viser 内置 scene tree 可查真实层级。
 - 目前 overlay、AVM 和 ROS/GUI 编码在 CPU，CUDA 后处理与端到端零拷贝尚未实现。独立 worker 保留替换边界。
-- 已验证真实车辆 PLY 的格式、缩放与坐标转换，但尚未完成 CUDA 像素结果和真实相机内外参精度验收。
+- 真实环境与车辆已通过 CUDA 原生渲染和 ROS smoke；尚未使用真实相机标定参数验收投影精度。
 - 用户管理、日志中心、报告、AI 生成、版本管理、自动标定与批量标定按本轮要求不实现。
 
 ## 下一阶段
 
-接下来接入真实 PLY、GLB 与四路标定参数，并进行 CUDA 原生渲染数值对照、动态物体遮挡精化、GPU overlay/BEV 优化，测量实际 FPS、延迟与显存。Ubuntu 24.04/Jazzy 保留后续兼容复验。暂不扩展外围业务功能。
+下一步接入真实四路相机标定参数，验收投影精度、车辆遮挡和长期运行表现，并继续优化 GPU overlay/BEV 与测量端到端延迟。Ubuntu 24.04/Jazzy 保留后续兼容复验。

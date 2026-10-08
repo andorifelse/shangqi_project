@@ -66,7 +66,11 @@ class GsplatRenderer:
                     opacities=self.opacities,colors=self.colors,
                     viewmats=self.tensor(np.array([inverse(scene.camera_optical_pose(n)) for n in names])),
                     Ks=self.tensor(ks),width=width,height=height,
-                    camera_model=model,with_ut=True,with_eval3d=True,packed=False,
+                    # gsplat 1.5.3's 3D evaluation CUDA kernel asserts exactly
+                    # three channels, while RGB+ED supplies four. Use the
+                    # projected Gaussian path so RGB and expected depth are
+                    # rasterized together without hitting that kernel limit.
+                    camera_model=model,with_ut=True,with_eval3d=False,packed=False,
                     render_mode="RGB+ED",backgrounds=self.tensor(np.tile([.055,.07,.095],(len(names),1))),
                     **kwargs)
                 # One batch transfer at the current CPU overlay/ROS boundary.

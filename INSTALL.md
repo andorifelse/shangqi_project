@@ -39,7 +39,7 @@ python -m venv .venv
 
 已测主要版本：Python 3.12.4、Viser 1.1.1、NumPy 2.5.3、SciPy 1.18.1、OpenCV 5.0.0.93、trimesh 5.1.0、plyfile 1.1.5、PyYAML 6.0.3。完整记录见 requirements-tested.txt；它只记录本机环境，不强制 Ubuntu 使用未来或平台限定轮子。
 
-本机 NVIDIA GeForce RTX 4060 Laptop GPU 8GB，驱动 566.24。nvidia-smi 的 CUDA 12.7 是驱动支持能力；nvcc 实际 Toolkit 为 11.8。原始环境无 torch、gsplat、ROS、WSL，后续只安装了 gsplat 1.5.3 Python 包用于检查官方源码；未安装 PyTorch/CUDA 编译依赖。当前不能运行 native backend。
+Windows 开发记录中的 NVIDIA GeForce RTX 4060 Laptop GPU 8GB、驱动 566.24 与 CUDA Toolkit 11.8 作为历史环境信息保留。当前 Ubuntu 22.04 的 RTX 4060 已在 `.venv-ros` 配置 PyTorch 2.7.1+cu118 和 gsplat 1.5.3，并通过 native smoke 与真实 ROS 场景验收。
 
 原 pip 镜像出现 TLS EOF，改用官方 PyPI 成功。不禁用 TLS 验证。
 
@@ -89,7 +89,7 @@ Ubuntu 24.04 使用 Jazzy 时流程相同：安装 `ros-jazzy-*` 软件包后运
 
 先确认 `nvidia-smi` 和 `nvcc --version` 都正常。不要只安装 CUDA runtime 就假定可以 JIT 编译 gsplat；PyTorch wheel 的 CUDA 版本应与本地 `nvcc` 主版本一致。
 
-本机已有 CUDA Toolkit 11.8，因此 Ubuntu 22.04 建议先验证以下组合。PyTorch 官方提供 Python 3.10 的 2.7.1 + cu118 wheel；gsplat 固定为 requirements-gpu.txt 中的 1.5.3。**该组合尚未在当前 GPU 设备上实测**：
+本机 CUDA Toolkit 11.8、Python 3.10、PyTorch 2.7.1+cu118 和 gsplat 1.5.3 已于 2026-10-08 在 RTX 4060 Laptop 实测通过原生 smoke、GPU pytest 和真实场景 ROS 验证：
 
 ```bash
 source .venv-ros/bin/activate
@@ -98,6 +98,7 @@ python -m pip install --index-url https://pypi.org/simple -r requirements-gpu.tx
 # 当前机器的 nvcc 位于此处；如果安装位置不同，相应修改。
 export CUDA_HOME=/home/wzc/cuda-11.8
 export PATH="$CUDA_HOME/bin:$PATH"
+export TORCH_CUDA_ARCH_LIST=8.9  # 本机 RTX 4060；更换 GPU 时相应调整
 nvcc --version
 python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
 python tools/render_smoke.py --backend gsplat
@@ -128,7 +129,19 @@ ros2 run tf2_ros tf2_echo world camera_front_optical
 
 浏览器移动车辆后 world->camera_front_optical 应变，base_link->camera_front_link 应不变。移动相机时后者应变。四路图像的同批 stamp 和 CameraInfo 应一致。
 
-Ubuntu 22.04/Humble 已通过上述 Python 验证脚本：四路 RGB、CameraInfo、匹配的 AVM stamp 和 TF 均正常。CUDA native smoke 尚未验收。
+Ubuntu 22.04/Humble 已通过上述 Python 验证脚本：四路 RGB、CameraInfo、匹配的 AVM stamp 和 TF 均正常。
+
+2026-10-08 已通过真实场景 CUDA 和 ROS smoke。现在可以在项目根目录运行 `bash tools/run_gpu_ros.sh`；追加 `port:=8081` 可更换端口。
+
+真实场景独立出图与连续批次耗时记录：
+
+```bash
+CUDA_HOME=/home/wzc/cuda-11.8 python tools/render_smoke.py \
+  --backend gsplat --scene outputs/vehicle_3dgs_scene.yaml \
+  --frames 5 --output outputs/gpu_real_smoke
+```
+
+gsplat 1.5.3 的 `with_eval3d` CUDA kernel 仅支持三通道，不能直接与 `RGB+ED` 合用；适配器已使用 UT 投影加 splat 路径同时计算 RGB 和期望深度。
 
 ## 6. 替换资产
 

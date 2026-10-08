@@ -20,7 +20,7 @@
 | AVM Preview | 已在浏览器展开查看由四路图像生成的 BEV |
 | CPU 四路 + AVM | tools/render_smoke.py 成功写五张 PNG |
 | pytest | Ubuntu 22.04 / Python 3.10：22 passed, 1 skipped |
-| CUDA smoke | 实际运行 --backend gsplat，明确失败：未安装 torch |
+| CUDA smoke | 2026-10-08：RTX 4060 / torch 2.7.1+cu118 / gsplat 1.5.3，真实场景与 GPU 测试通过 |
 | ROS2 / colcon | Humble 六个 package 构建成功；launch、四路图像、CameraInfo、AVM stamp 与 TF 通过 |
 
 ## Ubuntu 22.04 standalone 复验
@@ -39,6 +39,18 @@
 - 真实环境 1,097,138 Gaussian + 车辆 192,336 Gaussian 尚未运行 CPU 传感器，避免把不适用的参考后端当作性能路径；等待 CUDA/gsplat 验收。
 
 原始环境与包版本可用 tools/check_environment.py 重现，写入 outputs/environment.json。没有为绕过验证而模拟 ROS 节点或伪造 GPU 成功。
+
+## CUDA 与真实场景复验（2026-10-08）
+
+- 系统 NVIDIA 驱动和 RTX 4060 Laptop 正常；受限执行沙箱没有映射 GPU 设备，CUDA 验证在可访问设备的执行环境中完成。
+- CUDA Toolkit 11.8、Python 3.10.12、PyTorch 2.7.1+cu118、gsplat 1.5.3。
+- 发现并修复 `with_eval3d=True` 与 `RGB+ED` 的四通道断言崩溃，改用 UT 投影 splat 路径生成 RGB 和期望 optical Z 深度。
+- `render_smoke.py --backend gsplat` 成功；`AVM_TEST_GPU=1 pytest tests/test_gpu_optional.py` 为 1 passed。
+- 包含 CUDA 用例的完整回归为 25 passed（62.60 s）。
+- 使用现有 `outputs/vehicle_3dgs_scene.yaml`，保留其环境、车辆和相机参数，合成 1,289,474 个 Gaussian。四路 320×240 / AVM 512×512，首批 4.917 s；后续四批为 1.022、1.036、1.031、1.034 s。峰值 torch allocated 428.9 MiB / reserved 434 MiB，不包含桌面与浏览器显存。
+- 真实场景 ROS gsplat launch + `verify_ros_runtime.py` 通过四路 RGB、CameraInfo、同 stamp AVM 和 TF；未完成真实标定精度、长期稳定性或 30 FPS 验收。
+- 使用真实场景的 GPU 位姿探针移动车辆 0.3 m 并旋转 0.1 rad：环境 Gaussian 保持不动，车辆 Gaussian 按 `vehicle.pose` 更新；相机局部外参保持不变，front 图像均值差约 34.68，复原车辆位姿后图像逐像素恢复。
+- 输出为 `outputs/gpu_real_smoke/*.png` 与 `metrics.json`；正式启动脚本为 `tools/run_gpu_ros.sh`。
 
 ## 几何证据
 
@@ -79,4 +91,4 @@
 
 ## 下一次必须进行的验收
 
-在 CUDA 可用环境执行 native render_smoke 与 `AVM_TEST_GPU=1 pytest`，并使用真实资产做长期运行、topic hz 和性能验收。Ubuntu 24.04/Jazzy 保留为兼容复验目标。
+后续需接入真实相机标定参数，验证几何精度、动态车辆遮挡和长期运行稳定性。Ubuntu 24.04/Jazzy 保留为兼容复验目标。
