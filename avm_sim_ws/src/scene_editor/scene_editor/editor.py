@@ -13,8 +13,11 @@ class Editor:
         self.events = SimpleQueue()
         self.selected = "base_link"
         self.revision = -1
+        self._view_key = None
         self.gizmo = None
         self.gizmo_offset = np.zeros(3)
+        self._gizmo_generation = 0
+        self._dragging = False
         self.objects = ObjectView(server, lambda name: self.events.put(("select", name)))
         server.gui.add_markdown("# AVM Simulation\nMeters  |  Z up  |  RPY in degrees\n\nOrbit: left drag  |  Pan: right drag  |  Zoom: wheel")
         self.status = server.gui.add_markdown("Ready")
@@ -62,6 +65,7 @@ class Editor:
         if self.gizmo:
             self.gizmo.remove()
             self.gizmo = None
+        self._dragging = False
         if self.selected not in scene.object_ids():
             self.selected = next(iter(scene.object_ids()), "")
         self._shown_selection = self.selected
@@ -85,15 +89,25 @@ class Editor:
             self.board_size.content = f"{b.width:.3f} m x {b.height:.3f} m"
         t = scene.world_pose(self.selected)
         self.gizmo_offset = np.array([0., 0., 2.0 if self.selected == "base_link" else .4])
-        self.gizmo = self.server.scene.add_transform_controls("/gizmo", scale=115., fixed=True, line_width=5.,
+        # A fresh wire name prevents delayed messages for a removed control
+        # from being routed to a different camera's newly created control.
+        self._gizmo_generation += 1
+        self.gizmo = self.server.scene.add_transform_controls(f"/gizmo/{self._gizmo_generation}", scale=115., fixed=True, line_width=5.,
             position=t[:3,3]+self.gizmo_offset, wxyz=wxyz_from_matrix(t),
             disable_axes=self.mode.value == "Rotate", disable_sliders=self.mode.value == "Rotate",
             disable_rotations=self.mode.value == "Translate", depth_test=True)
         self.gizmo.on_update(self._drag)
 
     async def _drag(self, event) -> None:
-        if event.client and self.gizmo:
-            self.events.put(("drag", (self.selected, np.array(event.target.wxyz), np.array(event.target.position)-self.gizmo_offset)))
+        if not event.client or event.target is not self.gizmo:
+            return
+        phase = getattr(event, "phase", "update")
+        self._dragging = phase != "end"
+        if phase == "start":
+            return
+        # Snapshot identity and values before the editor consumes the queue.
+        self.events.put(("drag", (self.selected, np.array(event.target.wxyz).copy(),
+                                  np.array(event.target.position).copy()-self.gizmo_offset)))
 
     def _handle(self, kind, value) -> None:
         _, scene = self.store.snapshot()
@@ -152,13 +166,15 @@ class Editor:
             except (ValueError, KeyError, OSError) as exc:
                 self.status.content = f"**Edit rejected:** {exc}"
         revision, scene = self.store.snapshot()
-        if revision == self.revision:
+        view_key = (revision, tuple((name, tuple(scene.object(name).pose)) for name in scene.object_ids()))
+        if view_key == self._view_key:
             return
         try:
             self.objects.sync(scene)
         except (ValueError, OSError) as exc:
             self.status.content = f"**Object display error:** {exc}"
             self.revision = revision
+            self._view_key = view_key
             return
         self.tree.options = tuple(scene.object_ids()) or ("(empty)",)
         # Reuse gizmo while dragging; recreating it breaks continuous mouse capture.
@@ -167,9 +183,13 @@ class Editor:
             self._select(scene)
         elif self.selected:
             t = scene.world_pose(self.selected)
-            self.gizmo.position, self.gizmo.wxyz = t[:3,3]+self.gizmo_offset, wxyz_from_matrix(t)
+            # Authoritative ROS state can trail the pointer by several frames.
+            # Repositioning PivotControls mid-drag changes its drag reference.
+            if not self._dragging:
+                self.gizmo.position, self.gizmo.wxyz = t[:3,3]+self.gizmo_offset, wxyz_from_matrix(t)
             obj = scene.object(self.selected)
             for h,v in zip(self.position+self.rotation, obj.pose[:3]+np.rad2deg(obj.pose[3:]).tolist()):
                 h.value = float(v)
         self._shown_selection = self.selected
         self.revision = revision
+        self._view_key = view_key

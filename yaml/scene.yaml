@@ -19,7 +19,7 @@ coordinate:
     - 0.0
     - 1.0
 vehicle:
-  asset: avm_sim_ws/src/avm_bringup/example_assets/vehicle.glb
+  asset: ../avm_sim_ws/src/avm_bringup/example_assets/vehicle.glb
   pose:
   - 0.0
   - 0.0
@@ -178,4 +178,4 @@ bev:
   height: 512
 schema_version: 1
 scene:
-  gaussian_file: avm_sim_ws/src/avm_bringup/example_assets/test_room.ply
+  gaussian_file: ../avm_sim_ws/src/avm_bringup/example_assets/test_room.ply

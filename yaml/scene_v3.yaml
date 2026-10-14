@@ -19,7 +19,7 @@ coordinate:
     - 0.0
     - 1.0
 vehicle:
-  asset: assets/vehicle_3dgs_calibration_board_2026-09-19/vehicle_mclaren_A2_256views_60k.ply
+  asset: ../assets/vehicle_3dgs_calibration_board_2026-09-19/vehicle_mclaren_A2_256views_60k.ply
   pose:
   - 4.71492519600771e-64
   - 1.0469237023986078e-79
@@ -190,4 +190,4 @@ bev:
   height: 512
 schema_version: 1
 scene:
-  gaussian_file: assets/point_cloud_pgsr_depth.ply
+  gaussian_file: ../assets/point_cloud_pgsr_depth.ply

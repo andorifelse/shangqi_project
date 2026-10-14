@@ -1,9 +1,45 @@
 """Asynchronous sensor preview, independent of UI redraws and orbit camera."""
 from __future__ import annotations
 import time
+from collections import OrderedDict
 import numpy as np
 from gs_renderer.worker import SensorWorker
 from avm_stitcher.projection import AvmStitcher
+
+
+class SensorPreviewBuffer:
+    """Only expose complete camera batches rendered for the current revision."""
+    def __init__(self):
+        self.batches = OrderedDict()
+
+    def batch(self, stamp):
+        batch = self.batches.setdefault(stamp, {"images": {}})
+        while len(self.batches) > 12:
+            self.batches.popitem(last=False)
+        return batch
+
+    def metadata(self, stamp, revision, names):
+        self.batch(stamp).update(revision=revision, names=tuple(names))
+
+    def image(self, stamp, name, rgb):
+        self.batch(stamp)["images"][name] = rgb
+
+    def ready(self, revision):
+        complete = []
+        for stamp, batch in list(self.batches.items()):
+            rendered = batch.get("revision")
+            if rendered is not None and rendered < revision:
+                del self.batches[stamp]
+            elif rendered == revision and all(n in batch["images"] for n in batch["names"]):
+                complete.append(stamp)
+        if not complete:
+            return None
+        stamp = max(complete)
+        batch = self.batches.pop(stamp)
+        for old in list(self.batches):
+            if old <= stamp:
+                del self.batches[old]
+        return stamp, {n: batch["images"][n] for n in batch["names"]}
 
 
 class PreviewDisplay:
@@ -20,10 +56,12 @@ class PreviewDisplay:
         for name in list(self.images):
             if name not in images:
                 self.images.pop(name).remove()
-        for name,rgb in images.items():
+        order = {n: i for i, n in enumerate(("front", "rear", "left", "right"))}
+        for name in sorted(images, key=lambda n: (order.get(n, 4), n)):
+            rgb = images[name]
             if name not in self.images:
                 with self.container:
-                    self.images[name] = self.server.gui.add_image(rgb,label=name,format="jpeg")
+                    self.images[name] = self.server.gui.add_image(rgb,label=f"{name} | /sim/camera/{name}/image_raw",format="jpeg")
             else:
                 self.images[name].image = rgb
         if avm is not None:
