@@ -67,6 +67,12 @@ ros2 launch avm_bringup avm_sim.launch.py \
 
 ## ROS 2 启动
 
+一键启动:
+```bash
+cd /home/wzc/shangqi_project
+bash tools/run_gpu_ros.sh
+```
+
 Ubuntu 22.04 安装 ROS 2 Humble 后，初始化 rosdep，并让脚本建立基于系统 Python 3.10 的独立 `.venv-ros`：
 
 ```bash
