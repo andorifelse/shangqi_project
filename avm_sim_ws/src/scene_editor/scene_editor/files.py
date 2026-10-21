@@ -15,6 +15,9 @@ class SceneFiles:
             self.path = server.gui.add_text("Scene YAML", str(default_path))
             server.gui.add_button("Save Scene").on_click(lambda _: self.events.put({"action":"save","path":self.path.value}))
             server.gui.add_button("Load Scene").on_click(lambda _: self.events.put({"action":"load","path":self.path.value}))
+            self.truth_path = server.gui.add_text("Ground Truth YAML", str(default_path.parent / "ground_truth.yaml"))
+            server.gui.add_button("Export Ground Truth").on_click(lambda _: self.events.put({
+                "action":"export_ground_truth", "path":self.truth_path.value}))
             self.ply = server.gui.add_text("Gaussian PLY path", "")
             server.gui.add_button("Load Gaussian PLY").on_click(lambda _: self.events.put({"action":"gaussian","path":self.ply.value}))
             self.glb = server.gui.add_text("Vehicle GLB / GLTF / 3DGS PLY path", "")

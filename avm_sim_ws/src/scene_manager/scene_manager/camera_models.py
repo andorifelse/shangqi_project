@@ -63,3 +63,28 @@ def unproject(camera: Camera, pixels: np.ndarray) -> tuple[np.ndarray, np.ndarra
 def camera_rays(camera: Camera) -> tuple[np.ndarray, np.ndarray]:
     u,v = np.meshgrid(np.arange(camera.width),np.arange(camera.height))
     return unproject(camera,np.stack([u,v],axis=-1))
+
+
+def world_to_pixel(scene, name: str, points: np.ndarray):
+    from .transforms import inverse, transform_points
+    return project(scene.cameras[name], transform_points(inverse(scene.camera_optical_pose(name)), points))
+
+
+def pixel_to_world_rays(scene, name: str, pixels: np.ndarray):
+    rays, valid = unproject(scene.cameras[name], pixels)
+    t = scene.camera_optical_pose(name)
+    return t[:3, 3].copy(), rays @ t[:3, :3].T, valid
+
+
+def pixels_to_world_plane(scene, name: str, pixels: np.ndarray, normal, offset: float):
+    """Intersect rays with n dot X + offset = 0; reject parallel/backward rays."""
+    origin, directions, valid = pixel_to_world_rays(scene, name, pixels)
+    normal = np.asarray(normal, dtype=float)
+    if normal.shape != (3,) or not np.isfinite(normal).all() or np.linalg.norm(normal) < 1e-12:
+        raise ValueError("Plane requires a finite nonzero normal")
+    denom = directions @ normal
+    distance = np.divide(-(origin @ normal + offset), denom,
+                         out=np.full(denom.shape, np.nan), where=np.abs(denom)>1e-10)
+    valid &= np.isfinite(distance) & (distance > 0)
+    points = origin + distance[..., None] * directions
+    return np.where(valid[..., None], points, np.nan), valid

@@ -17,6 +17,14 @@ from .types import RenderResult
 from .cpu_renderer import CpuRayRenderer
 
 
+def gsplat_intrinsics(camera):
+    """Convert OpenCV integer-centered K to gsplat half-pixel centers."""
+    k = np.asarray(camera.K, dtype=np.float64).reshape(3,3).copy()
+    k[0,2] += .5
+    k[1,2] += .5
+    return k
+
+
 class GsplatRenderer:
     name = "gsplat CUDA"
 
@@ -58,8 +66,7 @@ class GsplatRenderer:
                 "tangential_coeffs":self.tensor(d[:,2:4])}
             # gsplat samples at u+.5,v+.5. Our/OpenCV integer pixel centers require
             # principal point +.5 when handing K to the CUDA rasterizer.
-            ks = np.array([c.matrix for c in cameras])
-            ks[:,:2,2] += .5
+            ks = np.array([gsplat_intrinsics(c) for c in cameras])
             with self.torch.inference_mode():
                 rgbd,alpha,_ = self.rasterization(
                     means=self.means,quats=self.quats,scales=self.scales,

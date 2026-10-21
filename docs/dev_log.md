@@ -18,6 +18,9 @@
         yaml/
 
 # v5.2
+
+- 修改相机生成图像的bug
+
 位于分支 main
 您的分支与上游分支 'origin/main' 一致。
 
@@ -44,4 +47,8 @@
         tests/test_remote_store.py
         yaml/scene_v4.yaml
 
-- 修改相机生成图像的bug
+# v6
+
+- 增加相机标定模块
+
+

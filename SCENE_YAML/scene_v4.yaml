@@ -1,5 +1,5 @@
 coordinate:
-  scale: 1.0
+  scale: 2.0
   ground_z: 0.0
   T_world_from_gs:
   - - 1.0
@@ -19,66 +19,37 @@ coordinate:
     - 0.0
     - 1.0
 vehicle:
-  asset: ../avm_sim_ws/src/avm_bringup/example_assets/vehicle.glb
+  asset: ../assets/vehicle_3dgs_calibration_board_2026-09-19/vehicle_mclaren_A2_256views_60k.ply
   pose:
-  - 0.0
-  - 0.0
-  - 0.0
-  - 0.0
+  - 8.283501980779223e-64
+  - 1.839306924717837e-79
+  - 0.2936054681246092
+  - -5.473822126268817e-48
   - 0.0
   - 0.0
   dimensions:
-  - 4.2
-  - 1.8
-  - 1.6
+  - 4.200000286102295
+  - 1.966065526008606
+  - 1.0898061990737915
   asset_pose:
   - 0.0
   - 0.0
+  - 0.5449126958847046
   - 0.0
   - 0.0
-  - 0.0
-  - 0.0
-  asset_scale: 1.0
+  - -1.5707963267948966
+  asset_scale: 4.6
 cameras:
-  front:
-    name: front
-    parent: base_link
-    pose:
-    - 2.15
-    - 0
-    - 1
-    - 0
-    - 0.55
-    - 0
-    model: fisheye
-    width: 320
-    height: 240
-    K:
-    - 110.0
-    - 0
-    - 159.5
-    - 0
-    - 110.0
-    - 119.5
-    - 0
-    - 0
-    - 1
-    D:
-    - 0.0
-    - 0.0
-    - 0.0
-    - 0.0
-    max_angle: 1.55
   rear:
     name: rear
     parent: base_link
     pose:
-    - -2.15
-    - 0
-    - 1
-    - 0
-    - 0.55
-    - 3.141592653589793
+    - 4.403242713756516
+    - 0.03251434131360561
+    - 0.6400000000000001
+    - 0.0
+    - 0.0
+    - 0.043012351578261936
     model: fisheye
     width: 320
     height: 240
@@ -102,12 +73,12 @@ cameras:
     name: left
     parent: base_link
     pose:
-    - 0
-    - 0.95
-    - 1.05
-    - 0
-    - 0.55
-    - 1.5707963267948966
+    - 0.143176585303994
+    - -2.406016372212127
+    - 0.12080512371045671
+    - 0.13862145450335728
+    - -0.016775341856597903
+    - -1.468590312211759
     model: fisheye
     width: 320
     height: 240
@@ -131,12 +102,12 @@ cameras:
     name: right
     parent: base_link
     pose:
-    - 0
-    - -0.95
-    - 1.05
-    - 0
-    - 0.55
-    - -1.5707963267948966
+    - 0.0390352081394618
+    - 2.0913951967852955
+    - 0.6205432859103461
+    - -0.005652866316666061
+    - 0.05205411364871981
+    - 1.466076571675237
     model: fisheye
     width: 320
     height: 240
@@ -156,16 +127,16 @@ cameras:
     - 0.0
     - 0.0
     max_angle: 1.55
-  extra_left:
-    name: extra_left
+  front:
+    name: front
     parent: base_link
     pose:
-    - 3.6716613377352942
-    - -1.9721522630525295e-31
-    - 4.150078419720169
-    - 6.84435077411722e-33
-    - 0.4500000000000002
-    - 1.566503317257836e-33
+    - -3.88
+    - 0.0
+    - 0.69
+    - 7.74083974289015e-33
+    - -0.13962634015954636
+    - 3.141592653589793
     model: fisheye
     width: 320
     height: 240
@@ -192,12 +163,24 @@ boards:
     columns: 8
     square_size: 0.15
     pose:
-    - 3.0
-    - 0
-    - 0.025
-    - 0
-    - 0
-    - 0
+    - 6.599667496807791
+    - -0.18094101327692572
+    - 0.3991473831891077
+    - -5.473822126268817e-48
+    - 0.0
+    - 0.0
+  board_002:
+    id: board_002
+    rows: 6
+    columns: 8
+    square_size: 0.15
+    pose:
+    - 0.3233952542556193
+    - 4.500125469275406
+    - 0.12318913250230623
+    - -5.473822126268817e-48
+    - 0.0
+    - 0.0
 bev:
   x_min: -5.0
   x_max: 5.0
@@ -207,4 +190,4 @@ bev:
   height: 512
 schema_version: 1
 scene:
-  gaussian_file: ../assets/point_cloud_pgsr_depth.ply
+  gaussian_file: ../assets/scene.ply

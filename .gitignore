@@ -7,6 +7,7 @@ avm_sim_ws/build/
 avm_sim_ws/install/
 avm_sim_ws/log/
 outputs/
+experiments/
 assets/*
 !assets/README.md
 .vscode/
@@ -16,3 +17,4 @@ assets/*
 
 demo_example.mp4
 项目需求.docx
+company_para/

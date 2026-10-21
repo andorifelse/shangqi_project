@@ -13,4 +13,4 @@ python -c 'import torch; assert torch.cuda.is_available(), "CUDA device unavaila
 cd "$PROJECT_ROOT"
 exec ros2 launch avm_bringup avm_sim.launch.py \
     scene:="$PROJECT_ROOT/outputs/vehicle_3dgs_scene.yaml" \
-    backend:=gsplat render_hz:=10.0 "$@"
+    backend:=gsplat render_hz:=30.0 "$@"

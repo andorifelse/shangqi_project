@@ -96,12 +96,67 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 
 ```text
 /tf
+/sim/scene/state
+/sim/ground_truth
 /sim/camera/{front,rear,left,right}/image_raw
 /sim/camera/{front,rear,left,right}/camera_info
 /sim/avm/image
 ```
 
 额外两相机同样生成图像 topic，AVM 当前只使用指定四路。
+
+## 第二阶段：标定闭环与实验复现
+
+已在现有 Scene/SceneStore 上增量加入统一 Ground Truth 导出、几何数学测试、固定 seed 的棋盘格数据集生成、OpenCV pinhole/fisheye baseline 标定及误差报告。无需启动 ROS 或浏览器即可运行完整闭环：
+
+```bash
+.venv-ros/bin/python tools/run_calibration.py \
+  --scene SCENE_YAML/scene_v5.yaml \
+  --experiment-id calib_v5 \
+  --views 40 --seed 202610
+```
+
+每次运行请使用新的 `--experiment-id`，避免覆盖已有实验。标定输出在 `experiments/calib_v5/`。
+
+单独生成数据集(只生成并保存标定素材，暂时不执行 OpenCV 标定),以后你修改角点检测或标定算法，可以一直使用这批图片测试，不用重新生成图片。
+
+```bash
+.venv-ros/bin/python tools/generate_dataset.py \
+  --scene yaml/scene_v2.yaml \
+  --output outputs/dataset_my_run \
+  --views 40 --seed 20261020
+```
+
+只重跑已有 PNG 的标定：
+
+```bash
+.venv-ros/bin/python tools/calibrate_dataset.py \
+  experiments/calibration_my_run \
+  --output /tmp/calibration_replay.json
+```
+
+检查 AVM 几何并生成调试图：
+
+```bash
+.venv-ros/bin/python tools/verify_avm.py \
+  --scene yaml/scene_v2.yaml \
+  --output outputs/avm_debug_my_run
+```
+
+ROS 录包前，需在终端 source ROS Humble、`.venv-ros` 和 `avm_sim_ws/install/setup.bash`，并让仿真和录制器使用相同的 `ROS_DOMAIN_ID`。启动仿真后，在另一个终端运行：
+
+```bash
+.venv-ros/bin/python tools/record_experiment.py \
+  --duration 30 --experiment-id rosbag_my_run
+```
+
+回放：
+
+```bash
+tools/replay_experiment.sh experiments/rosbag_my_run
+```
+
+已实跑四路相机各 40 张图片，重投影 RMS 为 0.095–0.108 px。这是无 Gaussian 遮挡的棋盘格参考渲染基线，不代表真实 3DGS 场景或真实相机的标定精度。AVM debug、数据集重放标定、rosbag2 记录和回放命令及验证边界见 [PHASE2.md](docs/PHASE2.md)。
 
 ## 阶段与验收状态
 
@@ -115,6 +170,7 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 | M6 | checkerboard 射线平面相交、纹理采样、深度遮挡；本地通过 |
 | M7 | 四路图像地面投影、重叠融合、AVM；本地出图通过 |
 | M8 | worker 隔离、静态数据/投影缓存、文档和测试完成；目标 GPU 优化待进行 |
+| 第二阶段 | Ground Truth、pinhole/fisheye 标定闭环、可复现数据集、AVM 数学验证和 rosbag2 实验记录/回放已实际运行 |
 
 验证证据和环境边界见 [VALIDATION.md](docs/VALIDATION.md)。目录与坐标协议见 [ARCHITECTURE.md](docs/ARCHITECTURE.md)，需求和视频分析见 [REFERENCE_ANALYSIS.md](docs/REFERENCE_ANALYSIS.md)。
 
@@ -131,8 +187,8 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 - GUI 的相机 frustum 是方向提示，不表示鱼眼的完整非线性有效边界。对象选择为列表，Viser 内置 scene tree 可查真实层级。
 - 目前 overlay、AVM 和 ROS/GUI 编码在 CPU，CUDA 后处理与端到端零拷贝尚未实现。独立 worker 保留替换边界。
 - 真实环境与车辆已通过 CUDA 原生渲染和 ROS smoke；尚未使用真实相机标定参数验收投影精度。
-- 用户管理、日志中心、报告、AI 生成、版本管理、自动标定与批量标定按本轮要求不实现。
+- 尚无用户管理、集中日志服务、AI 生成或生产级标定任务平台；已支持第二阶段要求的合成数据 baseline 标定和文件级实验报告。
 
 ## 下一阶段
 
-下一步接入真实四路相机标定参数，验收投影精度、车辆遮挡和长期运行表现，并继续优化 GPU overlay/BEV 与测量端到端延迟。Ubuntu 24.04/Jazzy 保留后续兼容复验。
+第二阶段的合成标定基线已跑通。后续可在此基线上加入真实 3DGS 遮挡/噪声实验和更广视场的采样，继续优化 GPU overlay/BEV 与测量端到端延迟。真实环境坐标标定与真实车辆配置按用户要求暂不开展；Ubuntu 24.04/Jazzy 保留后续兼容复验。

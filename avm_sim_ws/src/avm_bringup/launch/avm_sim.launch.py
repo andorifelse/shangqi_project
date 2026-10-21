@@ -4,6 +4,7 @@ from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration,PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
@@ -17,8 +18,8 @@ def generate_launch_description():
         DeclareLaunchArgument("host",default_value="127.0.0.1"),
         Node(package="scene_manager",executable="scene_manager_node",output="screen",parameters=[{"scene":scene}]),
         Node(package="gs_renderer",executable="gs_renderer_node",output="screen",parameters=[{
-            "backend":LaunchConfiguration("backend"),"render_hz":LaunchConfiguration("render_hz")}]),
+            "backend":LaunchConfiguration("backend"),"render_hz":ParameterValue(LaunchConfiguration("render_hz"),value_type=float)}]),
         Node(package="avm_stitcher",executable="avm_stitcher_node",output="screen"),
         Node(package="scene_editor",executable="scene_editor_node",output="screen",parameters=[{
-            "port":LaunchConfiguration("port"),"host":LaunchConfiguration("host")}]),
+            "port":ParameterValue(LaunchConfiguration("port"),value_type=int),"host":LaunchConfiguration("host")}]),
     ])

@@ -16,6 +16,11 @@ class SceneStore:
         with self._lock:
             return self._revision, deepcopy(self._scene)
 
+    def ground_truth(self):
+        from .ground_truth import GroundTruth
+        revision, scene = self.snapshot()
+        return GroundTruth.capture(scene, revision)
+
     def replace(self, scene: Scene) -> int:
         scene.validate()
         with self._lock:
@@ -28,6 +33,9 @@ class SceneStore:
             if expected_revision >= 0 and self._revision != expected_revision:
                 raise ValueError("Scene changed; refresh before editing")
             action = command["action"]
+            if action == "export_ground_truth":
+                self.ground_truth().save(command["path"])
+                return self._revision
             if action == "save":
                 from .persistence import save_scene
                 save_scene(self._scene, command["path"])

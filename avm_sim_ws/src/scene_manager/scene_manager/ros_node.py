@@ -6,6 +6,7 @@ from .persistence import load_scene, save_scene
 from .store import SceneStore
 from .frames import scene_frames
 from .transforms import wxyz_from_matrix
+from .ground_truth import GroundTruth
 
 
 def main(args=None) -> None:
@@ -26,6 +27,8 @@ def main(args=None) -> None:
             self.store = SceneStore(load_scene(scene_file))
             self.pub = self.create_publisher(String, "/sim/scene/state",
                 QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
+            self.truth_pub = self.create_publisher(String, "/sim/ground_truth",
+                QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
             self.tf = TransformBroadcaster(self)
             self.service = self.create_service(SceneCommand, "/sim/scene/command", self.command)
             self.last_revision = -1
@@ -44,6 +47,7 @@ def main(args=None) -> None:
             revision, scene = self.store.snapshot()
             if revision != self.last_revision:
                 self.pub.publish(String(data=json.dumps({"revision":revision, "scene":scene.to_dict()})))
+                self.truth_pub.publish(String(data=json.dumps(GroundTruth.capture(scene,revision).to_dict())))
                 self.last_revision = revision
             stamp = self.get_clock().now().to_msg()
             messages = []
