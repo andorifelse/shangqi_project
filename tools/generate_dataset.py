@@ -17,10 +17,11 @@ def main():
     parser.add_argument("--views",type=int,default=32)
     parser.add_argument("--seed",type=int,default=20261020)
     parser.add_argument("--supersample",type=int,default=2)
+    parser.add_argument("--board-backend",choices=("cpu","gsplat"),default="cpu")
     parser.add_argument("--cameras",nargs="+")
     args=parser.parse_args()
     scene=load_scene(args.scene)
-    metadata=make_calibration_dataset(scene,args.output,args.views,args.seed,args.supersample,args.cameras)
+    metadata=make_calibration_dataset(scene,args.output,args.views,args.seed,args.supersample,args.cameras,args.board_backend)
     print(f"Generated {len(metadata['views'])} deterministic views in {args.output.resolve()}")
     print(f"Seed: {metadata['seed']}; cameras: {', '.join(metadata['cameras'])}")
 

@@ -8,6 +8,12 @@ import yaml
 from .models import Scene
 
 
+def asset_entries(state: dict):
+    """Mutable asset fields shared by Scene and Ground Truth serialization."""
+    return [(state, "gaussian_file"), (state.get("vehicle") or {}, "asset"),
+            *((b, "asset") for b in (state.get("boards") or {}).values())]
+
+
 def load_scene(path: str | Path) -> Scene:
     path = Path(path).expanduser().resolve()
     try:
@@ -22,14 +28,15 @@ def load_scene(path: str | Path) -> Scene:
             raise ValueError(f"Scene field '{key}' must be a mapping")
     # A scene section is kept for asset fields; object data is at the top level.
     data["gaussian_file"] = (data.pop("scene", {}) or {}).get("gaussian_file", data.get("gaussian_file", ""))
-    for obj, key in [(data, "gaussian_file"), (data.get("vehicle") or {}, "asset")]:
+    for obj, key in asset_entries(data):
         if obj.get(key):
             obj[key] = str((path.parent / obj[key]).resolve())
     try:
         scene = Scene.from_dict(data)
     except (TypeError, AttributeError, KeyError, IndexError) as exc:
         raise ValueError(f"Invalid scene schema: {exc}") from exc
-    for asset in (scene.gaussian_file, scene.vehicle.asset if scene.vehicle else ""):
+    for obj, key in asset_entries(scene.to_dict()):
+        asset = obj.get(key)
         if asset and not Path(asset).is_file():
             raise ValueError(f"Asset does not exist: {asset}")
     return scene
@@ -40,7 +47,7 @@ def save_scene(scene: Scene, path: str | Path) -> None:
     path = Path(path).expanduser().resolve()
     path.parent.mkdir(parents=True, exist_ok=True)
     data = scene.to_dict()
-    for obj, key in [(data, "gaussian_file"), (data.get("vehicle") or {}, "asset")]:
+    for obj, key in asset_entries(data):
         if obj.get(key):
             try:
                 obj[key] = Path(os.path.relpath(Path(obj[key]).resolve(), path.parent)).as_posix()

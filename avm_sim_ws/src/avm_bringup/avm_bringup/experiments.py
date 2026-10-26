@@ -73,7 +73,8 @@ def begin_experiment_from_snapshot(snapshot, directory, config, project_root):
                 archive.write(root/name,name)
     (directory/"logs"/"run.log").write_text(f"Started {datetime.now(timezone.utc).isoformat()}\n",encoding="utf-8")
     assets={}
-    for label,path in (("environment",scene.gaussian_file),("vehicle",scene.vehicle.asset if scene.vehicle else "")):
+    for label,path in [("environment",scene.gaussian_file),("vehicle",scene.vehicle.asset if scene.vehicle else ""),
+                       *((f"board:{name}",b.asset) for name,b in scene.boards.items())]:
         if path:
             assets[label]={"path":str(Path(path).resolve()),"sha256":file_sha256(path)}
     (directory/"logs"/"assets.json").write_text(json.dumps(assets,indent=2),encoding="utf-8")

@@ -100,7 +100,7 @@ def detect_corners(image: np.ndarray, board) -> tuple[bool, np.ndarray | None]:
 
 def make_calibration_dataset(scene: Scene, output: str | Path, views: int = 24,
                              seed: int = 20261020, supersample: int = 2,
-                             camera_names: list[str] | None = None) -> dict:
+                             camera_names: list[str] | None = None, backend: str = "cpu") -> dict:
     output = Path(output).expanduser().resolve()
     output.mkdir(parents=True, exist_ok=True)
     allowed_existing = {"scene.yaml", "ground_truth.yaml", "config.yaml", "logs"}
@@ -116,6 +116,8 @@ def make_calibration_dataset(scene: Scene, output: str | Path, views: int = 24,
         raise ValueError("Calibration requires a checkerboard in SceneState")
     board_id = next(iter(scene.boards))
     board = scene.boards[board_id]
+    from .pipeline import SensorPipeline
+    board_pipeline = SensorPipeline(backend) if board.is_gaussian else None
     if board.rows < 4 or board.columns < 4:
         raise ValueError("Calibration requires at least 4x4 squares")
     if any(scene.cameras[n].model not in ("pinhole","fisheye") for n in camera_names):
@@ -128,7 +130,8 @@ def make_calibration_dataset(scene: Scene, output: str | Path, views: int = 24,
     metadata = {"dataset_version": 1, "seed": int(seed), "views_per_camera": int(views),
                 "scene_sha256": truth.sha256, "ground_truth_file_sha256":ground_truth_file_sha256,
                 "opencv_version":cv2.__version__, "numpy_version":np.__version__,
-                "renderer":"board_ray_reference", "background":"neutral; no Gaussian occlusion",
+                "renderer":f"gaussian_board_{backend}" if board.is_gaussian else "board_ray_reference",
+                "background":"board-only; no environment or vehicle occlusion",
                 "corner_identity":"GT only resolves checkerboard row/column symmetry; detected pixels are not replaced",
                 "supersample": int(supersample), "pattern_inner_corners": [board.columns-1,board.rows-1],
                 "board_square_size_m": board.square_size, "cameras": {}, "views": []}
@@ -146,7 +149,7 @@ def make_calibration_dataset(scene: Scene, output: str | Path, views: int = 24,
                 sample = deepcopy(scene)
                 sample.boards = {board_id:sample.boards[board_id]}
                 sample.boards[board_id].pose = pose
-                image = render_board_image(sample, name, supersample)
+                image = render_board_image(sample, name, supersample, backend, board_pipeline)
                 relative = Path("cameras") / name / f"view_{index:04d}.png"
                 destination = output / relative
                 destination.parent.mkdir(parents=True, exist_ok=True)

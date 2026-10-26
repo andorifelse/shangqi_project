@@ -26,6 +26,8 @@ def main() -> None:
     parser.add_argument("--views", type=int, default=32)
     parser.add_argument("--seed", type=int, default=20261020)
     parser.add_argument("--supersample", type=int, default=2)
+    parser.add_argument("--board-backend", choices=("cpu","gsplat"), default="cpu",
+                        help="Renderer for reconstructed Gaussian boards; use gsplat for large PLYs")
     parser.add_argument("--cameras", nargs="+", help="Default: all cameras in the scene")
     args = parser.parse_args()
     scene_path = args.scene.expanduser().resolve()
@@ -33,6 +35,7 @@ def main() -> None:
     scene = load_scene(scene_path)
     config = {"pipeline":"synthetic_opencv_baseline", "source_scene":str(scene_path),
               "seed":args.seed, "views_per_camera":args.views, "supersample":args.supersample,
+              "board_backend":args.board_backend,
               "cameras":args.cameras or sorted(scene.cameras),
               "ROS_DOMAIN_ID":os.environ.get("ROS_DOMAIN_ID","0"),
               "CUDA_VISIBLE_DEVICES":os.environ.get("CUDA_VISIBLE_DEVICES","")}
@@ -47,7 +50,7 @@ def main() -> None:
 
 def _run(scene_path, output, truth, args):
     metadata = make_calibration_dataset(truth.scene, output, args.views, args.seed,
-                                        args.supersample, args.cameras)
+                                        args.supersample, args.cameras, args.board_backend)
     reports = {}
     for name in metadata["cameras"]:
         reports[name] = calibrate_camera_dataset(output, name, truth)

@@ -15,7 +15,7 @@ def _rays(serialized_camera):
     return camera_rays(Camera(**json.loads(serialized_camera)))
 
 
-def render_board_image(scene, name: str, supersample: int = 2) -> np.ndarray:
+def render_board_image(scene, name: str, supersample: int = 2, backend: str = "cpu", pipeline=None) -> np.ndarray:
     """Render actual checker texture, never ideal projected corner coordinates.
 
     Neutral background and a white surrounding board margin make detection
@@ -31,6 +31,18 @@ def render_board_image(scene, name: str, supersample: int = 2) -> np.ndarray:
         camera.K[i] *= supersample
     for i in (2, 5):
         camera.K[i] = (camera.K[i] + .5)*supersample - .5
+    if any(b.is_gaussian for b in scene.boards.values()):
+        # Render the actual PLY, never silently replace a reconstructed board
+        # with an ideal checker. Keep vehicle pose for parented cameras, but
+        # exclude environment/vehicle geometry from this board-only baseline.
+        from .pipeline import SensorPipeline
+        sample = deepcopy(scene)
+        sample.gaussian_file = ""
+        if sample.vehicle:
+            sample.vehicle.asset = ""
+        sample.cameras = {name:camera}
+        result = (pipeline or SensorPipeline(backend)).render(sample)[name].rgb
+        return cv2.resize(result, (w,h), interpolation=cv2.INTER_AREA) if supersample > 1 else result
     rays, valid = _rays(json.dumps(asdict(camera), sort_keys=True))
     t = scene.camera_optical_pose(name)
     directions = rays @ t[:3, :3].T

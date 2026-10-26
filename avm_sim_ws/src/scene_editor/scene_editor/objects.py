@@ -35,7 +35,8 @@ class ObjectView:
             scene.vehicle.asset_scale if scene.vehicle else None,
             scene.vehicle.dimensions if scene.vehicle else None,
             [(n,c.parent,c.width,c.height,c.K) for n,c in scene.cameras.items()],
-            [(n,b.rows,b.columns,b.square_size) for n,b in scene.boards.items()]))
+            [(n,b.rows,b.columns,b.square_size,b.asset,b.asset_scale,b.asset_pose)
+             for n,b in scene.boards.items()]))
         if self.signature != signature:
             for handle in reversed(self.handles):
                 handle.remove()
@@ -77,9 +78,17 @@ class ObjectView:
                 handle.on_click(lambda _, n=name: self.on_select(n))
                 self.handles.append(handle)
             for name, board in scene.boards.items():
-                handle = self.server.scene.add_mesh_trimesh(f"/objects/{name}", board_mesh(board))
+                frame = self.server.scene.add_frame(f"/objects/{name}", show_axes=False)
+                self.frames[name] = frame
+                self.handles.append(frame)
+                if board.is_gaussian:
+                    gs = GaussianScene.load(board.asset, board.asset_scale, pose_matrix(board.asset_pose))
+                    handle = self.server.scene.add_gaussian_splats(f"/objects/{name}/gaussian",
+                        centers=gs.means, covariances=gs.covariances, rgbs=gs.colors,
+                        opacities=gs.opacities[:,None])
+                else:
+                    handle = self.server.scene.add_mesh_trimesh(f"/objects/{name}/checker", board_mesh(board))
                 handle.on_click(lambda _, n=name: self.on_select(n))
-                self.frames[name] = handle
                 self.handles.append(handle)
             self.signature = signature
         for name, handle in self.frames.items():

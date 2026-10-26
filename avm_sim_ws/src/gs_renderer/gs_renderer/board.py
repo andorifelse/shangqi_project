@@ -31,6 +31,8 @@ def overlay_boards(scene: Scene, name: str, result: RenderResult) -> RenderResul
     world_optical = scene.camera_optical_pose(name)
     world_rays = rays @ world_optical[:3,:3].T
     for board in scene.boards.values():
+        if board.is_gaussian:
+            continue  # Already composed in the Gaussian scene; never paint a fake checker over it.
         distance,inside,rgb = intersect_board(board,world_optical[:3,3],world_rays)
         visible = valid & inside & (distance < result.depth + .005)
         result.rgb[visible] = rgb[visible]

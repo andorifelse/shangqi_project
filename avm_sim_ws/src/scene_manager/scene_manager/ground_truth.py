@@ -9,6 +9,7 @@ import yaml
 import numpy as np
 from .models import Scene, Board
 from .transforms import inverse, pose_matrix
+from .persistence import asset_entries
 
 # Scene remains the schema consumed by renderer/GUI/ROS. This name documents
 # its role without creating another set of intrinsics, poses or AVM settings.
@@ -45,7 +46,7 @@ class GroundTruth:
         scene = self.scene
         state = scene.to_dict()
         if asset_base is not None:
-            for obj, key in ((state, "gaussian_file"), (state.get("vehicle") or {}, "asset")):
+            for obj, key in asset_entries(state):
                 if obj.get(key):
                     try:
                         obj[key] = Path(os.path.relpath(Path(obj[key]).resolve(), asset_base.resolve())).as_posix()
@@ -92,7 +93,7 @@ class GroundTruth:
             raise ValueError("Ground Truth scene checksum mismatch")
         state = data["state"]
         path = Path(path).expanduser().resolve()
-        for obj, key in ((state, "gaussian_file"), (state.get("vehicle") or {}, "asset")):
+        for obj, key in asset_entries(state):
             if obj.get(key) and not Path(obj[key]).is_absolute():
                 obj[key] = str((path.parent / obj[key]).resolve())
         truth = cls.capture(Scene.from_dict(state), data["revision"])

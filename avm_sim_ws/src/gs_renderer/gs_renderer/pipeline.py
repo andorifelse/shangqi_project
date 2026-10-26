@@ -16,6 +16,7 @@ class SensorPipeline:
         self._environment = None
         self._vehicle_key = None
         self._vehicle_local = None
+        self._board_local = {}
         self.renderer = None
 
     def render(self, scene: Scene):
@@ -23,7 +24,7 @@ class SensorPipeline:
         if environment_key != self._environment_key:
             self._environment = GaussianScene.load(
                 scene.gaussian_file, scene.coordinate.scale,
-                np.array(scene.coordinate.T_world_from_gs))
+                np.array(scene.coordinate.T_world_from_gs)) if scene.gaussian_file else None
             self._environment_key = environment_key
 
         vehicle_key = None
@@ -42,12 +43,27 @@ class SensorPipeline:
             self._vehicle_key = None
             self._vehicle_local = None
 
+        board_keys, board_world, active = [], [], set()
+        for name, board in scene.boards.items():
+            if not board.is_gaussian:
+                continue
+            local_key = (board.asset, board.asset_scale, tuple(board.asset_pose))
+            active.add(local_key)
+            if local_key not in self._board_local:
+                self._board_local[local_key] = GaussianScene.load(
+                    board.asset, board.asset_scale, pose_matrix(board.asset_pose))
+            board_keys.append((name, local_key, tuple(board.pose)))
+            board_world.append((local_key, tuple(board.pose)))
+        self._board_local = {k:v for k,v in self._board_local.items() if k in active}
         key = (environment_key, vehicle_key,
                tuple(scene.vehicle.pose) if vehicle_world is not None else None,
-               self.backend)
+               tuple(board_keys), self.backend)
         if key != self._key:
-            gs = (GaussianScene.concatenate(self._environment, vehicle_world)
-                  if vehicle_world is not None else self._environment)
+            parts = [g for g in [self._environment, vehicle_world] if g is not None]
+            parts.extend(self._board_local[k].transformed(transform=pose_matrix(pose)) for k,pose in board_world)
+            if not parts:
+                raise ValueError("Sensor rendering requires an environment or Gaussian object")
+            gs = GaussianScene.concatenate(*parts) if len(parts) > 1 else parts[0]
             if self.backend == "gsplat":
                 from .gsplat_renderer import GsplatRenderer
                 self.renderer = GsplatRenderer(gs)

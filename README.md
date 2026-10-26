@@ -37,6 +37,8 @@ Windows 仍可使用 `.\.venv\Scripts\python.exe -X utf8 tools/run_demo.py`。
 
 ## 操作
 
+高斯重建 PLY 标定板已支持导入、6DoF、缩放和相机渲染；操作及坐标对齐说明见 [GAUSSIAN_BOARDS.md](docs/GAUSSIAN_BOARDS.md)。
+
 1. 左键拖动空白处 Orbit，右键拖动 Pan，滚轮 Zoom。
 2. Scene Objects 下拉或点击模型选择物体；Add Vehicle / Add Camera / Add Board 添加；Delete selected 删除。MVP 一个车辆，最多六个相机；删除车辆同时删除挂载于该车的相机。
 3. Transform 的 XYZ 为米，Roll/Pitch/Yaw 为度。相机数值相对于 parent。拖动彩色箭头平移、圆弧旋转，数值同步回写。Gizmo 模式可切换 Translate / Rotate。

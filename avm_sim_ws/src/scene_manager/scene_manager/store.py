@@ -73,7 +73,7 @@ class SceneStore:
                 obj = scene.object(command["id"])
                 allowed = {
                     Camera: {"model", "width", "height", "K", "D", "max_angle"},
-                    Board: {"rows", "columns", "square_size"},
+                    Board: {"rows", "columns", "square_size", "asset", "asset_pose", "asset_scale"},
                     Vehicle: {"asset", "dimensions", "asset_pose", "asset_scale"}
                 }[type(obj)]
                 for key, value in command["properties"].items():
@@ -89,7 +89,11 @@ class SceneStore:
                 from pathlib import Path
                 asset = command["properties"]["asset"]
                 if asset and not Path(asset).is_file():
-                    raise ValueError(f"Vehicle asset does not exist: {asset}")
+                    raise ValueError(f"Object asset does not exist: {asset}")
+            if action == "add_board" and scene.boards[command["name"]].asset:
+                from pathlib import Path
+                if not Path(scene.boards[command["name"]].asset).is_file():
+                    raise ValueError("Board asset does not exist")
             self._scene = scene
             self._revision += 1
             return self._revision

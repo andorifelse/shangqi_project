@@ -59,14 +59,14 @@ def test_seed_reproducibility_and_overwrite_guard(tmp_path):
         calibrate_camera_dataset(tmp_path/"a","left",GroundTruth.capture(s))
 
 
-def test_seeded_samples_keep_all_board_corners_inside_camera_domain():
+def test_seeded_samples_keep_all_board_corners_inside_camera_domain(tmp_path):
     """Regression: narrow/offset camera poses must resample clipped checkerboards."""
     from scene_manager.camera_models import project
     from scene_manager.transforms import inverse,transform_points,pose_matrix
     from scene_manager.ground_truth import board_corners
     from scipy.spatial.transform import Rotation
 
-    s=default_scene()
+    s=default_scene(tmp_path)
     s.cameras["left"].pose=[.143176585303994,-2.406016372212127,.12080512371045671,
         .13862145450335728,-.016775341856597903,-1.468590312211759]
     s.cameras["rear"].pose=[4.403242713756516,.03251434131360561,.6400000000000001,

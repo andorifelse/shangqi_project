@@ -60,6 +60,14 @@ class Editor:
             self.square = self.server.gui.add_number("Square size (m)", .15, min=.001, step=.01)
             self.board_size = self.server.gui.add_markdown("Physical size = columns/rows x square size")
             self.server.gui.add_button("Apply board parameters").on_click(lambda _: self.events.put(("board", None)))
+            self.board_asset = self.server.gui.add_text("Board Gaussian PLY path (empty = virtual)", "")
+            self.board_asset_scale = self.server.gui.add_number("Board asset scale", 1., min=.000001, step=.01)
+            self.board_asset_position = [self.server.gui.add_number(f"Asset {a} (m)", 0., step=.01) for a in ("X","Y","Z")]
+            self.board_asset_rotation = [self.server.gui.add_number(f"Asset {a} (deg)", 0., step=1.) for a in ("Roll","Pitch","Yaw")]
+            self.server.gui.add_markdown("Asset alignment maps scaled PLY into the centered XY board frame. "
+                "Transform controls move the whole board; square size describes the physical pattern, not PLY scale.")
+            self.server.gui.add_button("Apply board asset").on_click(lambda _: self.events.put(("board_asset", None)))
+            self.server.gui.add_button("Use virtual board").on_click(lambda _: self.events.put(("board_virtual", None)))
 
     def _select(self, scene) -> None:
         if self.gizmo:
@@ -84,9 +92,7 @@ class Editor:
             self.distortion.value = ",".join(str(d) for d in c.D)
             self.max_angle.value = float(np.rad2deg(c.max_angle))
         if self.selected in scene.boards:
-            b = scene.boards[self.selected]
-            self.rows.value, self.columns.value, self.square.value = b.rows,b.columns,b.square_size
-            self.board_size.content = f"{b.width:.3f} m x {b.height:.3f} m"
+            self._sync_board_fields(scene.boards[self.selected])
         t = scene.world_pose(self.selected)
         self.gizmo_offset = np.array([0., 0., 2.0 if self.selected == "base_link" else .4])
         # A fresh wire name prevents delayed messages for a removed control
@@ -97,6 +103,20 @@ class Editor:
             disable_axes=self.mode.value == "Rotate", disable_sliders=self.mode.value == "Rotate",
             disable_rotations=self.mode.value == "Translate", depth_test=True)
         self.gizmo.on_update(self._drag)
+
+    def _sync_board_fields(self, board) -> None:
+        # Refresh only when authoritative properties change. This handles ROS
+        # asynchronous service echoes without overwriting an un-applied edit
+        # on every pose tick.
+        key = (board.id, board.rows, board.columns, board.square_size,
+               board.asset, board.asset_scale, tuple(board.asset_pose))
+        self.rows.value, self.columns.value, self.square.value = board.rows,board.columns,board.square_size
+        self.board_size.content = f"{board.width:.3f} m x {board.height:.3f} m"
+        self.board_asset.value, self.board_asset_scale.value = board.asset,board.asset_scale
+        for h,v in zip(self.board_asset_position+self.board_asset_rotation,
+                       board.asset_pose[:3]+np.rad2deg(board.asset_pose[3:]).tolist()):
+            h.value = float(v)
+        self._board_fields_key = key
 
     async def _drag(self, event) -> None:
         if not event.client or event.target is not self.gizmo:
@@ -157,6 +177,20 @@ class Editor:
                 raise ValueError("Select a board first")
             self.store.command({"action":"properties","id":self.selected,"properties":{
                 "rows":int(self.rows.value),"columns":int(self.columns.value),"square_size":self.square.value}})
+        elif kind in ("board_asset", "board_virtual"):
+            if self.selected not in scene.boards:
+                raise ValueError("Select a board first")
+            from pathlib import Path
+            from gs_renderer.gaussian import GaussianScene
+            raw_path = self.board_asset.value.strip() if kind == "board_asset" else ""
+            asset = str(Path(raw_path).expanduser().resolve()) if raw_path else ""
+            if asset:
+                GaussianScene.load(asset)  # Validate before changing authoritative state.
+            self.store.command({"action":"properties", "id":self.selected, "properties":{
+                "asset":asset, "asset_scale":float(self.board_asset_scale.value),
+                "asset_pose":[h.value for h in self.board_asset_position]+
+                    np.deg2rad([h.value for h in self.board_asset_rotation]).tolist()}})
+            self._select(self.store.snapshot()[1])
 
     def tick(self) -> None:
         while not self.events.empty():
@@ -193,3 +227,8 @@ class Editor:
         self._shown_selection = self.selected
         self.revision = revision
         self._view_key = view_key
+        if self.selected in scene.boards:
+            b = scene.boards[self.selected]
+            key = (b.id,b.rows,b.columns,b.square_size,b.asset,b.asset_scale,tuple(b.asset_pose))
+            if key != getattr(self, "_board_fields_key", None):
+                self._sync_board_fields(b)

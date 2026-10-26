@@ -46,6 +46,15 @@ class Board:
     columns: int = 8
     square_size: float = .15
     pose: list[float] = field(default_factory=lambda: [3., 0, .025, 0, 0, 0])
+    # Empty asset preserves the analytic checkerboard. For PLY assets, the
+    # logical checkerboard frame remains centered XY, normal +Z (meters).
+    asset: str = ""
+    asset_pose: list[float] = field(default_factory=lambda: [0.] * 6)
+    asset_scale: float = 1.
+
+    @property
+    def is_gaussian(self) -> bool:
+        return bool(self.asset) and Path(self.asset).suffix.lower() == ".ply"
 
     @property
     def width(self) -> float:
@@ -123,6 +132,11 @@ class Scene:
             if name != board.id or not re.fullmatch(r"board_[a-zA-Z0-9_]+", name):
                 raise ValueError("Invalid board id; use board_ prefix")
             pose_matrix(board.pose)
+            pose_matrix(board.asset_pose)
+            if not np.isfinite(board.asset_scale) or board.asset_scale <= 0:
+                raise ValueError("Board asset_scale must be positive")
+            if board.asset and not board.is_gaussian:
+                raise ValueError("Board asset must be a Gaussian .ply file")
             if not all(isinstance(v, int) and 1 <= v <= 100 for v in (board.rows, board.columns)) or not np.isfinite(board.square_size) or board.square_size <= 0:
                 raise ValueError("Invalid board dimensions")
         b = self.bev
