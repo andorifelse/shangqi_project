@@ -56,7 +56,17 @@ def begin_experiment_from_snapshot(snapshot, directory, config, project_root):
     """Persist an existing immutable GroundTruth snapshot and its exact revision."""
     directory=Path(directory).expanduser().resolve()
     directory.mkdir(parents=True,exist_ok=False)
-    (directory/"logs").mkdir()
+    return initialize_experiment_from_snapshot(snapshot,directory,config,project_root)
+
+
+def initialize_experiment_from_snapshot(snapshot, directory, config, project_root):
+    """Populate a newly reserved job directory in its background process."""
+    directory=Path(directory).expanduser().resolve()
+    protected=("scene.yaml","ground_truth.yaml","config.yaml","result.json",
+               "logs/runtime.json","logs/assets.json","logs/source.zip","logs/run.log")
+    if any((directory/name).exists() for name in protected):
+        raise FileExistsError(f"Experiment already initialized: {directory}")
+    (directory/"logs").mkdir(parents=True,exist_ok=True)
     scene=snapshot.scene
     save_scene(scene,directory/"scene.yaml")
     snapshot.save(directory/"ground_truth.yaml")

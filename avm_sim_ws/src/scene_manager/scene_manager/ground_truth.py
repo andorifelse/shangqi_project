@@ -10,6 +10,23 @@ import numpy as np
 from .models import Scene, Board
 from .transforms import inverse, pose_matrix
 from .persistence import asset_entries
+from .board_geometry import board_geometry
+
+
+def derived_board(board):
+    result={'T_world_from_board':pose_matrix(board.pose).tolist(),
+        'width_m':board.width,'height_m':board.height,'inner_corners_board_m':board_corners(board).tolist()}
+    if board.is_gaussian:
+        # Rows/columns are legacy virtual-pattern fields, NOT measured PLY truth.
+        result.update(width_m=None,height_m=None,inner_corners_board_m=None,
+            geometry_status='MISSING_OR_UNVERIFIED',public_corners_board_m=[])
+        try:
+            doc=board_geometry(board)
+            result.update(geometry_status='PUBLIC_GEOMETRY_DECLARED',public_corners_board_m=doc['corners'],
+                geometry_source=doc['source'])
+        except ValueError:
+            pass
+    return result
 
 # Scene remains the schema consumed by renderer/GUI/ROS. This name documents
 # its role without creating another set of intrinsics, poses or AVM settings.
@@ -71,9 +88,7 @@ class GroundTruth:
                     "T_world_from_camera_optical": scene.camera_optical_pose(n).tolist(),
                     "T_camera_optical_from_world": inverse(scene.camera_optical_pose(n)).tolist(),
                 } for n in scene.cameras},
-                "boards": {n: {"T_world_from_board": pose_matrix(b.pose).tolist(),
-                                  "width_m": b.width, "height_m": b.height,
-                                  "inner_corners_board_m": board_corners(b).tolist()}
+                "boards": {n: derived_board(b)
                            for n, b in scene.boards.items()},
             },
         }
@@ -97,6 +112,16 @@ class GroundTruth:
             if obj.get(key) and not Path(obj[key]).is_absolute():
                 obj[key] = str((path.parent / obj[key]).resolve())
         truth = cls.capture(Scene.from_dict(state), data["revision"])
-        if data["derived"] != truth.to_dict()["derived"]:
-            raise ValueError("Ground Truth derived transforms disagree with SceneState")
+        expected=truth.to_dict()['derived']
+        if data['derived']!=expected:
+            # Read old v1 snapshots without upgrading their virtual default grid
+            # into verified Gaussian geometry. New exports always mark it absent.
+            from copy import deepcopy
+            legacy=deepcopy(expected)
+            for name,b in truth.scene.boards.items():
+                if b.is_gaussian:
+                    legacy['boards'][name]={'T_world_from_board':pose_matrix(b.pose).tolist(),
+                        'width_m':b.width,'height_m':b.height,'inner_corners_board_m':board_corners(b).tolist()}
+            if data['derived']!=legacy:
+                raise ValueError("Ground Truth derived transforms disagree with SceneState")
         return truth

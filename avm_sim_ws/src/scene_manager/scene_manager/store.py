@@ -44,7 +44,9 @@ class SceneStore:
                 from .persistence import load_scene
                 return self.replace(load_scene(command["path"]))
             scene = deepcopy(self._scene)
-            if action == "add_vehicle":
+            if action == "calibration_settings":
+                scene.calibration = deepcopy(command['settings'])
+            elif action == "add_vehicle":
                 if scene.vehicle:
                     raise ValueError("MVP allows one vehicle")
                 scene.vehicle = Vehicle(**command.get("properties", {}))
@@ -73,7 +75,7 @@ class SceneStore:
                 obj = scene.object(command["id"])
                 allowed = {
                     Camera: {"model", "width", "height", "K", "D", "max_angle"},
-                    Board: {"rows", "columns", "square_size", "asset", "asset_pose", "asset_scale"},
+                    Board: {"rows", "columns", "square_size", "asset", "asset_pose", "asset_scale", "calibration_geometry"},
                     Vehicle: {"asset", "dimensions", "asset_pose", "asset_scale"}
                 }[type(obj)]
                 for key, value in command["properties"].items():

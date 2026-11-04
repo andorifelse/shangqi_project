@@ -10,6 +10,7 @@ from scene_manager.store import SceneStore
 from .editor import Editor
 from .preview import Preview
 from .files import SceneFiles
+from .calibration_ui import CalibrationPanel
 from scene_manager.persistence import load_scene
 
 
@@ -33,6 +34,7 @@ def main() -> None:
     store = SceneStore(scene)
     editor = Editor(server, store)
     files = SceneFiles(server, store, editor.status, Path.cwd() / "outputs" / "scene.yaml")
+    calibration = CalibrationPanel(server, store, args.backend)
     preview = None if args.no_render else Preview(server, store, args.backend)
     @server.on_client_connect
     def on_connect(client):
@@ -44,13 +46,14 @@ def main() -> None:
         while True:
             files.tick()
             editor.tick()
+            calibration.tick()
             if preview:
                 preview.tick()
             time.sleep(.03)
     except KeyboardInterrupt:
         pass
     finally:
+        calibration.close()
         if preview:
             preview.close()
         server.stop()
-

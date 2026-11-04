@@ -109,6 +109,10 @@ ros2 launch avm_bringup avm_sim.launch.py backend:=gsplat render_hz:=5.0
 
 ## 第二阶段：标定闭环与实验复现
 
+编辑器现可在 **标定 Calibration** 中下拉选择算法，点击 **开始标定** 并查看/导出结果；已集成用户提供的 `calibration_pipeline_1.0.0`。输入来源、操作与验证边界见 [CALIBRATION_GUI.md](docs/CALIBRATION_GUI.md)。
+
+1.0.0 现默认 **当前 GUI 场景（一键采集）**：冻结 SceneState、固定相机/水平小板 XY/Yaw、gsplat 实际 PNG、原版内外参/BEV、事后 GT 对比。板角色、公开角点和 camera→region 可在 GUI 配置保存，无需手写流程 JSON。真实环车板仍须核实米制尺度与公开角点，详细说明见 [CURRENT_SCENE_CALIBRATION.md](docs/CURRENT_SCENE_CALIBRATION.md)。
+
 已在现有 Scene/SceneStore 上增量加入统一 Ground Truth 导出、几何数学测试、固定 seed 的棋盘格数据集生成、OpenCV pinhole/fisheye baseline 标定及误差报告。无需启动 ROS 或浏览器即可运行完整闭环：
 
 ```bash

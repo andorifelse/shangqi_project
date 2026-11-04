@@ -10,6 +10,7 @@ from .editor import Editor
 from .files import SceneFiles
 from .preview import PreviewDisplay, SensorPreviewBuffer
 from .remote_store import RemoteStore
+from .calibration_ui import CalibrationPanel
 
 
 def main(args=None) -> None:
@@ -32,6 +33,7 @@ def main(args=None) -> None:
                                    SceneCommand.Request, self.edit_status)
             self.editor=Editor(self.server,self.store)
             self.files=SceneFiles(self.server,self.store,self.editor.status,Path.cwd()/"scene.yaml")
+            self.calibration=CalibrationPanel(self.server,self.store,self.declare_parameter("backend","cpu").value)
             self.preview=PreviewDisplay(self.server)
             self.images,self.image_subs={},{}
             self.sensor_batches = SensorPreviewBuffer()
@@ -78,6 +80,7 @@ def main(args=None) -> None:
         def tick(self):
             self.files.tick()
             self.editor.tick()
+            self.calibration.tick()
             ready = None if self.store._poses else self.sensor_batches.ready(self.store.revision)
             if ready:
                 stamp, self.images = ready
@@ -94,6 +97,7 @@ def main(args=None) -> None:
     except KeyboardInterrupt:
         pass
     finally:
+        node.calibration.close()
         node.server.stop()
         node.destroy_node()
         if rclpy.ok():

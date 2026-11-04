@@ -51,6 +51,7 @@ class Board:
     asset: str = ""
     asset_pose: list[float] = field(default_factory=lambda: [0.] * 6)
     asset_scale: float = 1.
+    calibration_geometry: dict = field(default_factory=dict)
 
     @property
     def is_gaussian(self) -> bool:
@@ -91,6 +92,7 @@ class Scene:
     boards: dict[str, Board] = field(default_factory=dict)
     bev: Bev = field(default_factory=Bev)
     schema_version: int = 1
+    calibration: dict = field(default_factory=dict)
 
     def validate(self) -> None:
         if self.schema_version != 1:
@@ -129,6 +131,8 @@ class Scene:
                 if np.min(derivative) <= .01:
                     raise ValueError("Fisheye polynomial must be monotonic within max_angle")
         for name, board in self.boards.items():
+            from .board_geometry import validate_geometry
+            validate_geometry(board.calibration_geometry)
             if name != board.id or not re.fullmatch(r"board_[a-zA-Z0-9_]+", name):
                 raise ValueError("Invalid board id; use board_ prefix")
             pose_matrix(board.pose)
@@ -140,6 +144,21 @@ class Scene:
             if not all(isinstance(v, int) and 1 <= v <= 100 for v in (board.rows, board.columns)) or not np.isfinite(board.square_size) or board.square_size <= 0:
                 raise ValueError("Invalid board dimensions")
         b = self.bev
+        if not isinstance(self.calibration,dict):raise ValueError('标定设置必须为对象')
+        mapping=self.calibration.get('camera_regions',{})
+        if not isinstance(mapping,dict) or any(not isinstance(k,str) or not isinstance(v,str) for k,v in mapping.items()):
+            raise ValueError('camera→region 必须是相机名到区域名的映射')
+        for key in ('intrinsic_board','extrinsic_board'):
+            if key in self.calibration and not isinstance(self.calibration[key],str):
+                raise ValueError(f'{key} 必须是标定板 ID 字符串')
+        for key in ('views','holdout','seed','supersample'):
+            if key in self.calibration and (isinstance(self.calibration[key],bool) or not isinstance(self.calibration[key],int)):
+                raise ValueError(f'{key} 必须为整数')
+        for key in ('spread_x','spread_y','yaw_range_deg'):
+            if key in self.calibration:
+                value=self.calibration[key]
+                if isinstance(value,bool) or not isinstance(value,(int,float)) or not np.isfinite(value) or value<0:
+                    raise ValueError(f'{key} 必须为非负有限数值')
         if not np.isfinite([b.x_min, b.x_max, b.y_min, b.y_max]).all() or b.x_min >= b.x_max or b.y_min >= b.y_max:
             raise ValueError("Invalid BEV bounds")
         if not all(isinstance(v, int) and 16 <= v <= 4096 for v in (b.width, b.height)):
@@ -185,7 +204,8 @@ class Scene:
             vehicle=Vehicle(**vehicle_data) if vehicle_data is not None else None,
             cameras={n: Camera(**c) for n, c in data.get("cameras", {}).items()},
             boards={n: Board(**b) for n, b in data.get("boards", {}).items()},
-            bev=Bev(**data.get("bev", {})), schema_version=data.get("schema_version", 1))
+            bev=Bev(**data.get("bev", {})), schema_version=data.get("schema_version", 1),
+            calibration=data.get('calibration',{}))
         scene.validate()
         return scene
 

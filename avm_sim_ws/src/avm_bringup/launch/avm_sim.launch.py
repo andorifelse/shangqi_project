@@ -21,5 +21,6 @@ def generate_launch_description():
             "backend":LaunchConfiguration("backend"),"render_hz":ParameterValue(LaunchConfiguration("render_hz"),value_type=float)}]),
         Node(package="avm_stitcher",executable="avm_stitcher_node",output="screen"),
         Node(package="scene_editor",executable="scene_editor_node",output="screen",parameters=[{
+            "backend":LaunchConfiguration("backend"),
             "port":ParameterValue(LaunchConfiguration("port"),value_type=int),"host":LaunchConfiguration("host")}]),
     ])
