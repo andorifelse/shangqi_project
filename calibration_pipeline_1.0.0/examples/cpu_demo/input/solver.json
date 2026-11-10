@@ -1,0 +1,62 @@
+{
+  "geometry": {
+    "corners_x": 7,
+    "corners_y": 5,
+    "square_size": 0.15
+  },
+  "camera_ids": [
+    "camera"
+  ],
+  "models": {
+    "pinhole": {
+      "resolution_px": [
+        480,
+        360
+      ],
+      "unknown": [
+        "fx",
+        "fy",
+        "skew",
+        "cx",
+        "cy",
+        "k1",
+        "k2",
+        "p1",
+        "p2",
+        "k3"
+      ]
+    },
+    "fisheye": {
+      "resolution_px": [
+        360,
+        360
+      ],
+      "unknown": [
+        "fx",
+        "fy",
+        "skew",
+        "cx",
+        "cy",
+        "k1",
+        "k2",
+        "k3",
+        "k4"
+      ]
+    }
+  },
+  "split_by_suffix": {
+    "train": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "holdout": [
+      6,
+      7
+    ]
+  },
+  "pose_prior": "fixed camera; plane translation and yaw only"
+}

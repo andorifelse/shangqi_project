@@ -1,0 +1,40 @@
+{
+  "package": "calibration-scene-pipeline",
+  "version": "1.0.0",
+  "runtime_python_files": 7,
+  "test_python_files": 1,
+  "git_base_commit": "4d0c55d7f62a22a069d67fd3e0728e9c18627625",
+  "git_branch": "codex/calibration-pipeline-package",
+  "source_identity": "Exact delivered file SHA256 values; base commit alone does not identify uncommitted implementation.",
+  "runtime_sources": {
+    "calibration_pipeline/__init__.py": "83b60203b2c38ab8508e00b44b10f55ccf8eb858a4b5732df2128556e0b2981f",
+    "calibration_pipeline/__main__.py": "93e0ec881a08fbfbd5f0752d7d71dc999c5c402e989c222c0415cb1d05914988",
+    "calibration_pipeline/bev.py": "9bf042bea4ca08ccb4a49e9cfce09b22e40793f70640bb1bb28689cd84054513",
+    "calibration_pipeline/calibration.py": "4dfbb6685c9678098382281baae2c87f6dda8f54cf49cb7538f8a4a8b92676c8",
+    "calibration_pipeline/pipeline.py": "f9c38941bce023b0193525f4cc27171a1a3ab26d1d2c8d337aee81b470208922",
+    "calibration_pipeline/rendering.py": "29b6a43e7cb36a9205f2af1dd9c0c23d0ddc4d705752a012da68175df4bbb3ed",
+    "calibration_pipeline/scene.py": "3d1910b6fe1ad3623d3a8016f47a8d7d273275636359c03acf69bcc639ce53c7"
+  },
+  "source_origins": [
+    "src/pipeline/postprocess_render/bake_gaussians.py",
+    "src/pipeline/postprocess_render/capture_dgr_calibration.py",
+    "src/pipeline/postprocess_render/capture_dgr_cubemap.py",
+    "src/pipeline/postprocess_render/compose_fisheye_capture.py",
+    "src/pipeline/postprocess_render/stitch_bev.py",
+    "experiments/wood_room_vehicle_board_20261020/scripts/analyze_calibration.py",
+    "experiments/wood_room_vehicle_board_20261020/scripts/analyze_extrinsics.py",
+    "experiments/wood_room_vehicle_board_20261020/scripts/prepare_bev.py"
+  ],
+  "external_backend": "Graphdeco gaussian-splatting + matching diff-gaussian-rasterization; not bundled",
+  "execution_boundary": "No remote tasks, real GPU acquisition or resumed outdoor experiment in this release.",
+  "origin_sha256": {
+    "src/pipeline/postprocess_render/bake_gaussians.py": "2c230b5dac3d7f31aabc3c5e1537a75eaeb4662d76b8c83a1a94f41411707537",
+    "src/pipeline/postprocess_render/capture_dgr_calibration.py": "6837bcbd59b49bf75f4a85aae2d3a0d025e9ac508e69abb23a0b817e9c4e9699",
+    "src/pipeline/postprocess_render/capture_dgr_cubemap.py": "b5f2790ca41b771b7a556a56dc444a957b25d49c37e2750db3ebb4bff15f908c",
+    "src/pipeline/postprocess_render/compose_fisheye_capture.py": "345aa201a5a2ba2471b40ab1d39a5d46bb5bd7b6a29b2967968f1c4fa3181f7a",
+    "src/pipeline/postprocess_render/stitch_bev.py": "a781f817cd9be23e35a3c011d1ecac84693b3712592dde96fb9048775859f0a8",
+    "experiments/wood_room_vehicle_board_20261020/scripts/analyze_calibration.py": "4653c96a084f39f5947d43a5d8fb1bc81d243c3d9cb1b31499ba1dfa18c33ba0",
+    "experiments/wood_room_vehicle_board_20261020/scripts/analyze_extrinsics.py": "fc30123a6c901276388b006fce3d5e340538e9010815cc2b72a990802a4d9dac",
+    "experiments/wood_room_vehicle_board_20261020/scripts/prepare_bev.py": "71e883603928c1d2357c010156567a9d44b097716e67e5aa30e57f72edef2771"
+  }
+}

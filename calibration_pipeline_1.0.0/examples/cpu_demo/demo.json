@@ -1,0 +1,58 @@
+{
+  "schema_version": "calibration-pipeline.v1",
+  "output_dir": "output",
+  "stages": [
+    "compose",
+    "intrinsics",
+    "extrinsics",
+    "bev"
+  ],
+  "compose": {
+    "models": [
+      "pinhole",
+      "fisheye"
+    ],
+    "kinds": [
+      "intrinsics",
+      "extrinsics"
+    ],
+    "intrinsics": {
+      "capture_spec": "input/capture.json",
+      "manifest": "input/intrinsics_manifest.json"
+    },
+    "extrinsics": {
+      "capture_spec": "input/capture.json",
+      "manifest": "input/extrinsics_manifest.json"
+    }
+  },
+  "intrinsics": {
+    "solver_spec": "input/solver.json"
+  },
+  "extrinsics": {
+    "corners_world": "input/corners_world.json",
+    "regions": {
+      "camera": "front_small"
+    },
+    "models": [
+      "pinhole",
+      "fisheye"
+    ]
+  },
+  "bev": {
+    "models": [
+      "pinhole",
+      "fisheye"
+    ],
+    "channels": [
+      "camera"
+    ],
+    "grid": {
+      "x_min_m": -0.5,
+      "x_max_m": 0.5,
+      "y_min_m": -0.5,
+      "y_max_m": 0.5,
+      "meters_per_pixel": 0.02,
+      "plane_z_m": 0.0
+    }
+  }
+}

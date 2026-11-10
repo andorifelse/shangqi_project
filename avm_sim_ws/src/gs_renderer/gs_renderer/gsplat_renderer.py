@@ -28,7 +28,7 @@ def gsplat_intrinsics(camera):
 class GsplatRenderer:
     name = "gsplat CUDA"
 
-    def __init__(self, gaussian: GaussianScene):
+    def __init__(self, gaussian: GaussianScene | None = None):
         try:
             import torch
             from gsplat import rasterization
@@ -41,11 +41,32 @@ class GsplatRenderer:
             raise RuntimeError("Installed gsplat lacks native distorted camera API; install gsplat==1.5.3")
         self.torch, self.rasterization = torch, rasterization
         self.tensor = lambda a: torch.as_tensor(a,dtype=torch.float32,device="cuda")
-        # Upload Gaussian arrays only when scene geometry changes.
-        self.means,self.quats,self.scales,self.opacities,self.colors = [
-            self.tensor(a) for a in (gaussian.means,gaussian.quats,gaussian.scales,gaussian.opacities,gaussian.colors)]
-        self.fallback = CpuRayRenderer(gaussian)
+        self._parts={};self._layout=None;self.fallback=None
         self.warned_ftheta = False
+        if gaussian is not None:self.set_parts({'scene':gaussian})
+
+    def set_parts(self, parts):
+        """Keep static GPU slices; moving a board only uploads that board."""
+        layout=tuple((name,len(gs.means)) for name,gs in parts.items())
+        rebuild=layout!=self._layout
+        changed=[name for name,gs in parts.items() if rebuild or self._parts.get(name) is not gs]
+        fields=('means','quats','scales','opacities','colors')
+        if rebuild:
+            for field in fields:
+                setattr(self,field,self.tensor(np.concatenate([getattr(gs,field) for gs in parts.values()])))
+        else:
+            offset=0
+            for name,gs in parts.items():
+                count=len(gs.means)
+                if name in changed:
+                    for field in fields:
+                        getattr(self,field)[offset:offset+count].copy_(
+                            self.torch.from_numpy(np.ascontiguousarray(getattr(gs,field))))
+                offset+=count
+        if changed:self.fallback=None
+        self.upload_stats={'layout_rebuilt':rebuild,
+            'uploaded_gaussians':sum(len(parts[name].means) for name in changed)}
+        self._parts=dict(parts);self._layout=layout
 
     def render_batch(self, scene: Scene) -> dict[str,RenderResult]:
         groups = defaultdict(list)
@@ -55,6 +76,9 @@ class GsplatRenderer:
                 if not self.warned_ftheta:
                     warnings.warn("Ftheta uses CPU ray fallback; native gsplat FTheta calibration adapter is pending.")
                     self.warned_ftheta = True
+                if self.fallback is None:
+                    gs=GaussianScene.concatenate(*self._parts.values())
+                    self.fallback=CpuRayRenderer(gs)
                 outputs[name] = self.fallback.render(camera,scene.camera_optical_pose(name))
             else:
                 groups[(camera.model,camera.width,camera.height)].append(name)

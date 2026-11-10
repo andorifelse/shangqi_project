@@ -1,0 +1,734 @@
+{
+  "status": "EXECUTED",
+  "output_dir": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output",
+  "run_manifest": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/pipeline_runs/20261024T171147_33ecb2d1/run.json",
+  "stages": {
+    "compose": {
+      "status": "EXECUTED",
+      "seconds": 0.477586030960083,
+      "result": {
+        "intrinsics/pinhole": {
+          "dry_run": false,
+          "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/intrinsics/pinhole",
+          "out_dir": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/intrinsics/pinhole",
+          "manifest_path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/intrinsics/pinhole/image_manifest.json",
+          "image_manifest": {
+            "schema_version": "calibration-images.v1",
+            "dry_run": false,
+            "camera_model": "pinhole",
+            "image_size_px": [
+              480,
+              360
+            ],
+            "cube_core_size_px": [
+              256,
+              256
+            ],
+            "cube_face_size_px": [
+              288,
+              288
+            ],
+            "cube_face_padding_px": 16,
+            "capture_spec_sha256": "38972b998166e31fdf61a10d0b235c5ef9f0592cd13f28768353031bb087c348",
+            "capture_manifest_sha256": "90d95db485e65d5d9a0b8cb33d907e358bd7fbcd69661b9124e42126db931b09",
+            "coordinate_convention": "zero-based pixel indices; original PNGs, no resize",
+            "image_count": 8,
+            "images": [
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_00",
+                "image": "camera/camera__pose_00.png",
+                "width_px": 480,
+                "height_px": 360,
+                "camera_model": "pinhole",
+                "sha256": "b93800f256b3c5518938c53e156469e7bbe4f4df596425cdef33a9adc6fc60b5"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_01",
+                "image": "camera/camera__pose_01.png",
+                "width_px": 480,
+                "height_px": 360,
+                "camera_model": "pinhole",
+                "sha256": "5d32702741892abddbb6027528930da28fcfc837800b0cb408b040c11e517aee"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_02",
+                "image": "camera/camera__pose_02.png",
+                "width_px": 480,
+                "height_px": 360,
+                "camera_model": "pinhole",
+                "sha256": "94372cb57ce1b8da078303a44f62ecb8a4e3f8395342f06385251b460cc2b9bb"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_03",
+                "image": "camera/camera__pose_03.png",
+                "width_px": 480,
+                "height_px": 360,
+                "camera_model": "pinhole",
+                "sha256": "749e05962feb351e18c45cc4ab82535b9e70c87792e7218e538bc9e7934cdda3"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_04",
+                "image": "camera/camera__pose_04.png",
+                "width_px": 480,
+                "height_px": 360,
+                "camera_model": "pinhole",
+                "sha256": "20be6426501a39924a61b04e455218cc02f9f954c331f8890b80fa1da4efc52a"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_05",
+                "image": "camera/camera__pose_05.png",
+                "width_px": 480,
+                "height_px": 360,
+                "camera_model": "pinhole",
+                "sha256": "ece4a277723e38070936ad3a0de4fe7c3d85333071a1e9b23955e809f856610c"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_06",
+                "image": "camera/camera__pose_06.png",
+                "width_px": 480,
+                "height_px": 360,
+                "camera_model": "pinhole",
+                "sha256": "f007e210d92a99a293e31a3e319f1eb472483b1308870c6f48cc192101c974a6"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_07",
+                "image": "camera/camera__pose_07.png",
+                "width_px": 480,
+                "height_px": 360,
+                "camera_model": "pinhole",
+                "sha256": "82ded9f4ed463ce564f7a018d8369b0efa6d59c145efd97b8295103f48d87688"
+              }
+            ],
+            "complete": true
+          },
+          "complete": true
+        },
+        "intrinsics/fisheye": {
+          "dry_run": false,
+          "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/intrinsics/fisheye",
+          "out_dir": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/intrinsics/fisheye",
+          "manifest_path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/intrinsics/fisheye/image_manifest.json",
+          "image_manifest": {
+            "schema_version": "calibration-images.v1",
+            "dry_run": false,
+            "camera_model": "fisheye",
+            "image_size_px": [
+              360,
+              360
+            ],
+            "cube_core_size_px": [
+              256,
+              256
+            ],
+            "cube_face_size_px": [
+              288,
+              288
+            ],
+            "cube_face_padding_px": 16,
+            "capture_spec_sha256": "38972b998166e31fdf61a10d0b235c5ef9f0592cd13f28768353031bb087c348",
+            "capture_manifest_sha256": "90d95db485e65d5d9a0b8cb33d907e358bd7fbcd69661b9124e42126db931b09",
+            "coordinate_convention": "zero-based pixel indices; original PNGs, no resize",
+            "image_count": 8,
+            "images": [
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_00",
+                "image": "camera/camera__pose_00.png",
+                "width_px": 360,
+                "height_px": 360,
+                "camera_model": "fisheye",
+                "sha256": "a9748d76d758c0132a9032c7236f059e68f017564d45e8b4d2ebae447ee9036e"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_01",
+                "image": "camera/camera__pose_01.png",
+                "width_px": 360,
+                "height_px": 360,
+                "camera_model": "fisheye",
+                "sha256": "549bc390e5d226de1b80c8d0c454f9bae3119af4060755b7e3916e0553379eca"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_02",
+                "image": "camera/camera__pose_02.png",
+                "width_px": 360,
+                "height_px": 360,
+                "camera_model": "fisheye",
+                "sha256": "26ae951facc2b9c0615581025885098189a67ac662f1c7ac9a0da41f45622841"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_03",
+                "image": "camera/camera__pose_03.png",
+                "width_px": 360,
+                "height_px": 360,
+                "camera_model": "fisheye",
+                "sha256": "adfefffba05cb06962f65d3db59360b7cce67e2581b8378d324a695d16b3bc53"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_04",
+                "image": "camera/camera__pose_04.png",
+                "width_px": 360,
+                "height_px": 360,
+                "camera_model": "fisheye",
+                "sha256": "8f5c02ca968f126333dc735e1410aa0de0866a687b01baeb2b1ece8146474870"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_05",
+                "image": "camera/camera__pose_05.png",
+                "width_px": 360,
+                "height_px": 360,
+                "camera_model": "fisheye",
+                "sha256": "76678f1296a4f8b72cc785ab7a39c211744b8043e9578f45543952938981ee8b"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_06",
+                "image": "camera/camera__pose_06.png",
+                "width_px": 360,
+                "height_px": 360,
+                "camera_model": "fisheye",
+                "sha256": "15fa2919f080da509207303bd1b85c338c304c74beb86add9d0468d53f16188f"
+              },
+              {
+                "camera_id": "camera",
+                "frame_id": "camera__pose_07",
+                "image": "camera/camera__pose_07.png",
+                "width_px": 360,
+                "height_px": 360,
+                "camera_model": "fisheye",
+                "sha256": "b40bb7326bfa3ebf62108b711a1c07b30c4af0a29bee8c8ee1cb183c0fdea3c9"
+              }
+            ],
+            "complete": true
+          },
+          "complete": true
+        },
+        "extrinsics/pinhole": {
+          "dry_run": false,
+          "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/pinhole",
+          "out_dir": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/pinhole",
+          "manifest_path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/pinhole/image_manifest.json",
+          "image_manifest": {
+            "schema_version": "calibration-images.v1",
+            "dry_run": false,
+            "camera_model": "pinhole",
+            "image_size_px": [
+              480,
+              360
+            ],
+            "cube_core_size_px": [
+              256,
+              256
+            ],
+            "cube_face_size_px": [
+              288,
+              288
+            ],
+            "cube_face_padding_px": 16,
+            "capture_spec_sha256": "38972b998166e31fdf61a10d0b235c5ef9f0592cd13f28768353031bb087c348",
+            "capture_manifest_sha256": "42d4f7b395ae1664afaebe11ee1c252b296fba79a19a7cbc9e08827b4ba79946",
+            "coordinate_convention": "zero-based pixel indices; original PNGs, no resize",
+            "image_count": 1,
+            "images": [
+              {
+                "camera_id": "camera",
+                "frame_id": "big_board_fixed",
+                "image": "camera/big_board_fixed.png",
+                "width_px": 480,
+                "height_px": 360,
+                "camera_model": "pinhole",
+                "sha256": "43c8fa6b6359d213f6b4b75e99081f5cd18d8658c3f11072cbdbc658e50fb626"
+              }
+            ],
+            "complete": true
+          },
+          "complete": true
+        },
+        "extrinsics/fisheye": {
+          "dry_run": false,
+          "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/fisheye",
+          "out_dir": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/fisheye",
+          "manifest_path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/fisheye/image_manifest.json",
+          "image_manifest": {
+            "schema_version": "calibration-images.v1",
+            "dry_run": false,
+            "camera_model": "fisheye",
+            "image_size_px": [
+              360,
+              360
+            ],
+            "cube_core_size_px": [
+              256,
+              256
+            ],
+            "cube_face_size_px": [
+              288,
+              288
+            ],
+            "cube_face_padding_px": 16,
+            "capture_spec_sha256": "38972b998166e31fdf61a10d0b235c5ef9f0592cd13f28768353031bb087c348",
+            "capture_manifest_sha256": "42d4f7b395ae1664afaebe11ee1c252b296fba79a19a7cbc9e08827b4ba79946",
+            "coordinate_convention": "zero-based pixel indices; original PNGs, no resize",
+            "image_count": 1,
+            "images": [
+              {
+                "camera_id": "camera",
+                "frame_id": "big_board_fixed",
+                "image": "camera/big_board_fixed.png",
+                "width_px": 360,
+                "height_px": 360,
+                "camera_model": "fisheye",
+                "sha256": "f68f559df0ac47985ff0eaf9e48dee8cd1c30fe71ce69e4e6a23613de3a59e07"
+              }
+            ],
+            "complete": true
+          },
+          "complete": true
+        }
+      }
+    },
+    "intrinsics": {
+      "status": "EXECUTED",
+      "seconds": 1.324059009552002,
+      "result": {
+        "status": "DIAGNOSTIC_COMPLETED",
+        "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/intrinsics",
+        "results": {
+          "pinhole/camera": {
+            "status": "DEGENERATE_PARALLEL_PLANE_ACQUISITION",
+            "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/intrinsics/pinhole/camera/calibration.json",
+            "training_complete": 6,
+            "heldout_complete": 2
+          },
+          "fisheye/camera": {
+            "status": "MULTISTART_UNSTABLE",
+            "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/intrinsics/fisheye/camera/calibration.json",
+            "training_complete": 6,
+            "heldout_complete": 2
+          }
+        },
+        "execute": true,
+        "calibration_accepted": false,
+        "cross_camera_bundle_adjustment": false,
+        "input_count": 18
+      }
+    },
+    "extrinsics": {
+      "status": "EXECUTED",
+      "seconds": 0.04093790054321289,
+      "result": {
+        "status": "DIAGNOSTIC_COMPLETED",
+        "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/extrinsics",
+        "results": {
+          "pinhole/camera": {
+            "status": "UNRESOLVED_INTRINSICS_AND_CORNER_IDS",
+            "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/extrinsics/pinhole/camera/extrinsics.json",
+            "detected": true,
+            "candidate_count": 6
+          },
+          "fisheye/camera": {
+            "status": "UNRESOLVED_INTRINSICS_AND_CORNER_IDS",
+            "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/extrinsics/fisheye/camera/extrinsics.json",
+            "detected": true,
+            "candidate_count": 6
+          }
+        },
+        "execute": true,
+        "calibration_accepted": false,
+        "cross_camera_bundle_adjustment": false,
+        "input_count": 6
+      }
+    },
+    "bev": {
+      "status": "EXECUTED",
+      "seconds": 0.014678001403808594,
+      "result": {
+        "pinhole": {
+          "schema_version": "bev-stitch-result.v1",
+          "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/bev/pinhole",
+          "dry_run": false,
+          "status": "DIAGNOSTIC_RENDERED",
+          "calibration_validity_confirmed": false,
+          "spec": null,
+          "spec_sha256": "be5f88ff644372ad09db77024415e85c198e21d7d171548f083a994642c4d37a",
+          "renderer_code_sha256": "9bf042bea4ca08ccb4a49e9cfce09b22e40793f70640bb1bb28689cd84054513",
+          "grid": {
+            "x_min_m": -0.5,
+            "x_max_m": 0.5,
+            "y_min_m": -0.5,
+            "y_max_m": 0.5,
+            "meters_per_pixel": 0.02,
+            "plane_z_m": 0.0
+          },
+          "shape_px": [
+            50,
+            50
+          ],
+          "orientation": "+X vehicle front up; +Y vehicle left left",
+          "image_space": "BGR uint8 display-encoded source PNG, 0..255; not linear radiometry",
+          "coverage_fraction": 1.0,
+          "overlap_fraction": 0.0,
+          "evaluation_area_m2": 1.0,
+          "method_metrics": {
+            "hard": {
+              "fixed_boundary_gray_jump_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "overlap_gray_gradient_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "assignment_boundary_pixels": 0,
+              "caution": "Low jump may reflect blur or a naturally flat patch; inspect edges and coverage."
+            },
+            "feather": {
+              "fixed_boundary_gray_jump_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "overlap_gray_gradient_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "assignment_boundary_pixels": 0,
+              "caution": "Low jump may reflect blur or a naturally flat patch; inspect edges and coverage."
+            },
+            "graphcut_local": {
+              "fixed_boundary_gray_jump_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "overlap_gray_gradient_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "assignment_boundary_pixels": 0,
+              "caution": "Low jump may reflect blur or a naturally flat patch; inspect edges and coverage."
+            }
+          },
+          "pair_metrics": [],
+          "fixed_regions": [],
+          "cameras": [
+            {
+              "id": "camera",
+              "image": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/pinhole/camera/big_board_fixed.png",
+              "image_sha256": "43c8fa6b6359d213f6b4b75e99081f5cd18d8658c3f11072cbdbc658e50fb626",
+              "resolution_px": [
+                480,
+                360
+              ],
+              "metadata": {
+                "kind": "estimated_conditional_candidate",
+                "candidate_index": 4,
+                "candidate_id": 4,
+                "candidate_count": 6,
+                "eligible_candidate_count": 6,
+                "intrinsic_seed": 1,
+                "intrinsic_best_seed_not_used_for_pairing": 0,
+                "source_intrinsic_json": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/intrinsics/pinhole/camera/calibration.json",
+                "source_intrinsic_sha256": "2a964af6f20e390764419e565b9221d985fea2a532c9e06f0e94ebad6fa41d85",
+                "source_extrinsic_json": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/extrinsics/pinhole/camera/extrinsics.json",
+                "source_extrinsic_sha256": "f94f7fb550902640a62bc012a360468375e918b4933a580ca9d7bf448562e779",
+                "source_image_sha256": "43c8fa6b6359d213f6b4b75e99081f5cd18d8658c3f11072cbdbc658e50fb626",
+                "intrinsic_status": "DEGENERATE_PARALLEL_PLANE_ACQUISITION",
+                "extrinsic_status": "UNRESOLVED_INTRINSICS_AND_CORNER_IDS",
+                "optimizer_success": true,
+                "intrinsic_optimizer_success": true,
+                "global_uniqueness_proved": false,
+                "all_correspondence_rmse_px": 0.2100032601113675,
+                "subset_reprojection_rmse_px": 0.2100032601113675,
+                "minimum_depth_m": 2.771720065977765,
+                "selection_key": [
+                  "all_correspondence_rmse_px",
+                  "-fit_corner_count",
+                  "subset_rmse_px",
+                  "intrinsic_seed_as_string",
+                  "row_start",
+                  "quarter_turns",
+                  "candidate_index"
+                ],
+                "interpretation": "Conditional diagnostic candidate; low error does not resolve lens or physical corner identities",
+                "row_start": 1,
+                "quarter_turns": 2,
+                "corner_ids": [
+                  "front_small/r04/c03",
+                  "front_small/r04/c02",
+                  "front_small/r04/c01",
+                  "front_small/r03/c03",
+                  "front_small/r03/c02",
+                  "front_small/r03/c01",
+                  "front_small/r02/c03",
+                  "front_small/r02/c02",
+                  "front_small/r02/c01",
+                  "front_small/r01/c03",
+                  "front_small/r01/c02",
+                  "front_small/r01/c01"
+                ],
+                "observation_indices": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11
+                ],
+                "fit_corner_count": 12,
+                "all_correspondence_count": 12
+              }
+            }
+          ],
+          "metadata": {
+            "parameter_source": "estimated",
+            "camera_truth_parameters_used": false,
+            "status": "DIAGNOSTIC_UNRESOLVED_CALIBRATION",
+            "world_frame": "+X vehicle front, +Y vehicle left, +Z up; supplied R_w2c maps this world to camera",
+            "translation_unit": "metres; caller must establish the world/target scale",
+            "rig_to_world_implicitly_assumed": false,
+            "source_inputs": [
+              {
+                "path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/extrinsics/pinhole/camera/extrinsics.json",
+                "sha256": "f94f7fb550902640a62bc012a360468375e918b4933a580ca9d7bf448562e779"
+              },
+              {
+                "path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/pinhole/camera/big_board_fixed.png",
+                "sha256": "43c8fa6b6359d213f6b4b75e99081f5cd18d8658c3f11072cbdbc658e50fb626"
+              },
+              {
+                "path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/intrinsics/pinhole/camera/calibration.json",
+                "sha256": "2a964af6f20e390764419e565b9221d985fea2a532c9e06f0e94ebad6fa41d85"
+              }
+            ]
+          },
+          "occlusion_handling": "Only explicit footprint exclusions; no per-camera depth/occlusion inference.",
+          "proxy_caution": "Nearest-edge distances do not establish feature identity in repeated patterns.",
+          "calibration_claim": "Diagnostic candidate reprojection; blending never certifies calibration.",
+          "exposure_compensation": false,
+          "native_seam_solver": "OpenCV GraphCut COST_COLOR_GRAD",
+          "seam_band_px": 12,
+          "opencv_version": "5.0.0"
+        },
+        "fisheye": {
+          "schema_version": "bev-stitch-result.v1",
+          "output": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/bev/fisheye",
+          "dry_run": false,
+          "status": "DIAGNOSTIC_RENDERED",
+          "calibration_validity_confirmed": false,
+          "spec": null,
+          "spec_sha256": "660d5d92c6b278c1db7367c2f4415f514b13cbf9c307b4283f0d78148d7b830b",
+          "renderer_code_sha256": "9bf042bea4ca08ccb4a49e9cfce09b22e40793f70640bb1bb28689cd84054513",
+          "grid": {
+            "x_min_m": -0.5,
+            "x_max_m": 0.5,
+            "y_min_m": -0.5,
+            "y_max_m": 0.5,
+            "meters_per_pixel": 0.02,
+            "plane_z_m": 0.0
+          },
+          "shape_px": [
+            50,
+            50
+          ],
+          "orientation": "+X vehicle front up; +Y vehicle left left",
+          "image_space": "BGR uint8 display-encoded source PNG, 0..255; not linear radiometry",
+          "coverage_fraction": 1.0,
+          "overlap_fraction": 0.0,
+          "evaluation_area_m2": 1.0,
+          "method_metrics": {
+            "hard": {
+              "fixed_boundary_gray_jump_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "overlap_gray_gradient_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "assignment_boundary_pixels": 0,
+              "caution": "Low jump may reflect blur or a naturally flat patch; inspect edges and coverage."
+            },
+            "feather": {
+              "fixed_boundary_gray_jump_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "overlap_gray_gradient_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "assignment_boundary_pixels": 0,
+              "caution": "Low jump may reflect blur or a naturally flat patch; inspect edges and coverage."
+            },
+            "graphcut_local": {
+              "fixed_boundary_gray_jump_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "overlap_gray_gradient_0_255": {
+                "count": 0,
+                "mean": null,
+                "median": null,
+                "p95": null
+              },
+              "assignment_boundary_pixels": 0,
+              "caution": "Low jump may reflect blur or a naturally flat patch; inspect edges and coverage."
+            }
+          },
+          "pair_metrics": [],
+          "fixed_regions": [],
+          "cameras": [
+            {
+              "id": "camera",
+              "image": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/fisheye/camera/big_board_fixed.png",
+              "image_sha256": "f68f559df0ac47985ff0eaf9e48dee8cd1c30fe71ce69e4e6a23613de3a59e07",
+              "resolution_px": [
+                360,
+                360
+              ],
+              "metadata": {
+                "kind": "estimated_conditional_candidate",
+                "candidate_index": 0,
+                "candidate_id": 0,
+                "candidate_count": 6,
+                "eligible_candidate_count": 6,
+                "intrinsic_seed": 0,
+                "intrinsic_best_seed_not_used_for_pairing": 0,
+                "source_intrinsic_json": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/intrinsics/fisheye/camera/calibration.json",
+                "source_intrinsic_sha256": "9705b3c0e8b893e0101ae060767524bc35cf40ea2439f116b40d7c3a036dcaa3",
+                "source_extrinsic_json": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/extrinsics/fisheye/camera/extrinsics.json",
+                "source_extrinsic_sha256": "68dd3649bb2e132605cbfd0ac1a3fa812482126256ef6a5ab43cf1d8864539cd",
+                "source_image_sha256": "f68f559df0ac47985ff0eaf9e48dee8cd1c30fe71ce69e4e6a23613de3a59e07",
+                "intrinsic_status": "MULTISTART_UNSTABLE",
+                "extrinsic_status": "UNRESOLVED_INTRINSICS_AND_CORNER_IDS",
+                "optimizer_success": true,
+                "intrinsic_optimizer_success": true,
+                "global_uniqueness_proved": false,
+                "all_correspondence_rmse_px": 0.09062417497637167,
+                "subset_reprojection_rmse_px": 0.09062417497637167,
+                "minimum_depth_m": 1.4510991311903325,
+                "selection_key": [
+                  "all_correspondence_rmse_px",
+                  "-fit_corner_count",
+                  "subset_rmse_px",
+                  "intrinsic_seed_as_string",
+                  "row_start",
+                  "quarter_turns",
+                  "candidate_index"
+                ],
+                "interpretation": "Conditional diagnostic candidate; low error does not resolve lens or physical corner identities",
+                "row_start": 1,
+                "quarter_turns": 0,
+                "corner_ids": [
+                  "front_small/r01/c01",
+                  "front_small/r01/c02",
+                  "front_small/r01/c03",
+                  "front_small/r02/c01",
+                  "front_small/r02/c02",
+                  "front_small/r02/c03",
+                  "front_small/r03/c01",
+                  "front_small/r03/c02",
+                  "front_small/r03/c03",
+                  "front_small/r04/c01",
+                  "front_small/r04/c02",
+                  "front_small/r04/c03"
+                ],
+                "observation_indices": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11
+                ],
+                "fit_corner_count": 12,
+                "all_correspondence_count": 12,
+                "source_image_circle_center_xy": [
+                  179.5,
+                  179.5
+                ],
+                "source_image_circle_radius_px": 179.0,
+                "lens_domain_policy": "positive-depth hemisphere, theta<89.9deg and continuous monotone radial domain",
+                "source_circle_policy": "centred inscribed circle; caller must verify or override for its actual image"
+              }
+            }
+          ],
+          "metadata": {
+            "parameter_source": "estimated",
+            "camera_truth_parameters_used": false,
+            "status": "DIAGNOSTIC_UNRESOLVED_CALIBRATION",
+            "world_frame": "+X vehicle front, +Y vehicle left, +Z up; supplied R_w2c maps this world to camera",
+            "translation_unit": "metres; caller must establish the world/target scale",
+            "rig_to_world_implicitly_assumed": false,
+            "source_inputs": [
+              {
+                "path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/extrinsics/fisheye/camera/extrinsics.json",
+                "sha256": "68dd3649bb2e132605cbfd0ac1a3fa812482126256ef6a5ab43cf1d8864539cd"
+              },
+              {
+                "path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/images/extrinsics/fisheye/camera/big_board_fixed.png",
+                "sha256": "f68f559df0ac47985ff0eaf9e48dee8cd1c30fe71ce69e4e6a23613de3a59e07"
+              },
+              {
+                "path": "/private/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0/examples/cpu_demo/output/intrinsics/fisheye/camera/calibration.json",
+                "sha256": "9705b3c0e8b893e0101ae060767524bc35cf40ea2439f116b40d7c3a036dcaa3"
+              }
+            ]
+          },
+          "occlusion_handling": "Only explicit footprint exclusions; no per-camera depth/occlusion inference.",
+          "proxy_caution": "Nearest-edge distances do not establish feature identity in repeated patterns.",
+          "calibration_claim": "Diagnostic candidate reprojection; blending never certifies calibration.",
+          "exposure_compensation": false,
+          "native_seam_solver": "OpenCV GraphCut COST_COLOR_GRAD",
+          "seam_band_px": 12,
+          "opencv_version": "5.0.0"
+        }
+      }
+    }
+  }
+}

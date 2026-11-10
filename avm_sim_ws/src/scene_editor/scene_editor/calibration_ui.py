@@ -38,10 +38,10 @@ class CalibrationPanel:
             self.extrinsic_board=server.gui.add_dropdown('外参固定大板（region/条带）',options=('(无)',))
             self.extrinsic_board.on_update(lambda _:self.events.put('regions'))
             self.holdout=server.gui.add_number('每相机留出图片数',2,min=1,max=30,step=1)
-            self.spread_x=server.gui.add_number('小板 X 平移半范围（m）',.5,min=0,max=20,step=.05)
-            self.spread_y=server.gui.add_number('小板 Y 平移半范围（m）',.5,min=0,max=20,step=.05)
-            self.yaw_range=server.gui.add_number('小板 Yaw 半范围（deg）',30.,min=0,max=180,step=1.)
-            self.sampling=server.gui.add_dropdown('平面采样方式',options=('自动：相机视野内水平面','当前小板附近 XY 范围'))
+            self.spread_x=server.gui.add_number('小板局部 X 平移半范围（m）',.5,min=0,max=20,step=.05)
+            self.spread_y=server.gui.add_number('小板局部 Y 平移半范围（m）',.5,min=0,max=20,step=.05)
+            self.yaw_range=server.gui.add_number('小板面内旋转半范围（deg）',30.,min=0,max=180,step=1.)
+            self.sampling=server.gui.add_dropdown('平面采样方式',options=('自动：逐相机可见平面','当前小板附近局部 XY 范围'))
             self.mapping_folder=server.gui.add_folder('相机 → 大板 region',expand_by_default=True)
             self.save_settings=server.gui.add_button('保存本场景标定设置')
             self.save_settings.on_click(lambda _:self.events.put('save_settings'))
@@ -73,7 +73,7 @@ class CalibrationPanel:
         self.info.content=("冻结点击时的当前 SceneState；运行期间可继续编辑。"
             "结果不自动覆盖相机参数。Gaussian 环车条带不能当完整棋盘。" if baseline else
             '冻结当前场景，使用原相机和 gsplat 直出 PNG；不是 Graphdeco 六面采集。'
-            '相机不动，小板只在当前水平面 XY 平移/Yaw 旋转。内外参板分开；'
+            '相机不动。自动模式可逐相机布置小板；每路采集固定板平面，仅面内平移/旋转。内参采集后移除内参板，其他板不变；'
             '高斯板缺少真实角点定义时会拒绝，先在公开几何面板填写。真值不传求解器。' if current else
             "执行你提供的原版 1.0.0 流程，数据来源由 JSON 决定；演示模式使用独立 CPU 示例，"
             "不是当前场景重新采集。当前场景快照仅作为实验上下文。"
@@ -116,8 +116,8 @@ class CalibrationPanel:
             if key in saved:h.value=saved[key]
         if saved.get('backend') in ('cpu','gsplat'):self.backend.value=saved['backend']
         if 'supersample' in saved:self.supersample.value=saved['supersample']
-        if saved.get('sampling')=='around_pose':self.sampling.value='当前小板附近 XY 范围'
-        elif saved.get('sampling')=='visible_plane':self.sampling.value='自动：相机视野内水平面'
+        if saved.get('sampling')=='around_pose':self.sampling.value='当前小板附近局部 XY 范围'
+        elif saved.get('sampling')=='visible_plane':self.sampling.value='自动：逐相机可见平面'
 
     def _download(self,event):
         if not event.client or not self.jobs.directory:return

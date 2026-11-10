@@ -1,0 +1,39 @@
+{
+  "version": "calibration-pipeline 1.0.0",
+  "installed_import": "/Users/jerryfan/Documents/0-inbox/project-inbox/3dgs场景创建与标定/experiments/calibration_pipeline_package_20261025/output/verification_env/lib/python3.12/site-packages/calibration_pipeline/__init__.py",
+  "test_cwd": "/tmp",
+  "extracted_package": "/var/folders/c8/nmtl612s3mscn9n2xd0d_zqc0000gn/T/calibration-pipeline-final-3945ylpq/calibration_pipeline_1.0.0",
+  "cli_api_plan_equal": true,
+  "archive_crc": "PASS",
+  "source_and_wheel_bytes": "PASS",
+  "gpu_worker_py37_syntax": "PASS",
+  "relocated_cli_exit_code": 0,
+  "tests_passed": 38,
+  "models": {
+    "pinhole": {
+      "intrinsic_status": "DEGENERATE_PARALLEL_PLANE_ACQUISITION",
+      "training_images": 6,
+      "heldout_images": 2,
+      "solutions": 3,
+      "extrinsic_candidates": 6,
+      "extrinsic_status": "UNRESOLVED_INTRINSICS_AND_CORNER_IDS",
+      "coverage_fraction": 1.0,
+      "calibration_validity_confirmed": false
+    },
+    "fisheye": {
+      "intrinsic_status": "MULTISTART_UNSTABLE",
+      "training_images": 6,
+      "heldout_images": 2,
+      "solutions": 3,
+      "extrinsic_candidates": 6,
+      "extrinsic_status": "UNRESOLVED_INTRINSICS_AND_CORNER_IDS",
+      "coverage_fraction": 1.0,
+      "calibration_validity_confirmed": false
+    }
+  },
+  "protected_inputs_unchanged": {
+    "dataset/data/fusion/project/placement.json": true,
+    "experiments/outdoor_1022_vehicle_board_20261024/config/scene.json": true,
+    "experiments/outdoor_1022_vehicle_board_20261024/notes/HANDOFF.md": true
+  }
+}

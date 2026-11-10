@@ -6,6 +6,7 @@ Pinhole D: k1,k2,p1,p2,k3. Fisheye/ftheta D: k1,k2,k3,k4.
 """
 from __future__ import annotations
 import cv2
+from functools import lru_cache
 import numpy as np
 from .models import Camera
 
@@ -60,9 +61,24 @@ def unproject(camera: Camera, pixels: np.ndarray) -> tuple[np.ndarray, np.ndarra
     return rays.reshape(*shape,3), valid.reshape(shape)
 
 
+@lru_cache(maxsize=8)
+def _camera_rays(model, width, height, k, d, max_angle):
+    camera=Camera(model=model,width=width,height=height,K=list(k),D=list(d),max_angle=max_angle)
+    rays=np.empty((height,width,3),dtype=np.float64)
+    valid=np.empty((height,width),dtype=bool)
+    # Bound temporary arrays during the 40-step fisheye inverse at high resolution.
+    for start in range(0,height,64):
+        stop=min(height,start+64)
+        u,v=np.meshgrid(np.arange(width),np.arange(start,stop))
+        rays[start:stop],valid[start:stop]=unproject(camera,np.stack([u,v],axis=-1))
+    rays.setflags(write=False);valid.setflags(write=False)
+    return rays,valid
+
+
 def camera_rays(camera: Camera) -> tuple[np.ndarray, np.ndarray]:
-    u,v = np.meshgrid(np.arange(camera.width),np.arange(camera.height))
-    return unproject(camera,np.stack([u,v],axis=-1))
+    """Read-only ray grids cached by optics/resolution, independent of camera pose."""
+    return _camera_rays(camera.model,camera.width,camera.height,
+        tuple(np.asarray(camera.K).reshape(-1)),tuple(camera.D),camera.max_angle)
 
 
 def world_to_pixel(scene, name: str, points: np.ndarray):

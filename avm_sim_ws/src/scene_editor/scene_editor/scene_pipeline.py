@@ -9,10 +9,11 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import time
 import cv2
 import numpy as np
 from scene_manager.board_geometry import board_geometry
-from scene_manager.transforms import pose_matrix,inverse,transform_points
+from scene_manager.transforms import pose_matrix,matrix_pose,inverse,transform_points
 
 
 def put(path, data):
@@ -70,8 +71,6 @@ def normalize_scene_request(scene, request):
     grid=next(iter(grids.values()))
     if not np.allclose(grid['grid'][:,:,2],0.,atol=1e-7):
         raise ValueError('内参板公开角点必须在 board 局部 Z=0 平面；请先校正 asset_pose/角点原点')
-    if not np.allclose(pose_matrix(small.pose)[:3,2],[0,0,1],atol=1e-7):
-        raise ValueError('内参小板必须平贴同一水平面（Roll/Pitch=0）；采集仅允许 XY/Yaw，不会自动改变高度/倾角')
     world_doc=deepcopy(large_doc)
     for row in world_doc['corners']:
         row['xyz_m']=transform_points(pose_matrix(large.pose),row['xyz_m']).tolist()
@@ -92,7 +91,7 @@ def normalize_scene_request(scene, request):
         out[key]=float(value)
     if out.get('backend','gsplat') not in ('gsplat','cpu'):raise ValueError('渲染后端只能选择 gsplat 或 cpu')
     if out.get('sampling','visible_plane') not in ('visible_plane','around_pose'):
-        raise ValueError('小板采样方式必须为视野内水平面或当前板附近')
+        raise ValueError('小板采样方式必须为视野内板平面或当前板附近')
     b=scene.bev
     mx=(b.x_max-b.x_min)/b.height;my=(b.y_max-b.y_min)/b.width
     if not np.isclose(mx,my):raise ValueError('1.0.0 BEV 仅支持正方形像素；请使 X范围/高度 = Y范围/宽度')
@@ -123,16 +122,39 @@ def public_corners(scene, request):
         'camera_regions':request['camera_regions']}
 
 
+def sample_intrinsic_pose(scene, name, board, request, rng):
+    """Move within the initial board plane, regardless of its world tilt."""
+    from scene_manager.camera_models import pixels_to_world_plane
+    plane=pose_matrix(board.pose)
+    if request['sampling']=='visible_plane':
+        camera=scene.cameras[name]
+        pixel=np.array([rng.uniform(.25,.75)*camera.width,rng.uniform(.3,.85)*camera.height])
+        normal=plane[:3,2]
+        hit,ok=pixels_to_world_plane(scene,name,pixel,normal,-float(normal@plane[:3,3]))
+        if not bool(ok):return None
+        local=transform_points(inverse(plane),hit)
+        dx,dy=local[:2]
+    else:
+        dx=rng.uniform(-request['spread_x'],request['spread_x'])
+        dy=rng.uniform(-request['spread_y'],request['spread_y'])
+    yaw=np.deg2rad(rng.uniform(-request['yaw_range_deg'],request['yaw_range_deg']))
+    # Right multiplication keeps both translation and rotation in board coordinates.
+    return matrix_pose(plane@pose_matrix([dx,dy,0.,0.,0.,yaw]))
+
+
 def capture_scene(scene, request, directory, progress):
     """Generate real PNG observations. No analytic replacement for Gaussian assets."""
     from gs_renderer.pipeline import SensorPipeline
-    from scene_manager.camera_models import world_to_pixel,pixels_to_world_plane,camera_rays
-    directory=Path(directory);small_id=request['intrinsic_board'];large_id=request['extrinsic_board']
-    small=scene.boards[small_id];points=np.array([r['xyz_m'] for r in request['intrinsic_geometry']['corners']])
+    from .capture_sampling import IntrinsicSampler,plan_intrinsic_board
+    from scene_manager.camera_models import camera_rays
+    directory=Path(directory);small_id=request['intrinsic_board']
+    small=scene.boards[small_id]
     pipeline=SensorPipeline(request['backend']);records=[];splits={};poses=[];attempt_log=[]
+    timing={'cameras':{},'render_s':0.,'detection_s':0.,'prefilter_s':0.,'background_s':0.}
+    started=time.perf_counter()
     root=directory/'pipeline';capture_root=directory/'capture';capture_root.mkdir()
     # All selected cameras stay fixed, with current K/D/resolution. A camera's
-    # protocol is independent but every pose obeys the same physical plane.
+    # protocol is independent and each camera uses one fixed physical plane.
     fixed={n:scene.camera_optical_pose(n).tolist() for n in request['cameras']}
     render_truth={'cameras':{n:{'definition':scene.cameras[n].__dict__,
         'T_world_from_camera_optical':fixed[n]} for n in fixed},
@@ -145,11 +167,14 @@ def capture_scene(scene, request, directory, progress):
     contract={'adapter':'direct_lens_png_v1','renderer':request['backend'],
         'not_graphdeco_cubemap':True,'skipped_original_stages':['prepare','capture','compose'],
         'reason':'1.0.0 accepts observed PNG; direct current calibrated lenses preserve arbitrary K/D and resolution',
-        'protocol':'fixed_camera_ground_board_xy_yaw','small_plane_height':small.pose[2],
+        'protocol':'fixed_camera_plane_xy_yaw',
+        'small_plane_origin_world_m':small.pose[:3],
+        'small_plane_normal_world':pose_matrix(small.pose)[:3,2].tolist(),
         'pose_sequence':'per-camera seeded independent planar observations, not simultaneous joint-BA observations',
-        'target_isolation':'intrinsics shows selected small board only; extrinsics shows selected large board only; environment/vehicle preserved',
-        'small_motion':'world X/Y translations and world Z yaw only; z/roll/pitch fixed',
+        'target_isolation':'intrinsics preserves all boards; after all intrinsic captures only the intrinsic board is removed for extrinsics/BEV; other boards/environment/vehicle preserved',
+        'small_motion':'per-camera fixed-plane local X/Y translations and normal-axis rotation; auto mode may plan a camera-facing plane before capture',
         'sampling':request['sampling'],
+        'sampling_acceleration':'geometry/depth preflight; successful-pose neighbourhoods with global exploration',
         'pixel':'integer OpenCV centers; RGB uint8 -> cv2 BGR encode PNG, no solver resize',
         'gsplat_K':'internal rasterizer-only principal point +0.5; saved K is unchanged',
         'asset_to_world':'T_world_board @ T_board_asset @ (asset_scale * p_asset)',
@@ -187,72 +212,124 @@ def capture_scene(scene, request, directory, progress):
         put(capture_root/'manifest.json',{'adapter':'direct_lens_png_v1','records':records,'complete':False})
     put(capture_root/'manifest.json',{'adapter':'direct_lens_png_v1','records':[],'complete':False})
     put(capture_root/'sampling_attempts.json',[])
+    # Check every camera before spending minutes collecting the first camera.
+    preflight={};planned_boards={}
+    def plane_record(board,source,candidate,rejections):
+        return {'feasible':candidate is not None,'source':source,'pose':board.pose,
+            'normal_world':pose_matrix(board.pose)[:3,2].tolist(),
+            'min_square_px':None if candidate is None else candidate['min_square_px'],
+            'rejections':rejections}
+    for name in request['cameras']:
+        seed=int.from_bytes(hashlib.sha256(f"{request['seed']}:{name}".encode()).digest()[:8],'little')
+        planned,source,candidate,rejections=plan_intrinsic_board(scene,name,small,request,seed)
+        planned_boards[name]=planned
+        preflight[name]=plane_record(planned,source,candidate,rejections)
+    put(capture_root/'preflight.json',preflight)
+    missing=[name for name,row in preflight.items() if not row['feasible']]
+    if missing:
+        for name in missing:
+            attempt_log.append({'camera':name,'attempt':1,'pose':None,'reason':'no_feasible_board_pose',
+                'prefilter_rejections':preflight[name]['rejections']})
+        put(capture_root/'sampling_attempts.json',attempt_log)
+        raise RuntimeError('、'.join(missing)+f"：仅采到 0/{request['views']+request['holdout']} 张；几何预检未找到完整可见且格子足够大的内参板姿态。请调整板位置或采样模式；自动模式支持逐相机布板，当前小板附近模式保留原平面，相机始终固定。")
     for name in request['cameras']:
         c=scene.cameras[name];seed=int.from_bytes(hashlib.sha256(f"{request['seed']}:{name}".encode()).digest()[:8],'little')
         mask_path=capture_root/'valid'/f'{name}.png';mask_path.parent.mkdir(exist_ok=True)
         _,valid_rays=camera_rays(c)
         if not cv2.imwrite(str(mask_path),valid_rays.astype(np.uint8)*255):raise OSError(mask_path)
         rng=np.random.default_rng(seed);accepted=[];attempts=0;need=request['views']+request['holdout']
+        progress(f'准备 {name} 静态场景遮挡缓存',done=done,total=total)
+        background=deepcopy(scene);background.cameras={name:background.cameras[name]}
+        del background.boards[small_id]
+        t0=time.perf_counter()
+        # Original-resolution depth suffices for conservative candidate screening.
+        background_result=pipeline.render(background)[name]
+        depth=getattr(background_result,'depth',None)
+        timing['background_s']+=time.perf_counter()-t0
+        # Recheck against actual static depth before committing to the plane.
+        planned,source,candidate,rejections=plan_intrinsic_board(scene,name,planned_boards[name],request,seed,depth)
+        if source=='scene_plane':source=preflight[name]['source']
+        planned_boards[name]=planned
+        preflight[name]=plane_record(planned,source,candidate,rejections)
+        put(capture_root/'preflight.json',preflight)
+        contract['intrinsic_planes_world']=preflight
+        render_truth['intrinsic_planes_world']=preflight
+        put(directory/'coordinate_contract.json',contract)
+        put(capture_root/'render_truth.json',render_truth)
+        if source=='camera_facing_plane':
+            progress(f'{name} 自动布置内参板，固定该路采集平面',done=done,total=total)
+        sampler=IntrinsicSampler(scene,name,planned,request,rng,depth)
+        del background_result
         while len(accepted)<need and attempts<need*request['max_attempts']:
-            pose=list(small.pose);attempts+=1
-            if attempts>1:
-                if request['sampling']=='visible_plane':
-                    # Camera truth is allowed here ONLY to propose board poses;
-                    # proposals remain on the original public horizontal plane.
-                    pixel=np.array([rng.uniform(.25,.75)*c.width,rng.uniform(.3,.85)*c.height])
-                    hit,ok=pixels_to_world_plane(scene,name,pixel,[0,0,1],-small.pose[2])
-                    if not bool(ok):
-                        attempt_log.append({'camera':name,'attempt':attempts,'pose':None,'reason':'ray_does_not_intersect_forward_plane'})
-                        put(capture_root/'sampling_attempts.json',attempt_log)
-                        continue
-                    pose[0],pose[1]=hit[:2]
-                else:
-                    pose[0]+=rng.uniform(-request['spread_x'],request['spread_x'])
-                    pose[1]+=rng.uniform(-request['spread_y'],request['spread_y'])
-                pose[5]+=np.deg2rad(rng.uniform(-request['yaw_range_deg'],request['yaw_range_deg']))
-            uv,valid=world_to_pixel(scene,name,transform_points(pose_matrix(pose),points))
-            reason='outside_camera_domain'
-            inside=(valid.all() and np.all(uv[:,0]>=4) and np.all(uv[:,0]<c.width-5)
-                and np.all(uv[:,1]>=4) and np.all(uv[:,1]<c.height-5))
-            if inside:
-                sample=deepcopy(scene);sample.cameras={name:sample.cameras[name]}
-                sample.boards={small_id:sample.boards[small_id]};sample.boards[small_id].pose=pose
-                image=render(sample,name)
-                found,_=cv2.findChessboardCornersSB(cv2.cvtColor(image,cv2.COLOR_RGB2GRAY),tuple(request['pattern_size']),
-                    flags=cv2.CALIB_CB_NORMALIZE_IMAGE|cv2.CALIB_CB_EXHAUSTIVE|cv2.CALIB_CB_ACCURACY)
-                if found:
-                    index=len(accepted);filename=f'view_{index:04d}.png'
-                    split='train' if index<request['views'] else 'holdout'
-                    save_image(image,name,'intrinsics',filename);accepted.append({'image':filename,'split':split})
-                    poses.append({'camera':name,'image':filename,'split':split,'board':small_id,'pose':pose})
-                    with pose_path.open('a',newline='',encoding='utf-8') as f:
-                        csv.writer(f).writerow([name,filename,split,small_id,*pose])
-                    done+=1;progress(f'采集内参 {name} {index+1}/{need}',done=done,total=total)
-                    reason='accepted'
-                else:
-                    reason='SB_detection_failed_or_occluded'
-                    rejected=capture_root/'rejected'/name/f'attempt_{attempts:04d}.png';rejected.parent.mkdir(parents=True,exist_ok=True)
-                    cv2.imwrite(str(rejected),cv2.cvtColor(image,cv2.COLOR_RGB2BGR))
-            attempt_log.append({'camera':name,'attempt':attempts,'pose':pose,'reason':reason})
+            t0=time.perf_counter();candidate=sampler.propose()
+            prefilter_s=time.perf_counter()-t0;timing['prefilter_s']+=prefilter_s
+            if candidate is None:
+                attempt_log.append({'camera':name,'attempt':attempts+1,'pose':None,
+                    'reason':'no_feasible_board_pose','prefilter_rejections':dict(sampler.rejections)})
+                put(capture_root/'sampling_attempts.json',attempt_log)
+                break
+            attempts+=1;pose=candidate['pose']
+            sample=deepcopy(scene);sample.cameras={name:sample.cameras[name]}
+            sample.boards[small_id].pose=pose
+            progress(f'采集内参 {name} {len(accepted)}/{need} · 尝试 {attempts} · 渲染',done=done,total=total)
+            t0=time.perf_counter();image=render(sample,name);render_s=time.perf_counter()-t0
+            timing['render_s']+=render_s
+            progress(f'采集内参 {name} {len(accepted)}/{need} · 尝试 {attempts} · 检测角点',done=done,total=total)
+            t0=time.perf_counter()
+            found,_=cv2.findChessboardCornersSB(cv2.cvtColor(image,cv2.COLOR_RGB2GRAY),tuple(request['pattern_size']),
+                flags=cv2.CALIB_CB_NORMALIZE_IMAGE|cv2.CALIB_CB_EXHAUSTIVE|cv2.CALIB_CB_ACCURACY)
+            detection_s=time.perf_counter()-t0;timing['detection_s']+=detection_s
+            sampler.observe(candidate,found)
+            if found:
+                index=len(accepted);filename=f'view_{index:04d}.png'
+                split='train' if index<request['views'] else 'holdout'
+                save_image(image,name,'intrinsics',filename);accepted.append({'image':filename,'split':split})
+                poses.append({'camera':name,'image':filename,'split':split,'board':small_id,'pose':pose})
+                with pose_path.open('a',newline='',encoding='utf-8') as f:
+                    csv.writer(f).writerow([name,filename,split,small_id,*pose])
+                done+=1;progress(f'采集内参 {name} {index+1}/{need}',done=done,total=total)
+                reason='accepted'
+            else:
+                reason='SB_detection_failed_or_occluded'
+                rejected=capture_root/'rejected'/name/f'attempt_{attempts:04d}.png';rejected.parent.mkdir(parents=True,exist_ok=True)
+                cv2.imwrite(str(rejected),cv2.cvtColor(image,cv2.COLOR_RGB2BGR))
+            attempt_log.append({'camera':name,'attempt':attempts,'pose':pose,'reason':reason,
+                'render_s':render_s,'detection_s':detection_s,'prefilter_s':prefilter_s,
+                'min_square_px':candidate['min_square_px']})
+            timing['cameras'][name]={'rendered_attempts':attempts,'accepted':len(accepted),
+                'prefilter_rejections':dict(sampler.rejections)}
+            timing['elapsed_s']=time.perf_counter()-started
+            put(capture_root/'timing.json',timing)
             put(capture_root/'sampling_attempts.json',attempt_log)
             put(capture_root/'manifest.json',{'adapter':'direct_lens_png_v1','records':records,'complete':False})
         if len(accepted)<need:
             put(capture_root/'manifest.json',{'adapter':'direct_lens_png_v1','records':records,'complete':False})
-            raise RuntimeError(f'{name}：仅采到 {len(accepted)}/{need} 张可检测图片。相机固定且小板仅 XY/Yaw；请将小板放入该相机视野并检查遮挡、平面高度或采样范围。拒绝图像和尝试已保存在 capture/。')
+            raise RuntimeError(f'{name}：仅采到 {len(accepted)}/{need} 张可检测图片。相机固定且小板仅在该相机的固定板平面内平移/旋转；请将小板放入该相机视野并检查遮挡、板平面或采样范围。拒绝图像和尝试已保存在 capture/。')
         splits[name]=accepted
-        sample=deepcopy(scene);sample.cameras={name:sample.cameras[name]};sample.boards={large_id:sample.boards[large_id]}
+    # Finish every camera's intrinsic capture before removing the moving target.
+    # Work on the experiment copy so the saved/UI scene remains reusable.
+    subsequent=deepcopy(scene)
+    del subsequent.boards[small_id]
+    progress(f'内参图片采集完成，后续阶段移除内参板 {small_id}，其他标定板保持不变',done=done,total=total)
+    for name in request['cameras']:
+        sample=deepcopy(subsequent);sample.cameras={name:sample.cameras[name]}
         image=render(sample,name);save_image(image,name,'extrinsics','big_board_fixed.png')
         done+=1;progress(f'采集外参 {name}',done=done,total=total)
     manifest={'adapter':'direct_lens_png_v1','backend':request['backend'],'complete':True,'records':records,
         'fixed_camera_truth':'render_truth.json (capture/evaluation only)','camera_motion':False,
-        'intrinsic_excluded_board':large_id,'extrinsic_excluded_board':small_id,
-        'small_plane_z_m':small.pose[2], 'seed':request['seed']}
+        'intrinsic_excluded_board':None,'extrinsic_excluded_board':small_id,
+        'intrinsic_boards':list(scene.boards),'extrinsic_boards':list(subsequent.boards),
+        'intrinsic_planes_world':preflight,
+        'small_plane_z_m':small.pose[2],
+        'small_plane_normal_world':pose_matrix(small.pose)[:3,2].tolist(), 'seed':request['seed']}
     asset_file=directory/'logs/assets.json'
     if asset_file.exists():
         for info in json.loads(asset_file.read_text()).values():
             if digest(info['path'])!=info['sha256']:
                 raise RuntimeError('采集期间资产文件发生变化，拒绝标记实验完成：'+info['path'])
         manifest['assets_unchanged']=True
+    timing['elapsed_s']=time.perf_counter()-started
+    put(capture_root/'timing.json',timing)
     put(capture_root/'manifest.json',manifest)
     return splits
 
@@ -268,7 +345,7 @@ def configs(scene, request, directory, splits):
     for i,((model,w,h),names) in enumerate(groups.items()):
         solver={'geometry':{'pattern_size':request['pattern_size'],'square_size':request['square_size_m']},
             'camera_ids':names,'models':{model:{'resolution_px':[w,h]}},'seeds':[0,1,2],
-            'acquisition_protocol':'fixed_camera_ground_board_xy_yaw',
+            'acquisition_protocol':'fixed_camera_plane_xy_yaw',
             'views':{model:{n:splits[n] for n in names}},'minimum_training_images':4}
         # Test this allowlist recursively; NEVER add K/D/pose/sample metadata.
         path=inputs/f'solver_group_{i}.json';put(path,solver)

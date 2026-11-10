@@ -1,0 +1,103 @@
+{
+  "cube_face_padding_px": 16,
+  "captures": {
+    "camera": {
+      "camera__pose_00": {
+        "faces": {
+          "front": "cubes/intrinsics/camera__pose_00/front.png",
+          "right": "cubes/intrinsics/camera__pose_00/right.png",
+          "left": "cubes/intrinsics/camera__pose_00/left.png",
+          "up": "cubes/intrinsics/camera__pose_00/up.png",
+          "down": "cubes/intrinsics/camera__pose_00/down.png",
+          "back": "cubes/intrinsics/camera__pose_00/back.png"
+        },
+        "frame_id": "camera__pose_00",
+        "board_id": "small"
+      },
+      "camera__pose_01": {
+        "faces": {
+          "front": "cubes/intrinsics/camera__pose_01/front.png",
+          "right": "cubes/intrinsics/camera__pose_01/right.png",
+          "left": "cubes/intrinsics/camera__pose_01/left.png",
+          "up": "cubes/intrinsics/camera__pose_01/up.png",
+          "down": "cubes/intrinsics/camera__pose_01/down.png",
+          "back": "cubes/intrinsics/camera__pose_01/back.png"
+        },
+        "frame_id": "camera__pose_01",
+        "board_id": "small"
+      },
+      "camera__pose_02": {
+        "faces": {
+          "front": "cubes/intrinsics/camera__pose_02/front.png",
+          "right": "cubes/intrinsics/camera__pose_02/right.png",
+          "left": "cubes/intrinsics/camera__pose_02/left.png",
+          "up": "cubes/intrinsics/camera__pose_02/up.png",
+          "down": "cubes/intrinsics/camera__pose_02/down.png",
+          "back": "cubes/intrinsics/camera__pose_02/back.png"
+        },
+        "frame_id": "camera__pose_02",
+        "board_id": "small"
+      },
+      "camera__pose_03": {
+        "faces": {
+          "front": "cubes/intrinsics/camera__pose_03/front.png",
+          "right": "cubes/intrinsics/camera__pose_03/right.png",
+          "left": "cubes/intrinsics/camera__pose_03/left.png",
+          "up": "cubes/intrinsics/camera__pose_03/up.png",
+          "down": "cubes/intrinsics/camera__pose_03/down.png",
+          "back": "cubes/intrinsics/camera__pose_03/back.png"
+        },
+        "frame_id": "camera__pose_03",
+        "board_id": "small"
+      },
+      "camera__pose_04": {
+        "faces": {
+          "front": "cubes/intrinsics/camera__pose_04/front.png",
+          "right": "cubes/intrinsics/camera__pose_04/right.png",
+          "left": "cubes/intrinsics/camera__pose_04/left.png",
+          "up": "cubes/intrinsics/camera__pose_04/up.png",
+          "down": "cubes/intrinsics/camera__pose_04/down.png",
+          "back": "cubes/intrinsics/camera__pose_04/back.png"
+        },
+        "frame_id": "camera__pose_04",
+        "board_id": "small"
+      },
+      "camera__pose_05": {
+        "faces": {
+          "front": "cubes/intrinsics/camera__pose_05/front.png",
+          "right": "cubes/intrinsics/camera__pose_05/right.png",
+          "left": "cubes/intrinsics/camera__pose_05/left.png",
+          "up": "cubes/intrinsics/camera__pose_05/up.png",
+          "down": "cubes/intrinsics/camera__pose_05/down.png",
+          "back": "cubes/intrinsics/camera__pose_05/back.png"
+        },
+        "frame_id": "camera__pose_05",
+        "board_id": "small"
+      },
+      "camera__pose_06": {
+        "faces": {
+          "front": "cubes/intrinsics/camera__pose_06/front.png",
+          "right": "cubes/intrinsics/camera__pose_06/right.png",
+          "left": "cubes/intrinsics/camera__pose_06/left.png",
+          "up": "cubes/intrinsics/camera__pose_06/up.png",
+          "down": "cubes/intrinsics/camera__pose_06/down.png",
+          "back": "cubes/intrinsics/camera__pose_06/back.png"
+        },
+        "frame_id": "camera__pose_06",
+        "board_id": "small"
+      },
+      "camera__pose_07": {
+        "faces": {
+          "front": "cubes/intrinsics/camera__pose_07/front.png",
+          "right": "cubes/intrinsics/camera__pose_07/right.png",
+          "left": "cubes/intrinsics/camera__pose_07/left.png",
+          "up": "cubes/intrinsics/camera__pose_07/up.png",
+          "down": "cubes/intrinsics/camera__pose_07/down.png",
+          "back": "cubes/intrinsics/camera__pose_07/back.png"
+        },
+        "frame_id": "camera__pose_07",
+        "board_id": "small"
+      }
+    }
+  }
+}

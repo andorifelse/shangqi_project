@@ -1,0 +1,136 @@
+{
+  "corners": [
+    {
+      "id": "front_small/r01/c01",
+      "region": "front_small",
+      "grid_row": 1,
+      "grid_col": 1,
+      "xyz_world_m": [
+        -0.25,
+        -0.375,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r01/c02",
+      "region": "front_small",
+      "grid_row": 1,
+      "grid_col": 2,
+      "xyz_world_m": [
+        0.0,
+        -0.375,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r01/c03",
+      "region": "front_small",
+      "grid_row": 1,
+      "grid_col": 3,
+      "xyz_world_m": [
+        0.25,
+        -0.375,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r02/c01",
+      "region": "front_small",
+      "grid_row": 2,
+      "grid_col": 1,
+      "xyz_world_m": [
+        -0.25,
+        -0.125,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r02/c02",
+      "region": "front_small",
+      "grid_row": 2,
+      "grid_col": 2,
+      "xyz_world_m": [
+        0.0,
+        -0.125,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r02/c03",
+      "region": "front_small",
+      "grid_row": 2,
+      "grid_col": 3,
+      "xyz_world_m": [
+        0.25,
+        -0.125,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r03/c01",
+      "region": "front_small",
+      "grid_row": 3,
+      "grid_col": 1,
+      "xyz_world_m": [
+        -0.25,
+        0.125,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r03/c02",
+      "region": "front_small",
+      "grid_row": 3,
+      "grid_col": 2,
+      "xyz_world_m": [
+        0.0,
+        0.125,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r03/c03",
+      "region": "front_small",
+      "grid_row": 3,
+      "grid_col": 3,
+      "xyz_world_m": [
+        0.25,
+        0.125,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r04/c01",
+      "region": "front_small",
+      "grid_row": 4,
+      "grid_col": 1,
+      "xyz_world_m": [
+        -0.25,
+        0.375,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r04/c02",
+      "region": "front_small",
+      "grid_row": 4,
+      "grid_col": 2,
+      "xyz_world_m": [
+        0.0,
+        0.375,
+        0.0
+      ]
+    },
+    {
+      "id": "front_small/r04/c03",
+      "region": "front_small",
+      "grid_row": 4,
+      "grid_col": 3,
+      "xyz_world_m": [
+        0.25,
+        0.375,
+        0.0
+      ]
+    }
+  ]
+}

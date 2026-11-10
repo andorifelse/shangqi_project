@@ -1,0 +1,82 @@
+{
+  "schema_version": "calibration-pipeline.v1",
+  "output_dir": "output/full_run_01",
+  "stages": [
+    "prepare",
+    "capture",
+    "compose",
+    "intrinsics",
+    "extrinsics",
+    "bev"
+  ],
+  "scene": {
+    "placement": "input/placement.json",
+    "asset_root": "input/assets",
+    "base_exclude_objects": [
+      "large_board"
+    ]
+  },
+  "capture": {
+    "repo": "external/gaussian-splatting",
+    "intrinsics_spec": "input/intrinsics_capture.json",
+    "extrinsics_spec": "input/extrinsics_capture.json",
+    "board_ply": "input/small_board_local.ply",
+    "channels": [
+      "camera"
+    ],
+    "near_plane": 0.01,
+    "seed": 2026
+  },
+  "compose": {
+    "models": [
+      "pinhole",
+      "fisheye"
+    ],
+    "kinds": [
+      "intrinsics",
+      "extrinsics"
+    ]
+  },
+  "intrinsics": {
+    "solver_spec": "input/solver.json",
+    "channels": [
+      "camera"
+    ]
+  },
+  "extrinsics": {
+    "corners_world": "input/large_board_corners_world.json",
+    "regions": {
+      "camera": "front_small"
+    },
+    "models": [
+      "pinhole",
+      "fisheye"
+    ]
+  },
+  "bev": {
+    "models": [
+      "pinhole",
+      "fisheye"
+    ],
+    "channels": [
+      "camera"
+    ],
+    "grid": {
+      "x_min_m": -4.0,
+      "x_max_m": 4.0,
+      "y_min_m": -3.0,
+      "y_max_m": 3.0,
+      "meters_per_pixel": 0.02,
+      "plane_z_m": 0.0
+    },
+    "exclude_rectangles_m": [
+      [
+        -2.3,
+        2.3,
+        -1.08,
+        1.08
+      ]
+    ],
+    "seam_band_px": 12
+  }
+}

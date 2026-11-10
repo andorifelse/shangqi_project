@@ -33,7 +33,9 @@ def runtime_manifest(project_root):
                      ("git_status",["git","status","--short"]),
                      ("git_diff",["git","diff","--no-ext-diff","--binary"])):
         try:
-            p=subprocess.run(args,cwd=project_root,capture_output=True,text=True,timeout=10)
+            # Git diffs can contain non-UTF-8 tracked text; retain those bytes as escapes.
+            p=subprocess.run(args,cwd=project_root,capture_output=True,text=True,
+                             encoding="utf-8",errors="backslashreplace",timeout=10)
             result[key]=p.stdout if p.returncode==0 else None
         except (OSError,subprocess.TimeoutExpired):
             result[key]=None

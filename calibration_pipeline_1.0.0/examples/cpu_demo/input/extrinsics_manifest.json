@@ -1,0 +1,19 @@
+{
+  "cube_face_padding_px": 16,
+  "captures": {
+    "camera": {
+      "big_board_fixed": {
+        "faces": {
+          "front": "cubes/extrinsics/big_board_fixed/front.png",
+          "right": "cubes/extrinsics/big_board_fixed/right.png",
+          "left": "cubes/extrinsics/big_board_fixed/left.png",
+          "up": "cubes/extrinsics/big_board_fixed/up.png",
+          "down": "cubes/extrinsics/big_board_fixed/down.png",
+          "back": "cubes/extrinsics/big_board_fixed/back.png"
+        },
+        "frame_id": "big_board_fixed",
+        "board_id": "large"
+      }
+    }
+  }
+}

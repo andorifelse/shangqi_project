@@ -26,13 +26,13 @@ def intersect_board(board: Board, origin_world: np.ndarray, rays_world: np.ndarr
 
 
 def overlay_boards(scene: Scene, name: str, result: RenderResult) -> RenderResult:
+    boards=[b for b in scene.boards.values() if not b.is_gaussian]
+    if not boards:return result
     camera = scene.cameras[name]
     rays,valid = camera_rays(camera)
     world_optical = scene.camera_optical_pose(name)
     world_rays = rays @ world_optical[:3,:3].T
-    for board in scene.boards.values():
-        if board.is_gaussian:
-            continue  # Already composed in the Gaussian scene; never paint a fake checker over it.
+    for board in boards:
         distance,inside,rgb = intersect_board(board,world_optical[:3,3],world_rays)
         visible = valid & inside & (distance < result.depth + .005)
         result.rgb[visible] = rgb[visible]

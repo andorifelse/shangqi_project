@@ -11,7 +11,7 @@ from scene_manager.persistence import save_scene,load_scene
 from scene_manager.ground_truth import GroundTruth
 from scene_manager.transforms import pose_matrix
 from scene_editor.scene_pipeline import (normalize_scene_request,public_corners,evaluation_frame,
-    configs,capture_scene,run_scene_pipeline)
+    configs,capture_scene,run_scene_pipeline,sample_intrinsic_pose)
 from scene_editor.calibration_jobs import CalibrationJobs,USER_PIPELINE,pipeline_class,project_root
 from test_calibration_jobs import wait_job
 
@@ -80,8 +80,55 @@ def test_public_frame_and_scale_and_no_camera_truth_in_generated_specs(tmp_path)
     assert specs[0]['stages']==['intrinsics','extrinsics']
 
 
-def test_current_scene_capture_fixed_plane_and_original_solver_pipeline(tmp_path):
+@pytest.mark.parametrize('gaussian_small',[False,True])
+def test_capture_removes_only_intrinsic_board_after_all_cameras(tmp_path,monkeypatch,gaussian_small):
+    from types import SimpleNamespace
+    import cv2
+    from gs_renderer.pipeline import SensorPipeline
+    s=fixture_scene(tmp_path)
+    s.boards['board_extra']=Board(id='board_extra',pose=[3,4,.2,0,0,.3])
+    if gaussian_small:
+        b=s.boards['board_small'];b.asset=s.gaussian_file
+        b.calibration_geometry=grid_geometry('small',b.columns-1,b.rows-1,b.square_size,
+            [-b.width/2+b.square_size,-b.height/2+b.square_size,0],source='test metric geometry')
+    other=deepcopy(s.cameras['front']);other.name='right';s.cameras['right']=other
+    r=request();r.update(cameras=['front','right'],camera_regions={'front':'board_large','right':'board_large'},
+        views=4,holdout=1,spread_x=0.,spread_y=0.,yaw_range_deg=0.)
+    r=normalize_scene_request(s,r);before=s.to_dict();samples=[]
+    def render(self,sample):
+        samples.append(deepcopy(sample))
+        return {name:SimpleNamespace(rgb=np.zeros((c.height,c.width,3),np.uint8))
+            for name,c in sample.cameras.items()}
+    monkeypatch.setattr(SensorPipeline,'render',render)
+    monkeypatch.setattr(cv2,'findChessboardCornersSB',lambda *args,**kwargs:(True,None))
+    splits=capture_scene(s,r,tmp_path,lambda *args,**kwargs:None)
+    intrinsic_count=(r['views']+r['holdout'])*len(r['cameras'])
+    assert len(samples)==intrinsic_count+2*len(r['cameras'])
+    # One target-free depth prepass per camera, then final target-free extrinsics.
+    intrinsic_samples=[sample for sample in samples if 'board_small' in sample.boards]
+    assert len(intrinsic_samples)==intrinsic_count
+    for sample in samples:
+        expected=set(s.boards) if 'board_small' in sample.boards else set(s.boards)-{'board_small'}
+        assert set(sample.boards)==expected
+        for name in expected:
+            assert sample.boards[name]==s.boards[name]
+        assert sample.vehicle==s.vehicle and sample.coordinate==s.coordinate
+        assert sample.gaussian_file==s.gaussian_file
+    assert s.to_dict()==before
+    assert all(len(rows)==5 for rows in splits.values())
+    manifest=json.loads((tmp_path/'capture/manifest.json').read_text())
+    assert manifest['intrinsic_excluded_board'] is None
+    assert manifest['extrinsic_excluded_board']=='board_small'
+    assert set(manifest['extrinsic_boards'])=={'board_large','board_extra'}
+    assert [row['kind'] for row in manifest['records']]==['intrinsics']*intrinsic_count+['extrinsics']*2
+
+
+@pytest.mark.parametrize('tilted',[False,True])
+def test_current_scene_capture_fixed_plane_and_original_solver_pipeline(tmp_path,tilted):
     s=fixture_scene(tmp_path);s.vehicle.pose=[0.]*6
+    if tilted:s.boards['board_small'].pose=[0.,0.,.35,.2,-.15,.1]
+    # Keep the retained large target behind the moving intrinsic board.
+    s.boards['board_large'].pose[2]=0.
     jobs=CalibrationJobs(experiments=tmp_path/'experiments')
     before=s.to_dict();store=SceneStore(s)
     try:
@@ -96,8 +143,11 @@ def test_current_scene_capture_fixed_plane_and_original_solver_pipeline(tmp_path
         assert intr['truth_read_by_solver'] is False and intr['training_complete']==6
         assert (out/'pipeline/bev/pinhole/comparison.png').exists()
         attempts=json.loads((out/'capture/sampling_attempts.json').read_text())
+        initial=pose_matrix(s.boards['board_small'].pose)
         for row in attempts:
-            assert row['pose'][2:5]==[.1,0,0]
+            sampled=pose_matrix(row['pose'])
+            np.testing.assert_allclose(sampled[:3,2],initial[:3,2],atol=1e-12)
+            assert abs(initial[:3,2]@(sampled[:3,3]-initial[:3,3]))<1e-12
         manifest=json.loads((out/'capture/manifest.json').read_text())
         assert len(manifest['records'])==9 and manifest['camera_motion'] is False
         assert len(result['ground_truth_comparison'])==1
@@ -105,13 +155,53 @@ def test_current_scene_capture_fixed_plane_and_original_solver_pipeline(tmp_path
     finally:jobs.close()
 
 
-def test_protocol_rejects_missing_mapping_tilt_and_same_roles(tmp_path):
+def test_protocol_rejects_missing_mapping_and_same_roles_but_accepts_tilt(tmp_path):
     s=fixture_scene(tmp_path)
     for update,match in (({'camera_regions':{}},'region'),({'extrinsic_board':'board_small'},'两个不同对象')):
         r=request();r.update(update)
         with pytest.raises(ValueError,match=match):normalize_scene_request(s,r)
     s.boards['board_small'].pose[3]=.2
-    with pytest.raises(ValueError,match='水平'):normalize_scene_request(s,request())
+    assert normalize_scene_request(s,request())['intrinsic_board']=='board_small'
+
+
+@pytest.mark.parametrize('angles',[[0.,0.,.4],[.3,-.4,.5],[np.pi/2,0.,.2]])
+@pytest.mark.parametrize('sampling',['around_pose','visible_plane'])
+def test_intrinsic_sampling_preserves_initial_plane(tmp_path,angles,sampling):
+    from scene_manager.transforms import inverse,T_LINK_OPTICAL,matrix_pose
+    s=fixture_scene(tmp_path);b=s.boards['board_small'];b.pose=[.2,-.1,.3,*angles]
+    initial=pose_matrix(b.pose);normal=initial[:3,2]
+    # Face the board from its normal, including the vertical-board case.
+    optical=initial.copy();optical[:3,:3]=initial[:3,:3]@np.diag([1.,-1.,-1.])
+    optical[:3,3]=initial[:3,3]+2.*normal
+    s.cameras['front'].pose=matrix_pose(optical@inverse(T_LINK_OPTICAL))
+    r=request();r['sampling']=sampling;r=normalize_scene_request(s,r)
+    before=s.to_dict();rng=np.random.default_rng(123)
+    for _ in range(12):
+        pose=sample_intrinsic_pose(s,'front',b,r,rng)
+        assert pose is not None
+        sampled=pose_matrix(pose)
+        np.testing.assert_allclose(sampled[:3,2],normal,atol=1e-12)
+        assert abs(normal@(sampled[:3,3]-initial[:3,3]))<1e-12
+        relative=inverse(initial)@sampled
+        assert abs(relative[0,3])<=r['spread_x']+1e-12 or sampling=='visible_plane'
+        assert abs(relative[1,3])<=r['spread_y']+1e-12 or sampling=='visible_plane'
+        yaw=np.arctan2(relative[1,0],relative[0,0])
+        assert abs(yaw)<=np.deg2rad(r['yaw_range_deg'])+1e-12
+        if sampling=='visible_plane':
+            from scene_manager.camera_models import world_to_pixel
+            pixel,valid=world_to_pixel(s,'front',sampled[:3,3])
+            assert bool(valid)
+            c=s.cameras['front']
+            assert .25*c.width-1e-9<=pixel[0]<=.75*c.width+1e-9
+            assert .3*c.height-1e-9<=pixel[1]<=.85*c.height+1e-9
+    assert s.to_dict()==before
+
+
+def test_intrinsic_sampling_rejects_parallel_camera_rays(tmp_path):
+    s=fixture_scene(tmp_path);s.boards['board_small'].pose=[0,0,.1,np.pi/2,0,0]
+    r=request();r['sampling']='visible_plane'
+    # The camera origin lies in the vertical plane: every forward hit is invalid.
+    assert sample_intrinsic_pose(s,'front',s.boards['board_small'],r,np.random.default_rng(123)) is None
 
 
 def test_direct_mask_preserves_black_pixels_and_rejects_modified_mask(tmp_path):
@@ -164,7 +254,8 @@ def test_failed_capture_and_cancel_keep_actual_artifacts(tmp_path):
         assert (out/'capture/board_poses.csv').exists()
         assert json.loads((out/'capture/manifest.json').read_text())['complete'] is False
         attempts=json.loads((out/'capture/sampling_attempts.json').read_text())
-        assert attempts and all(x['reason']=='outside_camera_domain' for x in attempts)
+        assert attempts and all(x['reason']=='no_feasible_board_pose' for x in attempts)
+        assert attempts[0]['prefilter_rejections']['outside_camera_domain']>0
     finally:jobs.close()
 
 
@@ -237,6 +328,10 @@ def gaussian_checker(path,columns,rows,pitch):
 @pytest.mark.parametrize('model',['pinhole','fisheye'])
 def test_actual_gaussian_board_gpu_capture_to_original_pipeline(tmp_path,model):
     s=fixture_scene(tmp_path);s.vehicle.pose=[0.]*6
+    # Both Gaussian targets must be above the Gaussian room floor; the moving
+    # target stays in front of the retained fixed board during intrinsic capture.
+    s.boards['board_small'].pose[2]=.3
+    s.boards['board_large'].pose[2]=.1
     c=s.cameras['front'];c.model=model
     c.D=[0.]*5 if model=='pinhole' else [0.]*4
     if model=='fisheye':c.K=[240.,0,239.5,0,240.,179.5,0,0,1]

@@ -1,0 +1,1120 @@
+coordinate:
+  scale: 1.5
+  ground_z: 0
+  T_world_from_gs:
+  - - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 1.0
+    - -0.2
+  - - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+vehicle:
+  asset: ../calibration_single_yaml_1.4.0/assets/vehicle_resized_low.ply
+  pose:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  dimensions:
+  - 4.92
+  - 1.89
+  - 1.2766301035881042
+  asset_pose:
+  - -1.5078044290542603
+  - 0.0006898641586304821
+  - 0.6383262872695923
+  - 0.0
+  - 0.0
+  - 1.5707963267948966
+  asset_scale: 1.0
+cameras:
+  front:
+    name: front
+    parent: world
+    pose:
+    - 0.9722882890555589
+    - -0.0018710580184305714
+    - 0.5818505943226915
+    - -0.008017724317693098
+    - 0.4392177001265405
+    - -0.00980940031841799
+    model: fisheye
+    width: 1280
+    height: 960
+    K:
+    - 323.20599365234375
+    - 0.0
+    - 640.8489990234375
+    - 0.0
+    - 323.27099609375
+    - 480.9739990234375
+    - 0.0
+    - 0.0
+    - 1.0
+    D:
+    - 0.03048899956047535
+    - 0.041357800364494324
+    - -0.008398070000112057
+    - -0.0009833199437707663
+    max_angle: 1.55
+  right:
+    name: right
+    parent: world
+    pose:
+    - -0.7290701617352431
+    - -0.9883724317007552
+    - 1.1386331671706273
+    - -0.0024443074375025686
+    - 0.595029203702488
+    - -1.5713460217674036
+    model: fisheye
+    width: 1280
+    height: 960
+    K:
+    - 321.7796325683594
+    - 0.0
+    - 640.9353637695312
+    - 0.0
+    - 321.56658935546875
+    - 479.9270935058594
+    - 0.0
+    - 0.0
+    - 1.0
+    D:
+    - 0.0264195054769516
+    - 0.04427875578403473
+    - -0.009900689125061035
+    - -0.0006940389866940677
+    max_angle: 1.55
+  rear:
+    name: rear
+    parent: world
+    pose:
+    - -3.8283953379287308
+    - 0.007357216861908156
+    - 0.7151496775989508
+    - 0.008494048298489654
+    - 0.6089837232445232
+    - -3.1335855479361827
+    model: fisheye
+    width: 1280
+    height: 960
+    K:
+    - 322.3823547363281
+    - 0.0
+    - 640.239990234375
+    - 0.0
+    - 322.0711669921875
+    - 481.8098449707031
+    - 0.0
+    - 0.0
+    - 1.0
+    D:
+    - 0.028165750205516815
+    - 0.0427195206284523
+    - -0.009364952333271503
+    - -0.0007407324155792594
+    max_angle: 1.55
+  left:
+    name: left
+    parent: world
+    pose:
+    - -0.7180665770932988
+    - 0.982904185694828
+    - 1.1092383855045524
+    - -0.0011679910155333317
+    - 0.7001560768354915
+    - 1.5741343823694118
+    model: fisheye
+    width: 1280
+    height: 960
+    K:
+    - 322.6552429199219
+    - 0.0
+    - 638.239013671875
+    - 0.0
+    - 322.52740478515625
+    - 483.5473327636719
+    - 0.0
+    - 0.0
+    - 1.0
+    D:
+    - 0.027126338332891464
+    - 0.04439070075750351
+    - -0.010194546543061733
+    - -0.0006064214976504445
+    max_angle: 1.55
+boards:
+  board_001:
+    id: board_001
+    rows: 6
+    columns: 8
+    square_size: 0.15
+    pose:
+    - 2.0
+    - 0.0
+    - 0.004
+    - 0.0
+    - 0.0
+    - -1.5707963267948966
+    asset: ''
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_002:
+    id: board_002
+    rows: 6
+    columns: 8
+    square_size: 0.15
+    pose:
+    - -1.5
+    - -2.0
+    - 0.004
+    - 0.0
+    - 0.0
+    - -1.5707963267948966
+    asset: ''
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_large:
+    id: board_large
+    rows: 1
+    columns: 1
+    square_size: 1.0
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - -1.5707963267948966
+    asset: ../calibration_single_yaml_1.4.0/assets/large_board/pattern_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry:
+      frame: board
+      verified: true
+      source: Procedural metric board geometry; source SHA256 a99ff252799e313b38acee8c85fa506b83e46c55690abca9277654cae0c153ae;
+        world registration is not independently surveyed
+      corners:
+      - id: left_strip/r01/c01
+        region: left_strip
+        grid_row: 1
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - 1.47
+        - 0
+      - id: left_strip/r01/c02
+        region: left_strip
+        grid_row: 1
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - 1.47
+        - 0
+      - id: left_strip/r01/c03
+        region: left_strip
+        grid_row: 1
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - 1.47
+        - 0
+      - id: left_strip/r02/c01
+        region: left_strip
+        grid_row: 2
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - 0.97
+        - 0
+      - id: left_strip/r02/c02
+        region: left_strip
+        grid_row: 2
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - 0.97
+        - 0
+      - id: left_strip/r02/c03
+        region: left_strip
+        grid_row: 2
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - 0.97
+        - 0
+      - id: left_strip/r03/c01
+        region: left_strip
+        grid_row: 3
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - 0.47
+        - 0
+      - id: left_strip/r03/c02
+        region: left_strip
+        grid_row: 3
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - 0.47
+        - 0
+      - id: left_strip/r03/c03
+        region: left_strip
+        grid_row: 3
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - 0.47
+        - 0
+      - id: left_strip/r04/c01
+        region: left_strip
+        grid_row: 4
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -0.03
+        - 0
+      - id: left_strip/r04/c02
+        region: left_strip
+        grid_row: 4
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -0.03
+        - 0
+      - id: left_strip/r04/c03
+        region: left_strip
+        grid_row: 4
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -0.03
+        - 0
+      - id: left_strip/r05/c01
+        region: left_strip
+        grid_row: 5
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -0.53
+        - 0
+      - id: left_strip/r05/c02
+        region: left_strip
+        grid_row: 5
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -0.53
+        - 0
+      - id: left_strip/r05/c03
+        region: left_strip
+        grid_row: 5
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -0.53
+        - 0
+      - id: left_strip/r06/c01
+        region: left_strip
+        grid_row: 6
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -1.03
+        - 0
+      - id: left_strip/r06/c02
+        region: left_strip
+        grid_row: 6
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -1.03
+        - 0
+      - id: left_strip/r06/c03
+        region: left_strip
+        grid_row: 6
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -1.03
+        - 0
+      - id: left_strip/r07/c01
+        region: left_strip
+        grid_row: 7
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -1.53
+        - 0
+      - id: left_strip/r07/c02
+        region: left_strip
+        grid_row: 7
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -1.53
+        - 0
+      - id: left_strip/r07/c03
+        region: left_strip
+        grid_row: 7
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -1.53
+        - 0
+      - id: left_strip/r08/c01
+        region: left_strip
+        grid_row: 8
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -2.03
+        - 0
+      - id: left_strip/r08/c02
+        region: left_strip
+        grid_row: 8
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -2.03
+        - 0
+      - id: left_strip/r08/c03
+        region: left_strip
+        grid_row: 8
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -2.03
+        - 0
+      - id: left_strip/r09/c01
+        region: left_strip
+        grid_row: 9
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -2.53
+        - 0
+      - id: left_strip/r09/c02
+        region: left_strip
+        grid_row: 9
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -2.53
+        - 0
+      - id: left_strip/r09/c03
+        region: left_strip
+        grid_row: 9
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -2.53
+        - 0
+      - id: left_strip/r10/c01
+        region: left_strip
+        grid_row: 10
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -3.03
+        - 0
+      - id: left_strip/r10/c02
+        region: left_strip
+        grid_row: 10
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -3.03
+        - 0
+      - id: left_strip/r10/c03
+        region: left_strip
+        grid_row: 10
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -3.03
+        - 0
+      - id: left_strip/r11/c01
+        region: left_strip
+        grid_row: 11
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -3.53
+        - 0
+      - id: left_strip/r11/c02
+        region: left_strip
+        grid_row: 11
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -3.53
+        - 0
+      - id: left_strip/r11/c03
+        region: left_strip
+        grid_row: 11
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -3.53
+        - 0
+      - id: left_strip/r12/c01
+        region: left_strip
+        grid_row: 12
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -4.03
+        - 0
+      - id: left_strip/r12/c02
+        region: left_strip
+        grid_row: 12
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -4.03
+        - 0
+      - id: left_strip/r12/c03
+        region: left_strip
+        grid_row: 12
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -4.03
+        - 0
+      - id: left_strip/r13/c01
+        region: left_strip
+        grid_row: 13
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -4.53
+        - 0
+      - id: left_strip/r13/c02
+        region: left_strip
+        grid_row: 13
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -4.53
+        - 0
+      - id: left_strip/r13/c03
+        region: left_strip
+        grid_row: 13
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -4.53
+        - 0
+      - id: left_strip/r14/c01
+        region: left_strip
+        grid_row: 14
+        grid_col: 1
+        xyz_m:
+        - -2.5
+        - -5.03
+        - 0
+      - id: left_strip/r14/c02
+        region: left_strip
+        grid_row: 14
+        grid_col: 2
+        xyz_m:
+        - -2.0
+        - -5.03
+        - 0
+      - id: left_strip/r14/c03
+        region: left_strip
+        grid_row: 14
+        grid_col: 3
+        xyz_m:
+        - -1.5
+        - -5.03
+        - 0
+      - id: right_strip/r01/c01
+        region: right_strip
+        grid_row: 1
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - 1.47
+        - 0
+      - id: right_strip/r01/c02
+        region: right_strip
+        grid_row: 1
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - 1.47
+        - 0
+      - id: right_strip/r01/c03
+        region: right_strip
+        grid_row: 1
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - 1.47
+        - 0
+      - id: right_strip/r02/c01
+        region: right_strip
+        grid_row: 2
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - 0.97
+        - 0
+      - id: right_strip/r02/c02
+        region: right_strip
+        grid_row: 2
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - 0.97
+        - 0
+      - id: right_strip/r02/c03
+        region: right_strip
+        grid_row: 2
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - 0.97
+        - 0
+      - id: right_strip/r03/c01
+        region: right_strip
+        grid_row: 3
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - 0.47
+        - 0
+      - id: right_strip/r03/c02
+        region: right_strip
+        grid_row: 3
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - 0.47
+        - 0
+      - id: right_strip/r03/c03
+        region: right_strip
+        grid_row: 3
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - 0.47
+        - 0
+      - id: right_strip/r04/c01
+        region: right_strip
+        grid_row: 4
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -0.03
+        - 0
+      - id: right_strip/r04/c02
+        region: right_strip
+        grid_row: 4
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -0.03
+        - 0
+      - id: right_strip/r04/c03
+        region: right_strip
+        grid_row: 4
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -0.03
+        - 0
+      - id: right_strip/r05/c01
+        region: right_strip
+        grid_row: 5
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -0.53
+        - 0
+      - id: right_strip/r05/c02
+        region: right_strip
+        grid_row: 5
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -0.53
+        - 0
+      - id: right_strip/r05/c03
+        region: right_strip
+        grid_row: 5
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -0.53
+        - 0
+      - id: right_strip/r06/c01
+        region: right_strip
+        grid_row: 6
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -1.03
+        - 0
+      - id: right_strip/r06/c02
+        region: right_strip
+        grid_row: 6
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -1.03
+        - 0
+      - id: right_strip/r06/c03
+        region: right_strip
+        grid_row: 6
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -1.03
+        - 0
+      - id: right_strip/r07/c01
+        region: right_strip
+        grid_row: 7
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -1.53
+        - 0
+      - id: right_strip/r07/c02
+        region: right_strip
+        grid_row: 7
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -1.53
+        - 0
+      - id: right_strip/r07/c03
+        region: right_strip
+        grid_row: 7
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -1.53
+        - 0
+      - id: right_strip/r08/c01
+        region: right_strip
+        grid_row: 8
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -2.03
+        - 0
+      - id: right_strip/r08/c02
+        region: right_strip
+        grid_row: 8
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -2.03
+        - 0
+      - id: right_strip/r08/c03
+        region: right_strip
+        grid_row: 8
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -2.03
+        - 0
+      - id: right_strip/r09/c01
+        region: right_strip
+        grid_row: 9
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -2.53
+        - 0
+      - id: right_strip/r09/c02
+        region: right_strip
+        grid_row: 9
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -2.53
+        - 0
+      - id: right_strip/r09/c03
+        region: right_strip
+        grid_row: 9
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -2.53
+        - 0
+      - id: right_strip/r10/c01
+        region: right_strip
+        grid_row: 10
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -3.03
+        - 0
+      - id: right_strip/r10/c02
+        region: right_strip
+        grid_row: 10
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -3.03
+        - 0
+      - id: right_strip/r10/c03
+        region: right_strip
+        grid_row: 10
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -3.03
+        - 0
+      - id: right_strip/r11/c01
+        region: right_strip
+        grid_row: 11
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -3.53
+        - 0
+      - id: right_strip/r11/c02
+        region: right_strip
+        grid_row: 11
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -3.53
+        - 0
+      - id: right_strip/r11/c03
+        region: right_strip
+        grid_row: 11
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -3.53
+        - 0
+      - id: right_strip/r12/c01
+        region: right_strip
+        grid_row: 12
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -4.03
+        - 0
+      - id: right_strip/r12/c02
+        region: right_strip
+        grid_row: 12
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -4.03
+        - 0
+      - id: right_strip/r12/c03
+        region: right_strip
+        grid_row: 12
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -4.03
+        - 0
+      - id: right_strip/r13/c01
+        region: right_strip
+        grid_row: 13
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -4.53
+        - 0
+      - id: right_strip/r13/c02
+        region: right_strip
+        grid_row: 13
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -4.53
+        - 0
+      - id: right_strip/r13/c03
+        region: right_strip
+        grid_row: 13
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -4.53
+        - 0
+      - id: right_strip/r14/c01
+        region: right_strip
+        grid_row: 14
+        grid_col: 1
+        xyz_m:
+        - 1.5
+        - -5.03
+        - 0
+      - id: right_strip/r14/c02
+        region: right_strip
+        grid_row: 14
+        grid_col: 2
+        xyz_m:
+        - 2.0
+        - -5.03
+        - 0
+      - id: right_strip/r14/c03
+        region: right_strip
+        grid_row: 14
+        grid_col: 3
+        xyz_m:
+        - 2.5
+        - -5.03
+        - 0
+      - id: front_small/r01/c01
+        region: front_small
+        grid_row: 1
+        grid_col: 1
+        xyz_m:
+        - -0.3
+        - 2.27
+        - 0
+      - id: front_small/r01/c02
+        region: front_small
+        grid_row: 1
+        grid_col: 2
+        xyz_m:
+        - 0.0
+        - 2.27
+        - 0
+      - id: front_small/r01/c03
+        region: front_small
+        grid_row: 1
+        grid_col: 3
+        xyz_m:
+        - 0.3
+        - 2.27
+        - 0
+      - id: front_small/r02/c01
+        region: front_small
+        grid_row: 2
+        grid_col: 1
+        xyz_m:
+        - -0.3
+        - 1.97
+        - 0
+      - id: front_small/r02/c02
+        region: front_small
+        grid_row: 2
+        grid_col: 2
+        xyz_m:
+        - 0.0
+        - 1.97
+        - 0
+      - id: front_small/r02/c03
+        region: front_small
+        grid_row: 2
+        grid_col: 3
+        xyz_m:
+        - 0.3
+        - 1.97
+        - 0
+      - id: front_small/r03/c01
+        region: front_small
+        grid_row: 3
+        grid_col: 1
+        xyz_m:
+        - -0.3
+        - 1.67
+        - 0
+      - id: front_small/r03/c02
+        region: front_small
+        grid_row: 3
+        grid_col: 2
+        xyz_m:
+        - 0.0
+        - 1.67
+        - 0
+      - id: front_small/r03/c03
+        region: front_small
+        grid_row: 3
+        grid_col: 3
+        xyz_m:
+        - 0.3
+        - 1.67
+        - 0
+      - id: front_small/r04/c01
+        region: front_small
+        grid_row: 4
+        grid_col: 1
+        xyz_m:
+        - -0.3
+        - 1.37
+        - 0
+      - id: front_small/r04/c02
+        region: front_small
+        grid_row: 4
+        grid_col: 2
+        xyz_m:
+        - 0.0
+        - 1.37
+        - 0
+      - id: front_small/r04/c03
+        region: front_small
+        grid_row: 4
+        grid_col: 3
+        xyz_m:
+        - 0.3
+        - 1.37
+        - 0
+      - id: rear_small/r01/c01
+        region: rear_small
+        grid_row: 1
+        grid_col: 1
+        xyz_m:
+        - -0.3
+        - -4.53
+        - 0
+      - id: rear_small/r01/c02
+        region: rear_small
+        grid_row: 1
+        grid_col: 2
+        xyz_m:
+        - 0.0
+        - -4.53
+        - 0
+      - id: rear_small/r01/c03
+        region: rear_small
+        grid_row: 1
+        grid_col: 3
+        xyz_m:
+        - 0.3
+        - -4.53
+        - 0
+      - id: rear_small/r02/c01
+        region: rear_small
+        grid_row: 2
+        grid_col: 1
+        xyz_m:
+        - -0.3
+        - -4.83
+        - 0
+      - id: rear_small/r02/c02
+        region: rear_small
+        grid_row: 2
+        grid_col: 2
+        xyz_m:
+        - 0.0
+        - -4.83
+        - 0
+      - id: rear_small/r02/c03
+        region: rear_small
+        grid_row: 2
+        grid_col: 3
+        xyz_m:
+        - 0.3
+        - -4.83
+        - 0
+      - id: rear_small/r03/c01
+        region: rear_small
+        grid_row: 3
+        grid_col: 1
+        xyz_m:
+        - -0.3
+        - -5.13
+        - 0
+      - id: rear_small/r03/c02
+        region: rear_small
+        grid_row: 3
+        grid_col: 2
+        xyz_m:
+        - 0.0
+        - -5.13
+        - 0
+      - id: rear_small/r03/c03
+        region: rear_small
+        grid_row: 3
+        grid_col: 3
+        xyz_m:
+        - 0.3
+        - -5.13
+        - 0
+      - id: rear_small/r04/c01
+        region: rear_small
+        grid_row: 4
+        grid_col: 1
+        xyz_m:
+        - -0.3
+        - -5.43
+        - 0
+      - id: rear_small/r04/c02
+        region: rear_small
+        grid_row: 4
+        grid_col: 2
+        xyz_m:
+        - 0.0
+        - -5.43
+        - 0
+      - id: rear_small/r04/c03
+        region: rear_small
+        grid_row: 4
+        grid_col: 3
+        xyz_m:
+        - 0.3
+        - -5.43
+        - 0
+bev:
+  x_min: -6.5
+  x_max: 3.5
+  y_min: -5.0
+  y_max: 5.0
+  width: 512
+  height: 512
+schema_version: 1
+calibration:
+  intrinsic_board: board_001
+  extrinsic_board: board_large
+  camera_regions:
+    front: front_small
+    right: right_strip
+    rear: rear_small
+    left: left_strip
+  views: 8
+  holdout: 2
+  seed: 2026
+  supersample: 1
+  spread_x: 0.2
+  spread_y: 0.2
+  yaw_range_deg: 45.0
+  sampling: visible_plane
+scene:
+  gaussian_file: ../assets/scene.ply
