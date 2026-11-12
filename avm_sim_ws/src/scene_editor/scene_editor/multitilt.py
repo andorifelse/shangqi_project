@@ -401,4 +401,8 @@ def run(scene, request, directory, progress):
         if payload['calibration_accepted']:
             from .marker_extrinsics import export_calibrated_scene
             payload['exports'] = export_calibrated_scene(scene, results, external, directory)
+            progress('使用标定后内外参拼接鸟瞰图')
+            from .calibrated_bev import generate
+            payload['bev'] = generate(directory, payload)
+            payload['input_notice'] = '多倾角内参 + 编码板外参；使用原始固定场景图片与估计参数生成 BEV。未修改 GUI 相机；覆盖率不代表拼接精度。'
     return payload

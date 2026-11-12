@@ -80,3 +80,20 @@ CLI 复现同一快照与设置并重新采集（自动创建新实验，原日�
 | right | 0.3118 | 0.3558 | 0.2591% |
 
 针对性回归及旧入口回归通过；另单独复现既有 `test_direct_mask_preserves_black_pixels_and_rejects_modified_mask` 失败（旧 BEV 有效像素掩码），未修改该模块。该失败不属于本新入口的内参路径。
+
+## 标定后的鸟瞰拼接
+
+四路 front/rear/left/right 内外参均通过后，当前流程自动生成 `bev/stitched.png` 并在结果面板预览。单相机标定仍可执行，BEV 将明确标记 SKIPPED。拼接读取 `extrinsics/<camera>.png` 原始固定场景图片并校验哈希，投影只使用估计的 K/D 与外参；不会用估计参数重新渲染传感器图片。采集有效域由原采集模型提供，黑色像素本身不判为无效。
+
+输出包括 `bev/metrics.json`（来源图片哈希、覆盖率、重叠率）、各相机地面投影 `<camera>_ground.png`、有效掩码、`coverage.png` 与 `overlap_count.png`。采用地平面逆映射与加权融合；覆盖率不是精度指标，车辆/立体物体会拉伸，未做深度遮挡或接缝优化。原失败日志和 GUI 相机参数保持不变。
+
+已有通过实验可单独补生成，原 `result.json` 不覆盖：
+
+```bash
+.venv-ros/bin/python tools/run_fisheye_calibration.py \
+  --bev-experiment experiments/calib_repaired_20261112_144714
+```
+
+该实验已实际生成 512×512 鸟瞰图，覆盖率 97.4716%，重叠覆盖率 55.8987%。重启编辑器后新任务将自动生成并预览；旧任务的补生成结果位于 `bev/metrics.json`，不会改写原任务结果。
+
+标定结果现同时显示两个独立预览：“真值参数鸟瞰图（同一组采集图片）”与“标定参数鸟瞰图”。现有实时鸟瞰图继续使用当前场景参数，不被标定结果替换。实验输出 `truth_stitched.png`（原场景真值）、`stitched.png`（估计参数）以及 `comparison.png`（左真值、右标定）；两路使用相同 RGB、画幅和融合方式，仅投影内外参不同。真值不进入标定求解。

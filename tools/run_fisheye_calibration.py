@@ -21,6 +21,7 @@ def main():
     source.add_argument('--scene', type=Path)
     source.add_argument('--from-experiment', type=Path, help='Reuse immutable scene/settings; capture new images in a new directory')
     source.add_argument('--export-experiment', type=Path, help='Export a passed result as a separate loadable scene, without recapturing')
+    source.add_argument('--bev-experiment', type=Path, help='Stitch saved original images using a passed calibration, without recapturing')
     parser.add_argument('--small-board')
     parser.add_argument('--cameras', nargs='+')
     parser.add_argument('--views', type=int)
@@ -32,6 +33,13 @@ def main():
     parser.add_argument('--intrinsics-only', action='store_true')
     parser.add_argument('--experiment-id', default='')
     args = parser.parse_args()
+    if args.bev_experiment:
+        from scene_editor.calibrated_bev import generate
+        directory = args.bev_experiment.resolve()
+        result = json.loads((directory/'result.json').read_text(encoding='utf-8'))
+        metrics = generate(directory, result)
+        print(json.dumps(metrics, ensure_ascii=False, indent=2))
+        return 0
     if args.export_experiment:
         from scene_editor.marker_extrinsics import export_calibrated_scene
         directory = args.export_experiment.resolve()

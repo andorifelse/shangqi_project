@@ -62,8 +62,10 @@ class CalibrationPanel:
             self.download_button.on_click(self._download)
             self.status=server.gui.add_markdown("尚未运行")
             self.results=server.gui.add_markdown("结果会显示在这里；完整参数与日志保存到 experiments/。")
-            self.preview=server.gui.add_image(np.zeros((64,128,3),np.uint8),label="流程 BEV 对比图")
+            self.preview=server.gui.add_image(np.zeros((64,128,3),np.uint8),label="标定参数鸟瞰图 / 流程 BEV")
             self.preview.visible=False
+            self.truth_preview=server.gui.add_image(np.zeros((64,128,3),np.uint8),label="真值参数鸟瞰图（同一组采集图片）")
+            self.truth_preview.visible=False
         self._update_algorithm();self.tick()
 
     def _update_algorithm(self):
@@ -194,7 +196,7 @@ class CalibrationPanel:
                     directory=self.jobs.start(self.store,settings)
                     self.status.content=f"后台标定已启动：`{directory}`"
                     self.results.content="正在运行，不会覆盖当前相机参数。"
-                    self.preview.visible=False;self._displayed=None
+                    self.preview.visible=False;self.truth_preview.visible=False;self._displayed=None
                 elif action=="cancel":self.jobs.cancel()
             except (ValueError,OSError,KeyError,RuntimeError,TypeError) as exc:
                 self.status.content=f"**无法开始标定：** {exc}"
@@ -216,6 +218,7 @@ class CalibrationPanel:
             self._displayed=path;self._show_result(state)
 
     def _show_result(self,state):
+        self.truth_preview.visible=False
         result=state["result"] or {}
         if result.get('algorithm')==MULTITILT:
             self._show_multitilt(state,result)
@@ -278,6 +281,21 @@ class CalibrationPanel:
                 lines.extend(f"\n{name} 外参: {reason}" for reason in row.get('rejection_reasons',[]))
             lines.append('\n外参见 extrinsics/；坐标为 scene_world，T_world_from_camera_optical 将光学坐标变换到世界坐标。')
         lines.append('\n完整观测 solver_inputs/；采集记录 capture/；结果 multitilt/。留出帧只拟合位姿，使用未参与位姿拟合的角点评分。')
-        self.results.content='\n'.join(lines);self.preview.visible=False
+        bev=result.get('bev',{})
+        if bev:
+            lines.append(f"\n鸟瞰图：{bev.get('status')}；{bev.get('reason',bev.get('notice',''))}")
+            if 'coverage_fraction' in bev:
+                lines.append(f"\n鸟瞰覆盖率 {100*bev['coverage_fraction']:.2f}%（不是精度指标），图片：{bev['image']}")
+        self.results.content='\n'.join(lines);self.preview.visible=False;self.truth_preview.visible=False
+        if bev.get('status')=='GENERATED':
+            bgr=cv2.imread(str(Path(state['directory'])/bev['image']))
+            if bgr is not None:
+                self.preview.image=cv2.cvtColor(bgr,cv2.COLOR_BGR2RGB)
+                self.preview.visible=True
+            if bev.get('truth_image'):
+                truth_bgr=cv2.imread(str(Path(state['directory'])/bev['truth_image']))
+                if truth_bgr is not None:
+                    self.truth_preview.image=cv2.cvtColor(truth_bgr,cv2.COLOR_BGR2RGB)
+                    self.truth_preview.visible=True
 
     def close(self):self.jobs.close()
