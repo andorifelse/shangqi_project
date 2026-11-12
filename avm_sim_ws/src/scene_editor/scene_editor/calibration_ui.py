@@ -4,11 +4,12 @@ from queue import SimpleQueue
 import time
 import cv2
 import numpy as np
-from .calibration_jobs import CalibrationJobs,BASELINE,USER_PIPELINE
+from .calibration_jobs import CalibrationJobs,BASELINE,USER_PIPELINE,MULTITILT
 from .geometry_ui import BoardGeometryPanel,region_names
 
 ALGORITHMS={"OpenCV 棋盘格基线（当前场景）":BASELINE,
-            "标定流程 1.0.0":USER_PIPELINE}
+            "标定流程 1.0.0":USER_PIPELINE,
+            "多倾角采集：鱼眼内参 / 编码板外参":MULTITILT}
 ALL_CAMERAS="全部相机"
 INPUT_MODES={'当前 GUI 场景（一键采集）':'scene','高级：手工 JSON':'manual','演示：CPU 示例图片':'demo'}
 
@@ -47,6 +48,12 @@ class CalibrationPanel:
             self.save_settings.on_click(lambda _:self.events.put('save_settings'))
             self.pipeline_config=server.gui.add_text("1.0.0 配置 JSON（仅高级模式）",'')
             self.stage=server.gui.add_text("1.0.0 阶段（all 或有序逗号列表）","all")
+            self.tilt=server.gui.add_number('小板最大倾角（deg）',40.,min=20.,max=55.,step=1.)
+            self.distance_min=server.gui.add_number('最小采集距离（m）',1.,min=.4,max=10.,step=.1)
+            self.distance_max=server.gui.add_number('最大采集距离（m）',2.4,min=.4,max=10.,step=.1)
+            self.run_extrinsics=server.gui.add_checkbox('内参通过后继续编码板外参',initial_value=True)
+            self.marker_geometry_file=server.gui.add_text('编码板几何 JSON（留空从资产包查找）','')
+            self.run_extrinsics.on_update(lambda _:self.events.put('algorithm'))
             self.start_button=server.gui.add_button("开始标定")
             self.start_button.on_click(lambda _:self.events.put("start"))
             self.cancel_button=server.gui.add_button("取消标定",disabled=True)
@@ -61,15 +68,29 @@ class CalibrationPanel:
 
     def _update_algorithm(self):
         baseline=ALGORITHMS[self.algorithm.value]==BASELINE
-        current=not baseline and INPUT_MODES[self.input_mode.value]=='scene'
-        self.views.min=8 if baseline else 4
-        manual=not baseline and INPUT_MODES[self.input_mode.value]=='manual'
-        self.input_mode.visible=not baseline
-        for h in (self.camera,self.views,self.seed,self.supersample,self.backend):h.visible=baseline or current
+        tilted=ALGORITHMS[self.algorithm.value]==MULTITILT
+        current=ALGORITHMS[self.algorithm.value]==USER_PIPELINE and INPUT_MODES[self.input_mode.value]=='scene'
+        self.views.min=12 if tilted else (8 if baseline else 4)
+        self.holdout.min=3 if tilted else 1
+        if tilted:
+            self.holdout.value=max(3,self.holdout.value)
+            self.views.value=max(12,self.views.value)
+        manual=not baseline and not tilted and INPUT_MODES[self.input_mode.value]=='manual'
+        self.input_mode.visible=not baseline and not tilted
+        for h in (self.camera,self.views,self.seed,self.supersample,self.backend):h.visible=baseline or current or tilted
         for h in (self.board,self.geometry_ok):h.visible=baseline
         for h in (self.intrinsic_board,self.extrinsic_board,self.holdout,self.spread_x,self.spread_y,
                   self.yaw_range,self.sampling,self.mapping_folder,self.save_settings):h.visible=current
         for h in (self.pipeline_config,self.stage):h.visible=manual
+        for h in (self.tilt,self.distance_min,self.distance_max):h.visible=tilted
+        self.run_extrinsics.visible=tilted
+        self.marker_geometry_file.visible=tilted and self.run_extrinsics.value
+        self.intrinsic_board.visible=current or tilted
+        self.holdout.visible=current or tilted
+        self.save_settings.visible=current or tilted
+        if tilted:
+            self.info.content='固定相机，自动改变小板倾角、距离和位置；留出图不参与内参拟合。可继续使用已知 ID 和公开三维角点的编码板求外参。自动从资产包查找几何 JSON，也可手工指定；缺失时启动前报错。不会自动修改相机。'
+            return
         self.info.content=("冻结点击时的当前 SceneState；运行期间可继续编辑。"
             "结果不自动覆盖相机参数。Gaussian 环车条带不能当完整棋盘。" if baseline else
             '冻结当前场景，使用原相机和 gsplat 直出 PNG；不是 Graphdeco 六面采集。'
@@ -80,6 +101,16 @@ class CalibrationPanel:
             "退化、局部解和角点歧义将原样保留；流程完成不等于标定验收通过。")
 
     def settings(self):
+        if ALGORITHMS[self.algorithm.value]==MULTITILT:
+            return {'algorithm':MULTITILT,'experiment_id':self.experiment_id.value,
+                'cameras':None if self.camera.value==ALL_CAMERAS else [self.camera.value],
+                'intrinsic_board':self.intrinsic_board.value,'views':int(self.views.value),
+                'holdout':int(self.holdout.value),'seed':int(self.seed.value),
+                'supersample':int(self.supersample.value),'backend':self.backend.value,
+                'tilt_deg':float(self.tilt.value),'distance_min':float(self.distance_min.value),
+                'distance_max':float(self.distance_max.value),
+                'run_extrinsics':self.run_extrinsics.value,
+                'marker_geometry_file':self.marker_geometry_file.value.strip()}
         return {"algorithm":ALGORITHMS[self.algorithm.value],"experiment_id":self.experiment_id.value,
             "cameras":None if self.camera.value==ALL_CAMERAS else [self.camera.value],
             "board_id":self.board.value,"views":int(self.views.value),"seed":int(self.seed.value),
@@ -109,6 +140,12 @@ class CalibrationPanel:
 
     def _load_saved(self,scene):
         saved=scene.calibration
+        self.run_extrinsics.value=saved.get('run_extrinsics', True)
+        self.marker_geometry_file.value=saved.get('marker_geometry_file','')
+        if saved.get('algorithm') in ALGORITHMS.values():
+            self.algorithm.value=next(n for n,v in ALGORITHMS.items() if v==saved['algorithm'])
+        for key,control in [('tilt_deg',self.tilt),('distance_min',self.distance_min),('distance_max',self.distance_max)]:
+            if key in saved:control.value=saved[key]
         for key,h in (('intrinsic_board',self.intrinsic_board),('extrinsic_board',self.extrinsic_board)):
             if saved.get(key) in scene.boards:h.value=saved[key]
         for key,h in (('views',self.views),('holdout',self.holdout),('seed',self.seed),
@@ -118,6 +155,7 @@ class CalibrationPanel:
         if 'supersample' in saved:self.supersample.value=saved['supersample']
         if saved.get('sampling')=='around_pose':self.sampling.value='当前小板附近局部 XY 范围'
         elif saved.get('sampling')=='visible_plane':self.sampling.value='自动：逐相机可见平面'
+        self._update_algorithm()
 
     def _download(self,event):
         if not event.client or not self.jobs.directory:return
@@ -179,6 +217,9 @@ class CalibrationPanel:
 
     def _show_result(self,state):
         result=state["result"] or {}
+        if result.get('algorithm')==MULTITILT:
+            self._show_multitilt(state,result)
+            return
         status=result.get("status","failed")
         title={"complete":"计算完成（不等于物理标定验收通过）","failed":"标定失败","cancelled":"已取消"}.get(status,status)
         self.status.content=f"**{title}** · {result.get('algorithm','—')} · scene revision {result.get('scene_revision','—')}\n\n`{state['directory']}`"
@@ -215,5 +256,28 @@ class CalibrationPanel:
         if images:
             bgr=cv2.imread(str(images[0]))
             if bgr is not None:self.preview.image=cv2.cvtColor(bgr,cv2.COLOR_BGR2RGB);self.preview.visible=True
+
+    def _show_multitilt(self,state,result):
+        title=('内外参数值验收通过（当前合成场景）' if result.get('calibration_accepted') else
+            '内参通过，外参未通过' if result.get('intrinsics_accepted') and result.get('scope')=='intrinsics_and_extrinsics' else
+            '内参数值检查通过' if result.get('intrinsics_accepted') else '内参未通过或计算失败')
+        self.status.content=f"**{title}** · 多倾角鱼眼标定\n\n`{state['directory']}`"
+        lines=[result.get('input_notice','仅内参，不自动修改相机，不生成外参/BEV。')]
+        if result.get('error'):lines.append(result['error'])
+        lines += ['', '| 相机 | 状态 | 训练 RMS | 留出最大 RMS |', '| --- | --- | ---: | ---: |']
+        for name,row in result.get('results',{}).items():
+            lines.append(f"| {name} | {row['status']} | {row['rms_px']:.4f} | {row['heldout_max_frame_rmse_px']:.4f} |")
+            lines.append(f"\n{name}: K={row['K']}; D={row['D']}")
+            lines.extend(f"\n{name}: {reason}" for reason in row['rejection_reasons'])
+        if result.get('extrinsics'):
+            lines += ['', '| 外参相机 | 状态 | RMS (px) | 留出 RMS (px) | 编码板数 |', '| --- | --- | ---: | ---: | ---: |']
+            for name,row in result['extrinsics'].items():
+                rms=f"{row['rms_px']:.4f}" if 'rms_px' in row else '—'
+                held=f"{row['heldout_rmse_px']:.4f}" if 'heldout_rmse_px' in row else '—'
+                lines.append(f"| {name} | {row['status']} | {rms} | {held} | {len(row.get('marker_ids',[]))} |")
+                lines.extend(f"\n{name} 外参: {reason}" for reason in row.get('rejection_reasons',[]))
+            lines.append('\n外参见 extrinsics/；坐标为 scene_world，T_world_from_camera_optical 将光学坐标变换到世界坐标。')
+        lines.append('\n完整观测 solver_inputs/；采集记录 capture/；结果 multitilt/。留出帧只拟合位姿，使用未参与位姿拟合的角点评分。')
+        self.results.content='\n'.join(lines);self.preview.visible=False
 
     def close(self):self.jobs.close()

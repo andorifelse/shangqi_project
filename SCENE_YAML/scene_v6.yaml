@@ -1,5 +1,5 @@
 coordinate:
-  scale: 1.5
+  scale: 1.0
   ground_z: 0
   T_world_from_gs:
   - - 1.0
@@ -13,13 +13,13 @@ coordinate:
   - - 0.0
     - 0.0
     - 1.0
-    - -0.2
+    - 0.0
   - - 0.0
     - 0.0
     - 0.0
     - 1.0
 vehicle:
-  asset: ../calibration_single_yaml_1.4.0/assets/vehicle_resized_low.ply
+  asset: ../标定成功场景点云及配置_20261110/世界坐标分件/车辆_3dgs.ply
   pose:
   - 0.0
   - 0.0
@@ -32,12 +32,12 @@ vehicle:
   - 1.89
   - 1.2766301035881042
   asset_pose:
-  - -1.5078044290542603
-  - 0.0006898641586304821
-  - 0.6383262872695923
   - 0.0
   - 0.0
-  - 1.5707963267948966
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
   asset_scale: 1.0
 cameras:
   front:
@@ -69,64 +69,6 @@ cameras:
     - -0.008398070000112057
     - -0.0009833199437707663
     max_angle: 1.55
-  right:
-    name: right
-    parent: world
-    pose:
-    - -0.7290701617352431
-    - -0.9883724317007552
-    - 1.1386331671706273
-    - -0.0024443074375025686
-    - 0.595029203702488
-    - -1.5713460217674036
-    model: fisheye
-    width: 1280
-    height: 960
-    K:
-    - 321.7796325683594
-    - 0.0
-    - 640.9353637695312
-    - 0.0
-    - 321.56658935546875
-    - 479.9270935058594
-    - 0.0
-    - 0.0
-    - 1.0
-    D:
-    - 0.0264195054769516
-    - 0.04427875578403473
-    - -0.009900689125061035
-    - -0.0006940389866940677
-    max_angle: 1.55
-  rear:
-    name: rear
-    parent: world
-    pose:
-    - -3.8283953379287308
-    - 0.007357216861908156
-    - 0.7151496775989508
-    - 0.008494048298489654
-    - 0.6089837232445232
-    - -3.1335855479361827
-    model: fisheye
-    width: 1280
-    height: 960
-    K:
-    - 322.3823547363281
-    - 0.0
-    - 640.239990234375
-    - 0.0
-    - 322.0711669921875
-    - 481.8098449707031
-    - 0.0
-    - 0.0
-    - 1.0
-    D:
-    - 0.028165750205516815
-    - 0.0427195206284523
-    - -0.009364952333271503
-    - -0.0007407324155792594
-    max_angle: 1.55
   left:
     name: left
     parent: world
@@ -156,6 +98,64 @@ cameras:
     - -0.010194546543061733
     - -0.0006064214976504445
     max_angle: 1.55
+  rear:
+    name: rear
+    parent: world
+    pose:
+    - -4.289264792525384
+    - 0.011617456578023237
+    - 1.5348668890959636
+    - 0.008494048298489654
+    - 0.6089837232445237
+    - -3.1335855479361827
+    model: fisheye
+    width: 1280
+    height: 960
+    K:
+    - 322.3823547363281
+    - 0.0
+    - 640.239990234375
+    - 0.0
+    - 322.0711669921875
+    - 481.8098449707031
+    - 0.0
+    - 0.0
+    - 1.0
+    D:
+    - 0.028165750205516815
+    - 0.0427195206284523
+    - -0.009364952333271503
+    - -0.0007407324155792594
+    max_angle: 1.55
+  right:
+    name: right
+    parent: world
+    pose:
+    - -0.7292534537234628
+    - -0.9402767863485757
+    - 1.0675767546704904
+    - -0.0024443074375023466
+    - 0.5950292037024876
+    - -1.5713460217674036
+    model: fisheye
+    width: 1280
+    height: 960
+    K:
+    - 321.7796325683594
+    - 0.0
+    - 640.9353637695312
+    - 0.0
+    - 321.56658935546875
+    - 479.9270935058594
+    - 0.0
+    - 0.0
+    - 1.0
+    D:
+    - 0.0264195054769516
+    - 0.04427875578403473
+    - -0.009900689125061035
+    - -0.0006940389866940677
+    max_angle: 1.55
 boards:
   board_001:
     id: board_001
@@ -163,13 +163,13 @@ boards:
     columns: 8
     square_size: 0.15
     pose:
-    - 2.0
-    - 0.0
-    - 0.004
-    - 0.0
-    - 0.0
-    - -1.5707963267948966
-    asset: ''
+    - 2.5131311058611034
+    - -0.73195792386158
+    - 0.9439236316176657
+    - 2.6945173764660493
+    - 0.8644992117884329
+    - -1.4897129338890074
+    asset: ../标定成功场景点云及配置_20261110/可移动小棋盘/小棋盘_局部坐标_3dgs.ply
     asset_pose:
     - 0.0
     - 0.0
@@ -178,29 +178,292 @@ boards:
     - 0.0
     - 0.0
     asset_scale: 1.0
-    calibration_geometry: {}
-  board_002:
-    id: board_002
-    rows: 6
-    columns: 8
-    square_size: 0.15
-    pose:
-    - -1.5
-    - -2.0
-    - 0.004
-    - 0.0
-    - 0.0
-    - -1.5707963267948966
-    asset: ''
-    asset_pose:
-    - 0.0
-    - 0.0
-    - 0.0
-    - 0.0
-    - 0.0
-    - 0.0
-    asset_scale: 1.0
-    calibration_geometry: {}
+    calibration_geometry:
+      corners:
+      - grid_col: 0
+        grid_row: 0
+        id: board_001/r00/c00
+        region: board_001
+        xyz_m:
+        - -0.44999999999999996
+        - -0.29999999999999993
+        - 0.0
+      - grid_col: 1
+        grid_row: 0
+        id: board_001/r00/c01
+        region: board_001
+        xyz_m:
+        - -0.29999999999999993
+        - -0.29999999999999993
+        - 0.0
+      - grid_col: 2
+        grid_row: 0
+        id: board_001/r00/c02
+        region: board_001
+        xyz_m:
+        - -0.14999999999999997
+        - -0.29999999999999993
+        - 0.0
+      - grid_col: 3
+        grid_row: 0
+        id: board_001/r00/c03
+        region: board_001
+        xyz_m:
+        - 0.0
+        - -0.29999999999999993
+        - 0.0
+      - grid_col: 4
+        grid_row: 0
+        id: board_001/r00/c04
+        region: board_001
+        xyz_m:
+        - 0.15000000000000002
+        - -0.29999999999999993
+        - 0.0
+      - grid_col: 5
+        grid_row: 0
+        id: board_001/r00/c05
+        region: board_001
+        xyz_m:
+        - 0.30000000000000004
+        - -0.29999999999999993
+        - 0.0
+      - grid_col: 6
+        grid_row: 0
+        id: board_001/r00/c06
+        region: board_001
+        xyz_m:
+        - 0.44999999999999996
+        - -0.29999999999999993
+        - 0.0
+      - grid_col: 0
+        grid_row: 1
+        id: board_001/r01/c00
+        region: board_001
+        xyz_m:
+        - -0.44999999999999996
+        - -0.14999999999999994
+        - 0.0
+      - grid_col: 1
+        grid_row: 1
+        id: board_001/r01/c01
+        region: board_001
+        xyz_m:
+        - -0.29999999999999993
+        - -0.14999999999999994
+        - 0.0
+      - grid_col: 2
+        grid_row: 1
+        id: board_001/r01/c02
+        region: board_001
+        xyz_m:
+        - -0.14999999999999997
+        - -0.14999999999999994
+        - 0.0
+      - grid_col: 3
+        grid_row: 1
+        id: board_001/r01/c03
+        region: board_001
+        xyz_m:
+        - 0.0
+        - -0.14999999999999994
+        - 0.0
+      - grid_col: 4
+        grid_row: 1
+        id: board_001/r01/c04
+        region: board_001
+        xyz_m:
+        - 0.15000000000000002
+        - -0.14999999999999994
+        - 0.0
+      - grid_col: 5
+        grid_row: 1
+        id: board_001/r01/c05
+        region: board_001
+        xyz_m:
+        - 0.30000000000000004
+        - -0.14999999999999994
+        - 0.0
+      - grid_col: 6
+        grid_row: 1
+        id: board_001/r01/c06
+        region: board_001
+        xyz_m:
+        - 0.44999999999999996
+        - -0.14999999999999994
+        - 0.0
+      - grid_col: 0
+        grid_row: 2
+        id: board_001/r02/c00
+        region: board_001
+        xyz_m:
+        - -0.44999999999999996
+        - 5.551115123125783e-17
+        - 0.0
+      - grid_col: 1
+        grid_row: 2
+        id: board_001/r02/c01
+        region: board_001
+        xyz_m:
+        - -0.29999999999999993
+        - 5.551115123125783e-17
+        - 0.0
+      - grid_col: 2
+        grid_row: 2
+        id: board_001/r02/c02
+        region: board_001
+        xyz_m:
+        - -0.14999999999999997
+        - 5.551115123125783e-17
+        - 0.0
+      - grid_col: 3
+        grid_row: 2
+        id: board_001/r02/c03
+        region: board_001
+        xyz_m:
+        - 0.0
+        - 5.551115123125783e-17
+        - 0.0
+      - grid_col: 4
+        grid_row: 2
+        id: board_001/r02/c04
+        region: board_001
+        xyz_m:
+        - 0.15000000000000002
+        - 5.551115123125783e-17
+        - 0.0
+      - grid_col: 5
+        grid_row: 2
+        id: board_001/r02/c05
+        region: board_001
+        xyz_m:
+        - 0.30000000000000004
+        - 5.551115123125783e-17
+        - 0.0
+      - grid_col: 6
+        grid_row: 2
+        id: board_001/r02/c06
+        region: board_001
+        xyz_m:
+        - 0.44999999999999996
+        - 5.551115123125783e-17
+        - 0.0
+      - grid_col: 0
+        grid_row: 3
+        id: board_001/r03/c00
+        region: board_001
+        xyz_m:
+        - -0.44999999999999996
+        - 0.15000000000000002
+        - 0.0
+      - grid_col: 1
+        grid_row: 3
+        id: board_001/r03/c01
+        region: board_001
+        xyz_m:
+        - -0.29999999999999993
+        - 0.15000000000000002
+        - 0.0
+      - grid_col: 2
+        grid_row: 3
+        id: board_001/r03/c02
+        region: board_001
+        xyz_m:
+        - -0.14999999999999997
+        - 0.15000000000000002
+        - 0.0
+      - grid_col: 3
+        grid_row: 3
+        id: board_001/r03/c03
+        region: board_001
+        xyz_m:
+        - 0.0
+        - 0.15000000000000002
+        - 0.0
+      - grid_col: 4
+        grid_row: 3
+        id: board_001/r03/c04
+        region: board_001
+        xyz_m:
+        - 0.15000000000000002
+        - 0.15000000000000002
+        - 0.0
+      - grid_col: 5
+        grid_row: 3
+        id: board_001/r03/c05
+        region: board_001
+        xyz_m:
+        - 0.30000000000000004
+        - 0.15000000000000002
+        - 0.0
+      - grid_col: 6
+        grid_row: 3
+        id: board_001/r03/c06
+        region: board_001
+        xyz_m:
+        - 0.44999999999999996
+        - 0.15000000000000002
+        - 0.0
+      - grid_col: 0
+        grid_row: 4
+        id: board_001/r04/c00
+        region: board_001
+        xyz_m:
+        - -0.44999999999999996
+        - 0.30000000000000004
+        - 0.0
+      - grid_col: 1
+        grid_row: 4
+        id: board_001/r04/c01
+        region: board_001
+        xyz_m:
+        - -0.29999999999999993
+        - 0.30000000000000004
+        - 0.0
+      - grid_col: 2
+        grid_row: 4
+        id: board_001/r04/c02
+        region: board_001
+        xyz_m:
+        - -0.14999999999999997
+        - 0.30000000000000004
+        - 0.0
+      - grid_col: 3
+        grid_row: 4
+        id: board_001/r04/c03
+        region: board_001
+        xyz_m:
+        - 0.0
+        - 0.30000000000000004
+        - 0.0
+      - grid_col: 4
+        grid_row: 4
+        id: board_001/r04/c04
+        region: board_001
+        xyz_m:
+        - 0.15000000000000002
+        - 0.30000000000000004
+        - 0.0
+      - grid_col: 5
+        grid_row: 4
+        id: board_001/r04/c05
+        region: board_001
+        xyz_m:
+        - 0.30000000000000004
+        - 0.30000000000000004
+        - 0.0
+      - grid_col: 6
+        grid_row: 4
+        id: board_001/r04/c06
+        region: board_001
+        xyz_m:
+        - 0.44999999999999996
+        - 0.30000000000000004
+        - 0.0
+      frame: board
+      source: analytic checkerboard definition
+      verified: true
+      white_margin_m: 0.0375
   board_large:
     id: board_large
     rows: 1
@@ -212,8 +475,8 @@ boards:
     - 0.0
     - 0.0
     - 0.0
-    - -1.5707963267948966
-    asset: ../calibration_single_yaml_1.4.0/assets/large_board/pattern_3dgs.ply
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/大棋盘_3dgs.ply
     asset_pose:
     - 0.0
     - 0.0
@@ -223,875 +486,1407 @@ boards:
     - 0.0
     asset_scale: 1.0
     calibration_geometry:
-      frame: board
-      verified: true
-      source: Procedural metric board geometry; source SHA256 a99ff252799e313b38acee8c85fa506b83e46c55690abca9277654cae0c153ae;
-        world registration is not independently surveyed
       corners:
-      - id: left_strip/r01/c01
-        region: left_strip
+      - grid_col: 1
         grid_row: 1
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - 1.47
-        - 0
-      - id: left_strip/r01/c02
+        id: left_strip/r01/c01
         region: left_strip
+        xyz_m:
+        - 1.4699999999999993
+        - 2.5000000000000004
+        - 0.0
+      - grid_col: 2
         grid_row: 1
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - 1.47
-        - 0
-      - id: left_strip/r01/c03
+        id: left_strip/r01/c02
         region: left_strip
+        xyz_m:
+        - 1.4699999999999995
+        - 2.0000000000000004
+        - 0.0
+      - grid_col: 3
         grid_row: 1
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - 1.47
-        - 0
-      - id: left_strip/r02/c01
+        id: left_strip/r01/c03
         region: left_strip
+        xyz_m:
+        - 1.4699999999999998
+        - 1.5000000000000002
+        - 0.0
+      - grid_col: 1
         grid_row: 2
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - 0.97
-        - 0
-      - id: left_strip/r02/c02
+        id: left_strip/r02/c01
         region: left_strip
+        xyz_m:
+        - 0.9699999999999994
+        - 2.5
+        - 0.0
+      - grid_col: 2
         grid_row: 2
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - 0.97
-        - 0
-      - id: left_strip/r02/c03
+        id: left_strip/r02/c02
         region: left_strip
+        xyz_m:
+        - 0.9699999999999995
+        - 2.0
+        - 0.0
+      - grid_col: 3
         grid_row: 2
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - 0.97
-        - 0
-      - id: left_strip/r03/c01
+        id: left_strip/r02/c03
         region: left_strip
+        xyz_m:
+        - 0.9699999999999996
+        - 1.5000000000000002
+        - 0.0
+      - grid_col: 1
         grid_row: 3
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - 0.47
-        - 0
-      - id: left_strip/r03/c02
+        id: left_strip/r03/c01
         region: left_strip
+        xyz_m:
+        - 0.4699999999999994
+        - 2.5
+        - 0.0
+      - grid_col: 2
         grid_row: 3
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - 0.47
-        - 0
-      - id: left_strip/r03/c03
+        id: left_strip/r03/c02
         region: left_strip
+        xyz_m:
+        - 0.46999999999999953
+        - 2.0
+        - 0.0
+      - grid_col: 3
         grid_row: 3
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - 0.47
-        - 0
-      - id: left_strip/r04/c01
+        id: left_strip/r03/c03
         region: left_strip
+        xyz_m:
+        - 0.46999999999999964
+        - 1.5
+        - 0.0
+      - grid_col: 1
         grid_row: 4
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -0.03
-        - 0
-      - id: left_strip/r04/c02
+        id: left_strip/r04/c01
         region: left_strip
+        xyz_m:
+        - -0.030000000000000554
+        - 2.5
+        - 0.0
+      - grid_col: 2
         grid_row: 4
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -0.03
-        - 0
-      - id: left_strip/r04/c03
+        id: left_strip/r04/c02
         region: left_strip
+        xyz_m:
+        - -0.030000000000000443
+        - 2.0
+        - 0.0
+      - grid_col: 3
         grid_row: 4
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - -0.03
-        - 0
-      - id: left_strip/r05/c01
+        id: left_strip/r04/c03
         region: left_strip
+        xyz_m:
+        - -0.030000000000000332
+        - 1.5
+        - 0.0
+      - grid_col: 1
         grid_row: 5
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -0.53
-        - 0
-      - id: left_strip/r05/c02
+        id: left_strip/r05/c01
         region: left_strip
+        xyz_m:
+        - -0.5300000000000006
+        - 2.5
+        - 0.0
+      - grid_col: 2
         grid_row: 5
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -0.53
-        - 0
-      - id: left_strip/r05/c03
+        id: left_strip/r05/c02
         region: left_strip
+        xyz_m:
+        - -0.5300000000000005
+        - 1.9999999999999998
+        - 0.0
+      - grid_col: 3
         grid_row: 5
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - -0.53
-        - 0
-      - id: left_strip/r06/c01
+        id: left_strip/r05/c03
         region: left_strip
+        xyz_m:
+        - -0.5300000000000004
+        - 1.4999999999999998
+        - 0.0
+      - grid_col: 1
         grid_row: 6
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -1.03
-        - 0
-      - id: left_strip/r06/c02
+        id: left_strip/r06/c01
         region: left_strip
+        xyz_m:
+        - -1.0300000000000007
+        - 2.4999999999999996
+        - 0.0
+      - grid_col: 2
         grid_row: 6
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -1.03
-        - 0
-      - id: left_strip/r06/c03
+        id: left_strip/r06/c02
         region: left_strip
+        xyz_m:
+        - -1.0300000000000005
+        - 1.9999999999999998
+        - 0.0
+      - grid_col: 3
         grid_row: 6
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - -1.03
-        - 0
-      - id: left_strip/r07/c01
+        id: left_strip/r06/c03
         region: left_strip
+        xyz_m:
+        - -1.0300000000000002
+        - 1.4999999999999998
+        - 0.0
+      - grid_col: 1
         grid_row: 7
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -1.53
-        - 0
-      - id: left_strip/r07/c02
+        id: left_strip/r07/c01
         region: left_strip
+        xyz_m:
+        - -1.5300000000000007
+        - 2.4999999999999996
+        - 0.0
+      - grid_col: 2
         grid_row: 7
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -1.53
-        - 0
-      - id: left_strip/r07/c03
+        id: left_strip/r07/c02
         region: left_strip
+        xyz_m:
+        - -1.5300000000000005
+        - 1.9999999999999996
+        - 0.0
+      - grid_col: 3
         grid_row: 7
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - -1.53
-        - 0
-      - id: left_strip/r08/c01
+        id: left_strip/r07/c03
         region: left_strip
+        xyz_m:
+        - -1.5300000000000002
+        - 1.4999999999999996
+        - 0.0
+      - grid_col: 1
         grid_row: 8
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -2.03
-        - 0
-      - id: left_strip/r08/c02
+        id: left_strip/r08/c01
         region: left_strip
+        xyz_m:
+        - -2.0300000000000002
+        - 2.4999999999999996
+        - 0.0
+      - grid_col: 2
         grid_row: 8
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -2.03
-        - 0
-      - id: left_strip/r08/c03
+        id: left_strip/r08/c02
         region: left_strip
+        xyz_m:
+        - -2.0300000000000002
+        - 1.9999999999999996
+        - 0.0
+      - grid_col: 3
         grid_row: 8
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - -2.03
-        - 0
-      - id: left_strip/r09/c01
+        id: left_strip/r08/c03
         region: left_strip
+        xyz_m:
+        - -2.0300000000000002
+        - 1.4999999999999996
+        - 0.0
+      - grid_col: 1
         grid_row: 9
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -2.53
-        - 0
-      - id: left_strip/r09/c02
+        id: left_strip/r09/c01
         region: left_strip
+        xyz_m:
+        - -2.5300000000000002
+        - 2.4999999999999996
+        - 0.0
+      - grid_col: 2
         grid_row: 9
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -2.53
-        - 0
-      - id: left_strip/r09/c03
+        id: left_strip/r09/c02
         region: left_strip
+        xyz_m:
+        - -2.5300000000000002
+        - 1.9999999999999993
+        - 0.0
+      - grid_col: 3
         grid_row: 9
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - -2.53
-        - 0
-      - id: left_strip/r10/c01
+        id: left_strip/r09/c03
         region: left_strip
+        xyz_m:
+        - -2.5300000000000002
+        - 1.4999999999999993
+        - 0.0
+      - grid_col: 1
         grid_row: 10
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -3.03
-        - 0
-      - id: left_strip/r10/c02
+        id: left_strip/r10/c01
         region: left_strip
+        xyz_m:
+        - -3.0300000000000002
+        - 2.499999999999999
+        - 0.0
+      - grid_col: 2
         grid_row: 10
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -3.03
-        - 0
-      - id: left_strip/r10/c03
+        id: left_strip/r10/c02
         region: left_strip
+        xyz_m:
+        - -3.0300000000000002
+        - 1.9999999999999993
+        - 0.0
+      - grid_col: 3
         grid_row: 10
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - -3.03
-        - 0
-      - id: left_strip/r11/c01
+        id: left_strip/r10/c03
         region: left_strip
+        xyz_m:
+        - -3.0300000000000002
+        - 1.4999999999999993
+        - 0.0
+      - grid_col: 1
         grid_row: 11
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -3.53
-        - 0
-      - id: left_strip/r11/c02
+        id: left_strip/r11/c01
         region: left_strip
+        xyz_m:
+        - -3.5300000000000002
+        - 2.499999999999999
+        - 0.0
+      - grid_col: 2
         grid_row: 11
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -3.53
-        - 0
-      - id: left_strip/r11/c03
+        id: left_strip/r11/c02
         region: left_strip
+        xyz_m:
+        - -3.5300000000000002
+        - 1.9999999999999991
+        - 0.0
+      - grid_col: 3
         grid_row: 11
-        grid_col: 3
-        xyz_m:
-        - -1.5
-        - -3.53
-        - 0
-      - id: left_strip/r12/c01
+        id: left_strip/r11/c03
         region: left_strip
+        xyz_m:
+        - -3.5300000000000002
+        - 1.4999999999999991
+        - 0.0
+      - grid_col: 1
         grid_row: 12
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -4.03
-        - 0
-      - id: left_strip/r12/c02
+        id: left_strip/r12/c01
         region: left_strip
+        xyz_m:
+        - -4.030000000000001
+        - 2.499999999999999
+        - 0.0
+      - grid_col: 2
         grid_row: 12
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -4.03
-        - 0
-      - id: left_strip/r12/c03
+        id: left_strip/r12/c02
         region: left_strip
+        xyz_m:
+        - -4.030000000000001
+        - 1.9999999999999991
+        - 0.0
+      - grid_col: 3
         grid_row: 12
-        grid_col: 3
+        id: left_strip/r12/c03
+        region: left_strip
         xyz_m:
-        - -1.5
         - -4.03
-        - 0
-      - id: left_strip/r13/c01
-        region: left_strip
+        - 1.4999999999999991
+        - 0.0
+      - grid_col: 1
         grid_row: 13
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -4.53
-        - 0
-      - id: left_strip/r13/c02
+        id: left_strip/r13/c01
         region: left_strip
+        xyz_m:
+        - -4.530000000000001
+        - 2.499999999999999
+        - 0.0
+      - grid_col: 2
         grid_row: 13
-        grid_col: 2
-        xyz_m:
-        - -2.0
-        - -4.53
-        - 0
-      - id: left_strip/r13/c03
+        id: left_strip/r13/c02
         region: left_strip
+        xyz_m:
+        - -4.530000000000001
+        - 1.999999999999999
+        - 0.0
+      - grid_col: 3
         grid_row: 13
-        grid_col: 3
+        id: left_strip/r13/c03
+        region: left_strip
         xyz_m:
-        - -1.5
         - -4.53
-        - 0
-      - id: left_strip/r14/c01
-        region: left_strip
+        - 1.499999999999999
+        - 0.0
+      - grid_col: 1
         grid_row: 14
-        grid_col: 1
-        xyz_m:
-        - -2.5
-        - -5.03
-        - 0
-      - id: left_strip/r14/c02
+        id: left_strip/r14/c01
         region: left_strip
-        grid_row: 14
-        grid_col: 2
         xyz_m:
-        - -2.0
-        - -5.03
-        - 0
-      - id: left_strip/r14/c03
+        - -5.030000000000001
+        - 2.4999999999999987
+        - 0.0
+      - grid_col: 2
+        grid_row: 14
+        id: left_strip/r14/c02
         region: left_strip
-        grid_row: 14
-        grid_col: 3
         xyz_m:
-        - -1.5
+        - -5.030000000000001
+        - 1.999999999999999
+        - 0.0
+      - grid_col: 3
+        grid_row: 14
+        id: left_strip/r14/c03
+        region: left_strip
+        xyz_m:
         - -5.03
-        - 0
-      - id: right_strip/r01/c01
-        region: right_strip
+        - 1.499999999999999
+        - 0.0
+      - grid_col: 1
         grid_row: 1
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - 1.47
-        - 0
-      - id: right_strip/r01/c02
+        id: right_strip/r01/c01
         region: right_strip
+        xyz_m:
+        - 1.4700000000000002
+        - -1.4999999999999998
+        - 0.0
+      - grid_col: 2
         grid_row: 1
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - 1.47
-        - 0
-      - id: right_strip/r01/c03
+        id: right_strip/r01/c02
         region: right_strip
+        xyz_m:
+        - 1.4700000000000004
+        - -1.9999999999999998
+        - 0.0
+      - grid_col: 3
         grid_row: 1
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - 1.47
-        - 0
-      - id: right_strip/r02/c01
+        id: right_strip/r01/c03
         region: right_strip
+        xyz_m:
+        - 1.4700000000000006
+        - -2.4999999999999996
+        - 0.0
+      - grid_col: 1
         grid_row: 2
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - 0.97
-        - 0
-      - id: right_strip/r02/c02
+        id: right_strip/r02/c01
         region: right_strip
+        xyz_m:
+        - 0.9700000000000003
+        - -1.4999999999999998
+        - 0.0
+      - grid_col: 2
         grid_row: 2
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - 0.97
-        - 0
-      - id: right_strip/r02/c03
+        id: right_strip/r02/c02
         region: right_strip
+        xyz_m:
+        - 0.9700000000000004
+        - -1.9999999999999998
+        - 0.0
+      - grid_col: 3
         grid_row: 2
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - 0.97
-        - 0
-      - id: right_strip/r03/c01
+        id: right_strip/r02/c03
         region: right_strip
+        xyz_m:
+        - 0.9700000000000005
+        - -2.5
+        - 0.0
+      - grid_col: 1
         grid_row: 3
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - 0.47
-        - 0
-      - id: right_strip/r03/c02
+        id: right_strip/r03/c01
         region: right_strip
+        xyz_m:
+        - 0.4700000000000003
+        - -1.5
+        - 0.0
+      - grid_col: 2
         grid_row: 3
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - 0.47
-        - 0
-      - id: right_strip/r03/c03
+        id: right_strip/r03/c02
         region: right_strip
+        xyz_m:
+        - 0.4700000000000004
+        - -2.0
+        - 0.0
+      - grid_col: 3
         grid_row: 3
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - 0.47
-        - 0
-      - id: right_strip/r04/c01
+        id: right_strip/r03/c03
         region: right_strip
+        xyz_m:
+        - 0.47000000000000053
+        - -2.5
+        - 0.0
+      - grid_col: 1
         grid_row: 4
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -0.03
-        - 0
-      - id: right_strip/r04/c02
+        id: right_strip/r04/c01
         region: right_strip
+        xyz_m:
+        - -0.029999999999999666
+        - -1.5
+        - 0.0
+      - grid_col: 2
         grid_row: 4
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -0.03
-        - 0
-      - id: right_strip/r04/c03
+        id: right_strip/r04/c02
         region: right_strip
+        xyz_m:
+        - -0.029999999999999555
+        - -2.0
+        - 0.0
+      - grid_col: 3
         grid_row: 4
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -0.03
-        - 0
-      - id: right_strip/r05/c01
+        id: right_strip/r04/c03
         region: right_strip
+        xyz_m:
+        - -0.029999999999999444
+        - -2.5
+        - 0.0
+      - grid_col: 1
         grid_row: 5
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -0.53
-        - 0
-      - id: right_strip/r05/c02
+        id: right_strip/r05/c01
         region: right_strip
+        xyz_m:
+        - -0.5299999999999997
+        - -1.5000000000000002
+        - 0.0
+      - grid_col: 2
         grid_row: 5
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -0.53
-        - 0
-      - id: right_strip/r05/c03
+        id: right_strip/r05/c02
         region: right_strip
+        xyz_m:
+        - -0.5299999999999996
+        - -2.0
+        - 0.0
+      - grid_col: 3
         grid_row: 5
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -0.53
-        - 0
-      - id: right_strip/r06/c01
+        id: right_strip/r05/c03
         region: right_strip
+        xyz_m:
+        - -0.5299999999999995
+        - -2.5
+        - 0.0
+      - grid_col: 1
         grid_row: 6
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -1.03
-        - 0
-      - id: right_strip/r06/c02
+        id: right_strip/r06/c01
         region: right_strip
+        xyz_m:
+        - -1.0299999999999998
+        - -1.5000000000000002
+        - 0.0
+      - grid_col: 2
         grid_row: 6
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -1.03
-        - 0
-      - id: right_strip/r06/c03
+        id: right_strip/r06/c02
         region: right_strip
+        xyz_m:
+        - -1.0299999999999996
+        - -2.0000000000000004
+        - 0.0
+      - grid_col: 3
         grid_row: 6
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -1.03
-        - 0
-      - id: right_strip/r07/c01
+        id: right_strip/r06/c03
         region: right_strip
+        xyz_m:
+        - -1.0299999999999994
+        - -2.5000000000000004
+        - 0.0
+      - grid_col: 1
         grid_row: 7
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -1.53
-        - 0
-      - id: right_strip/r07/c02
+        id: right_strip/r07/c01
         region: right_strip
+        xyz_m:
+        - -1.5299999999999998
+        - -1.5000000000000004
+        - 0.0
+      - grid_col: 2
         grid_row: 7
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -1.53
-        - 0
-      - id: right_strip/r07/c03
+        id: right_strip/r07/c02
         region: right_strip
+        xyz_m:
+        - -1.5299999999999996
+        - -2.0000000000000004
+        - 0.0
+      - grid_col: 3
         grid_row: 7
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -1.53
-        - 0
-      - id: right_strip/r08/c01
+        id: right_strip/r07/c03
         region: right_strip
+        xyz_m:
+        - -1.5299999999999994
+        - -2.5000000000000004
+        - 0.0
+      - grid_col: 1
         grid_row: 8
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -2.03
-        - 0
-      - id: right_strip/r08/c02
+        id: right_strip/r08/c01
         region: right_strip
+        xyz_m:
+        - -2.0299999999999994
+        - -1.5000000000000004
+        - 0.0
+      - grid_col: 2
         grid_row: 8
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -2.03
-        - 0
-      - id: right_strip/r08/c03
+        id: right_strip/r08/c02
         region: right_strip
+        xyz_m:
+        - -2.0299999999999994
+        - -2.0000000000000004
+        - 0.0
+      - grid_col: 3
         grid_row: 8
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -2.03
-        - 0
-      - id: right_strip/r09/c01
+        id: right_strip/r08/c03
         region: right_strip
+        xyz_m:
+        - -2.0299999999999994
+        - -2.5000000000000004
+        - 0.0
+      - grid_col: 1
         grid_row: 9
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -2.53
-        - 0
-      - id: right_strip/r09/c02
+        id: right_strip/r09/c01
         region: right_strip
+        xyz_m:
+        - -2.5299999999999994
+        - -1.5000000000000007
+        - 0.0
+      - grid_col: 2
         grid_row: 9
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -2.53
-        - 0
-      - id: right_strip/r09/c03
+        id: right_strip/r09/c02
         region: right_strip
+        xyz_m:
+        - -2.5299999999999994
+        - -2.0000000000000004
+        - 0.0
+      - grid_col: 3
         grid_row: 9
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -2.53
-        - 0
-      - id: right_strip/r10/c01
+        id: right_strip/r09/c03
         region: right_strip
+        xyz_m:
+        - -2.5299999999999994
+        - -2.5000000000000004
+        - 0.0
+      - grid_col: 1
         grid_row: 10
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -3.03
-        - 0
-      - id: right_strip/r10/c02
+        id: right_strip/r10/c01
         region: right_strip
+        xyz_m:
+        - -3.0299999999999994
+        - -1.5000000000000007
+        - 0.0
+      - grid_col: 2
         grid_row: 10
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -3.03
-        - 0
-      - id: right_strip/r10/c03
+        id: right_strip/r10/c02
         region: right_strip
+        xyz_m:
+        - -3.0299999999999994
+        - -2.000000000000001
+        - 0.0
+      - grid_col: 3
         grid_row: 10
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -3.03
-        - 0
-      - id: right_strip/r11/c01
+        id: right_strip/r10/c03
         region: right_strip
+        xyz_m:
+        - -3.0299999999999994
+        - -2.500000000000001
+        - 0.0
+      - grid_col: 1
         grid_row: 11
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -3.53
-        - 0
-      - id: right_strip/r11/c02
+        id: right_strip/r11/c01
         region: right_strip
+        xyz_m:
+        - -3.5299999999999994
+        - -1.5000000000000009
+        - 0.0
+      - grid_col: 2
         grid_row: 11
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -3.53
-        - 0
-      - id: right_strip/r11/c03
+        id: right_strip/r11/c02
         region: right_strip
+        xyz_m:
+        - -3.5299999999999994
+        - -2.000000000000001
+        - 0.0
+      - grid_col: 3
         grid_row: 11
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -3.53
-        - 0
-      - id: right_strip/r12/c01
+        id: right_strip/r11/c03
         region: right_strip
+        xyz_m:
+        - -3.5299999999999994
+        - -2.500000000000001
+        - 0.0
+      - grid_col: 1
         grid_row: 12
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -4.03
-        - 0
-      - id: right_strip/r12/c02
+        id: right_strip/r12/c01
         region: right_strip
+        xyz_m:
+        - -4.03
+        - -1.5000000000000009
+        - 0.0
+      - grid_col: 2
         grid_row: 12
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -4.03
-        - 0
-      - id: right_strip/r12/c03
+        id: right_strip/r12/c02
         region: right_strip
+        xyz_m:
+        - -4.029999999999999
+        - -2.000000000000001
+        - 0.0
+      - grid_col: 3
         grid_row: 12
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -4.03
-        - 0
-      - id: right_strip/r13/c01
+        id: right_strip/r12/c03
         region: right_strip
+        xyz_m:
+        - -4.029999999999999
+        - -2.500000000000001
+        - 0.0
+      - grid_col: 1
         grid_row: 13
-        grid_col: 1
-        xyz_m:
-        - 1.5
-        - -4.53
-        - 0
-      - id: right_strip/r13/c02
+        id: right_strip/r13/c01
         region: right_strip
+        xyz_m:
+        - -4.53
+        - -1.500000000000001
+        - 0.0
+      - grid_col: 2
         grid_row: 13
-        grid_col: 2
-        xyz_m:
-        - 2.0
-        - -4.53
-        - 0
-      - id: right_strip/r13/c03
+        id: right_strip/r13/c02
         region: right_strip
+        xyz_m:
+        - -4.529999999999999
+        - -2.000000000000001
+        - 0.0
+      - grid_col: 3
         grid_row: 13
-        grid_col: 3
-        xyz_m:
-        - 2.5
-        - -4.53
-        - 0
-      - id: right_strip/r14/c01
+        id: right_strip/r13/c03
         region: right_strip
-        grid_row: 14
-        grid_col: 1
         xyz_m:
-        - 1.5
-        - -5.03
-        - 0
-      - id: right_strip/r14/c02
+        - -4.529999999999999
+        - -2.500000000000001
+        - 0.0
+      - grid_col: 1
+        grid_row: 14
+        id: right_strip/r14/c01
         region: right_strip
-        grid_row: 14
-        grid_col: 2
         xyz_m:
-        - 2.0
         - -5.03
-        - 0
-      - id: right_strip/r14/c03
+        - -1.500000000000001
+        - 0.0
+      - grid_col: 2
+        grid_row: 14
+        id: right_strip/r14/c02
         region: right_strip
-        grid_row: 14
-        grid_col: 3
         xyz_m:
-        - 2.5
-        - -5.03
-        - 0
-      - id: front_small/r01/c01
+        - -5.029999999999999
+        - -2.0000000000000013
+        - 0.0
+      - grid_col: 3
+        grid_row: 14
+        id: right_strip/r14/c03
+        region: right_strip
+        xyz_m:
+        - -5.029999999999999
+        - -2.5000000000000013
+        - 0.0
+      - grid_col: 1
+        grid_row: 1
+        id: front_small/r01/c01
         region: front_small
-        grid_row: 1
-        grid_col: 1
         xyz_m:
-        - -0.3
         - 2.27
-        - 0
-      - id: front_small/r01/c02
-        region: front_small
-        grid_row: 1
-        grid_col: 2
-        xyz_m:
+        - 0.3000000000000005
         - 0.0
+      - grid_col: 2
+        grid_row: 1
+        id: front_small/r01/c02
+        region: front_small
+        xyz_m:
         - 2.27
-        - 0
-      - id: front_small/r01/c03
-        region: front_small
+        - 5.040412531798211e-16
+        - 0.0
+      - grid_col: 3
         grid_row: 1
-        grid_col: 3
+        id: front_small/r01/c03
+        region: front_small
         xyz_m:
-        - 0.3
         - 2.27
-        - 0
-      - id: front_small/r02/c01
-        region: front_small
+        - -0.2999999999999995
+        - 0.0
+      - grid_col: 1
         grid_row: 2
-        grid_col: 1
+        id: front_small/r02/c01
+        region: front_small
         xyz_m:
-        - -0.3
         - 1.97
-        - 0
-      - id: front_small/r02/c02
-        region: front_small
-        grid_row: 2
-        grid_col: 2
-        xyz_m:
+        - 0.30000000000000043
         - 0.0
+      - grid_col: 2
+        grid_row: 2
+        id: front_small/r02/c02
+        region: front_small
+        xyz_m:
         - 1.97
-        - 0
-      - id: front_small/r02/c03
-        region: front_small
+        - 4.3742787170231167e-16
+        - 0.0
+      - grid_col: 3
         grid_row: 2
-        grid_col: 3
+        id: front_small/r02/c03
+        region: front_small
         xyz_m:
-        - 0.3
         - 1.97
-        - 0
-      - id: front_small/r03/c01
-        region: front_small
+        - -0.29999999999999954
+        - 0.0
+      - grid_col: 1
         grid_row: 3
-        grid_col: 1
+        id: front_small/r03/c01
+        region: front_small
         xyz_m:
-        - -0.3
         - 1.67
-        - 0
-      - id: front_small/r03/c02
-        region: front_small
-        grid_row: 3
-        grid_col: 2
-        xyz_m:
+        - 0.3000000000000004
         - 0.0
+      - grid_col: 2
+        grid_row: 3
+        id: front_small/r03/c02
+        region: front_small
+        xyz_m:
         - 1.67
-        - 0
-      - id: front_small/r03/c03
-        region: front_small
+        - 3.7081449022480227e-16
+        - 0.0
+      - grid_col: 3
         grid_row: 3
-        grid_col: 3
+        id: front_small/r03/c03
+        region: front_small
         xyz_m:
-        - 0.3
         - 1.67
-        - 0
-      - id: front_small/r04/c01
+        - -0.2999999999999996
+        - 0.0
+      - grid_col: 1
+        grid_row: 4
+        id: front_small/r04/c01
         region: front_small
-        grid_row: 4
-        grid_col: 1
         xyz_m:
-        - -0.3
         - 1.37
-        - 0
-      - id: front_small/r04/c02
+        - 0.30000000000000027
+        - 0.0
+      - grid_col: 2
+        grid_row: 4
+        id: front_small/r04/c02
         region: front_small
-        grid_row: 4
-        grid_col: 2
         xyz_m:
-        - 0.0
         - 1.37
-        - 0
-      - id: front_small/r04/c03
+        - 3.042011087472929e-16
+        - 0.0
+      - grid_col: 3
+        grid_row: 4
+        id: front_small/r04/c03
         region: front_small
-        grid_row: 4
-        grid_col: 3
         xyz_m:
-        - 0.3
         - 1.37
-        - 0
-      - id: rear_small/r01/c01
-        region: rear_small
+        - -0.2999999999999997
+        - 0.0
+      - grid_col: 1
         grid_row: 1
-        grid_col: 1
-        xyz_m:
-        - -0.3
-        - -4.53
-        - 0
-      - id: rear_small/r01/c02
+        id: rear_small/r01/c01
         region: rear_small
+        xyz_m:
+        - -4.53
+        - 0.299999999999999
+        - 0.0
+      - grid_col: 2
         grid_row: 1
-        grid_col: 2
-        xyz_m:
-        - 0.0
-        - -4.53
-        - 0
-      - id: rear_small/r01/c03
+        id: rear_small/r01/c02
         region: rear_small
+        xyz_m:
+        - -4.53
+        - -1.0058620603103919e-15
+        - 0.0
+      - grid_col: 3
         grid_row: 1
-        grid_col: 3
+        id: rear_small/r01/c03
+        region: rear_small
         xyz_m:
-        - 0.3
         - -4.53
-        - 0
-      - id: rear_small/r02/c01
-        region: rear_small
-        grid_row: 2
-        grid_col: 1
-        xyz_m:
-        - -0.3
-        - -4.83
-        - 0
-      - id: rear_small/r02/c02
-        region: rear_small
-        grid_row: 2
-        grid_col: 2
-        xyz_m:
+        - -0.300000000000001
         - 0.0
-        - -4.83
-        - 0
-      - id: rear_small/r02/c03
-        region: rear_small
+      - grid_col: 1
         grid_row: 2
-        grid_col: 3
+        id: rear_small/r02/c01
+        region: rear_small
         xyz_m:
-        - 0.3
         - -4.83
-        - 0
-      - id: rear_small/r03/c01
-        region: rear_small
-        grid_row: 3
-        grid_col: 1
-        xyz_m:
-        - -0.3
-        - -5.13
-        - 0
-      - id: rear_small/r03/c02
-        region: rear_small
-        grid_row: 3
-        grid_col: 2
-        xyz_m:
+        - 0.29999999999999893
         - 0.0
-        - -5.13
-        - 0
-      - id: rear_small/r03/c03
+      - grid_col: 2
+        grid_row: 2
+        id: rear_small/r02/c02
         region: rear_small
-        grid_row: 3
-        grid_col: 3
         xyz_m:
-        - 0.3
-        - -5.13
-        - 0
-      - id: rear_small/r04/c01
-        region: rear_small
-        grid_row: 4
-        grid_col: 1
-        xyz_m:
-        - -0.3
-        - -5.43
-        - 0
-      - id: rear_small/r04/c02
-        region: rear_small
-        grid_row: 4
-        grid_col: 2
-        xyz_m:
+        - -4.83
+        - -1.0724754417879012e-15
         - 0.0
-        - -5.43
-        - 0
-      - id: rear_small/r04/c03
+      - grid_col: 3
+        grid_row: 2
+        id: rear_small/r02/c03
         region: rear_small
-        grid_row: 4
-        grid_col: 3
         xyz_m:
-        - 0.3
+        - -4.83
+        - -0.30000000000000104
+        - 0.0
+      - grid_col: 1
+        grid_row: 3
+        id: rear_small/r03/c01
+        region: rear_small
+        xyz_m:
+        - -5.13
+        - 0.2999999999999988
+        - 0.0
+      - grid_col: 2
+        grid_row: 3
+        id: rear_small/r03/c02
+        region: rear_small
+        xyz_m:
+        - -5.13
+        - -1.1390888232654106e-15
+        - 0.0
+      - grid_col: 3
+        grid_row: 3
+        id: rear_small/r03/c03
+        region: rear_small
+        xyz_m:
+        - -5.13
+        - -0.30000000000000115
+        - 0.0
+      - grid_col: 1
+        grid_row: 4
+        id: rear_small/r04/c01
+        region: rear_small
+        xyz_m:
         - -5.43
-        - 0
+        - 0.29999999999999877
+        - 0.0
+      - grid_col: 2
+        grid_row: 4
+        id: rear_small/r04/c02
+        region: rear_small
+        xyz_m:
+        - -5.43
+        - -1.20570220474292e-15
+        - 0.0
+      - grid_col: 3
+        grid_row: 4
+        id: rear_small/r04/c03
+        region: rear_small
+        xyz_m:
+        - -5.43
+        - -0.3000000000000012
+        - 0.0
+      frame: board
+      marker_dictionary: DICT_4X4_1000
+      marker_source: Explicit synthetic ray-rendered metric surfaces, 3 mm above the
+        public board plane; checker asset unchanged
+      source: Procedural metric board geometry; source SHA256 a99ff252799e313b38acee8c85fa506b83e46c55690abca9277654cae0c153ae;
+        world registration is not independently surveyed; transformed into baked world
+        coordinates; no additional asset transform
+      verified: true
+  board_code_000:
+    id: board_code_000
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_000_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_001:
+    id: board_code_001
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_001_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_002:
+    id: board_code_002
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_002_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_003:
+    id: board_code_003
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_003_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_004:
+    id: board_code_004
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_004_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_005:
+    id: board_code_005
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_005_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_006:
+    id: board_code_006
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_006_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_007:
+    id: board_code_007
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_007_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_008:
+    id: board_code_008
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_008_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_009:
+    id: board_code_009
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_009_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_010:
+    id: board_code_010
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_010_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_011:
+    id: board_code_011
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_011_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_012:
+    id: board_code_012
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_012_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_013:
+    id: board_code_013
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_013_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_014:
+    id: board_code_014
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_014_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_015:
+    id: board_code_015
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_015_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_016:
+    id: board_code_016
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_016_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_017:
+    id: board_code_017
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_017_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_018:
+    id: board_code_018
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_018_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_019:
+    id: board_code_019
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_019_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_020:
+    id: board_code_020
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_020_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_021:
+    id: board_code_021
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_021_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_022:
+    id: board_code_022
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_022_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
+  board_code_023:
+    id: board_code_023
+    rows: 1
+    columns: 1
+    square_size: 0.3
+    pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset: ../标定成功场景点云及配置_20261110/世界坐标分件/编码/aruco_023_3dgs.ply
+    asset_pose:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    asset_scale: 1.0
+    calibration_geometry: {}
 bev:
   x_min: -6.5
   x_max: 3.5
@@ -1105,16 +1900,8 @@ calibration:
   extrinsic_board: board_large
   camera_regions:
     front: front_small
-    right: right_strip
-    rear: rear_small
     left: left_strip
-  views: 8
-  holdout: 2
-  seed: 2026
-  supersample: 1
-  spread_x: 0.2
-  spread_y: 0.2
-  yaw_range_deg: 45.0
-  sampling: visible_plane
+    rear: rear_small
+    right: right_strip
 scene:
-  gaussian_file: ../assets/scene.ply
+  gaussian_file: ../标定成功场景点云及配置_20261110/世界坐标分件/房间_3dgs.ply

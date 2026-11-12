@@ -118,7 +118,7 @@ def test_viser_dropdown_button_and_result_widgets(tmp_path):
     server=viser.ViserServer(host='127.0.0.1',port=0,verbose=False)
     try:
         panel=CalibrationPanel(server,store,jobs=jobs)
-        assert len(panel.algorithm.options)==2
+        assert len(panel.algorithm.options)==3
         assert panel.board.value=='board_001'
         panel.camera.value='left';panel.views.value=24
         # Same queued action as the browser's Start button.

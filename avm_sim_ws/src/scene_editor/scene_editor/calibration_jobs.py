@@ -22,6 +22,7 @@ from scene_manager.ground_truth import GroundTruth
 
 BASELINE = "opencv_baseline"
 USER_PIPELINE = "pipeline_1_0_0"
+MULTITILT = "fisheye_multitilt"
 
 
 def project_root():
@@ -49,8 +50,11 @@ def pipeline_class(root):
 def normalize_request(request, scene, root):
     request = deepcopy(request)
     algorithm = request.get("algorithm", BASELINE)
-    if algorithm not in (BASELINE, USER_PIPELINE):
+    if algorithm not in (BASELINE, USER_PIPELINE, MULTITILT):
         raise ValueError(f"Unknown calibration algorithm: {algorithm}")
+    if algorithm == MULTITILT:
+        from .multitilt import normalize
+        return normalize(request, scene)
     if algorithm == BASELINE:
         if not scene.cameras:
             raise ValueError("Current scene has no cameras")
@@ -198,7 +202,11 @@ def run_job(directory):
             "calibration_accepted":False,"scene_parameters_applied":False}
     try:
         truth=GroundTruth.load(directory/"ground_truth.yaml")
-        if request["algorithm"]==BASELINE:
+        if request['algorithm']==MULTITILT:
+            from .multitilt import run
+            payload=run(truth.scene,request,directory,lambda phase,**kw:job_progress(directory,phase,**kw))
+            result.update(payload,input_scope='current_scene_snapshot')
+        elif request["algorithm"]==BASELINE:
             from gs_renderer.calibration import make_calibration_dataset,calibrate_camera_dataset,save_calibration_report
             scene=truth.scene
             scene.boards={request["board_id"]:scene.boards[request["board_id"]]}
@@ -240,12 +248,16 @@ def run_job(directory):
                 result.update(status="complete",pipeline=payload,input_scope="pipeline_config",
                     scientific_status="DIAGNOSTIC_NOT_ACCEPTED",
                     input_notice="Images/geometry come from the pipeline JSON; saved GUI scene is context only, not solver input.")
-        result["summary"]=report_rows(directory)
+        if request['algorithm']!=MULTITILT:result["summary"]=report_rows(directory)
         save_metrics(directory,result["summary"])
         finish_experiment(directory,result)
         job_progress(directory,"完成",status=result["status"])
         return result
     except Exception as exc:
+        if request['algorithm']==MULTITILT:
+            partial={p.stem:read_json(p,{}) for p in (directory/'multitilt').glob('*.json')
+                if p.stem in request['cameras']}
+            result.update(results=partial,input_scope='current_scene_snapshot',scope='intrinsics_only')
         comparison=read_json(directory/'ground_truth_comparison.json',{})
         if comparison:result['ground_truth_comparison']=comparison.get('results',[])
         result.update(error=f"{type(exc).__name__}: {exc}",summary=report_rows(directory))

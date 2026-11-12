@@ -77,3 +77,7 @@ experiments/<id>/
 - 七个原始 runtime Python 源文件逐一核对 `SOURCE_MANIFEST.json`，SHA-256 全部一致。
 
 代码入口：`scene_editor/calibration_ui.py`（界面）、`scene_editor/calibration_jobs.py`（任务与适配）、`tools/run_gui_calibration.py`（隔离 worker）。
+
+## 多倾角鱼眼内参
+
+新增独立“多倾角采集：鱼眼内参”入口，使用逐图片板姿态模型并限定小板检测区域。操作、留出评估、输出和验证边界见 [MULTITILT_INTRINSICS.md](MULTITILT_INTRINSICS.md)。原 1.0.0 入口保留；新入口不生成外参/BEV，不自动应用参数。
