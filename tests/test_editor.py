@@ -30,7 +30,7 @@ def test_gizmo_world_to_camera_relative_and_delete(tmp_path):
         np.testing.assert_allclose(store.snapshot()[1].cameras["front"].pose,desired,atol=1e-10)
         editor._handle("add","board")
         editor.tick()
-        assert editor.tree.value=="board_002"
+        assert editor.tree.value=="标定板（board_002）"
         editor._handle("delete",None)
         editor.tick()
         assert "board_002" not in store.snapshot()[1].boards

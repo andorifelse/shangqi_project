@@ -31,19 +31,19 @@ def project_root():
     for root in candidates:
         if (root / "tools/run_calibration.py").is_file():
             return root.resolve()
-    raise ValueError("Cannot locate project root; set AVM_PROJECT_ROOT")
+    raise ValueError("找不到项目目录，请设置 AVM_PROJECT_ROOT")
 
 
 def pipeline_class(root):
     source = Path(root) / "calibration_pipeline_1.0.0"
     if not (source / "calibration_pipeline/pipeline.py").is_file():
-        raise ValueError(f"User pipeline source not found: {source}")
+        raise ValueError(f"找不到标定流程源码： {source}")
     # No pip install, environment replacement, or modification of supplied code.
     sys.path.insert(0, str(source)) if str(source) not in sys.path else None
     from calibration_pipeline import Pipeline, __version__
     import calibration_pipeline
     if __version__ != "1.0.0" or source.resolve() not in Path(calibration_pipeline.__file__).resolve().parents:
-        raise ValueError("Imported pipeline is not the supplied local version 1.0.0")
+        raise ValueError("载入的标定流程不是本地 1.0.0 版本")
     return Pipeline
 
 
@@ -51,34 +51,34 @@ def normalize_request(request, scene, root):
     request = deepcopy(request)
     algorithm = request.get("algorithm", BASELINE)
     if algorithm not in (BASELINE, USER_PIPELINE, MULTITILT):
-        raise ValueError(f"Unknown calibration algorithm: {algorithm}")
+        raise ValueError(f"未知标定算法： {algorithm}")
     if algorithm == MULTITILT:
         from .multitilt import normalize
         return normalize(request, scene)
     if algorithm == BASELINE:
         if not scene.cameras:
-            raise ValueError("Current scene has no cameras")
+            raise ValueError("当前场景没有相机")
         names = request.get("cameras") or sorted(scene.cameras)
         if not isinstance(names,list) or not names or set(names) - scene.cameras.keys():
-            raise ValueError("Select cameras present in the current scene")
+            raise ValueError("请选择当前场景中存在的相机")
         board_id = request.get("board_id") or next(iter(scene.boards), "")
         if board_id not in scene.boards:
-            raise ValueError("Select a checkerboard from the current scene")
+            raise ValueError("请选择当前场景中的棋盘格")
         board = scene.boards[board_id]
         if board.rows < 4 or board.columns < 4:
-            raise ValueError("Baseline requires at least 4x4 squares")
+            raise ValueError("基线标定至少需要 4×4 个方格")
         if any(scene.cameras[n].model not in ("pinhole","fisheye") for n in names):
-            raise ValueError("OpenCV baseline supports pinhole/fisheye, not ftheta")
+            raise ValueError("基线标定仅支持针孔和鱼眼，不支持等距多项式模型")
         if board.is_gaussian and not request.get("confirm_board_geometry",False):
-            raise ValueError("Gaussian checkerboard needs verified rectangular pattern, dimensions and asset alignment; "
-                             "ring strips/center-hole PLYs are not a complete rectangular checkerboard")
+            raise ValueError("高斯板须核实完整矩形图案、尺寸与模型对齐；"
+                             "环车条带和中央孔模型不能当作完整矩形棋盘")
         for key,lo,hi,default in (("views",8,500,40),("seed",0,2**32-1,20261020),("supersample",1,4,2)):
             value=request.get(key,default)
             if isinstance(value,bool) or not isinstance(value,int) or not lo<=value<=hi:
-                raise ValueError(f"{key} must be an integer in [{lo},{hi}]")
+                raise ValueError(f"{key} 必须为范围内的整数： [{lo},{hi}]")
             request[key]=value
         if request.get("backend","cpu") not in ("cpu","gsplat"):
-            raise ValueError("Unknown board renderer")
+            raise ValueError("未知标定板渲染方式")
         request.update(cameras=names,board_id=board_id)
         return request
     mode=request.get('input_mode','manual' if request.get('pipeline_config') else 'scene')
@@ -93,18 +93,18 @@ def normalize_request(request, scene, root):
         request['pipeline_config']=str(Path(root)/'calibration_pipeline_1.0.0/examples/cpu_demo/demo.json')
     path=Path(request.get("pipeline_config","")).expanduser().resolve()
     if not path.is_file():
-        raise ValueError("Select the pipeline JSON configuration file")
+        raise ValueError("请选择标定流程配置文件")
     pipeline=pipeline_class(root)(path)
     # The supplied library validates stage ordering and paused status itself.
     stage=request.get("stage","all")
     plan=pipeline.plan(stage)
     if str(pipeline.config.get("execution_status","")).startswith(("paused","draft_pending")):
-        raise ValueError("Pipeline configuration is paused/pending; do not bypass its prerequisites")
+        raise ValueError("该配置已暂停或缺少前置条件，请先完成检查")
     sections={"scene" if s=="prepare" else s for s in plan["stages"]}
     missing=[x["path"] for x in plan["inputs"]
              if x["role"].split(".",1)[0] in sections and not x["exists"]]
     if missing:
-        raise ValueError("Missing pipeline inputs: " + "; ".join(missing))
+        raise ValueError("缺少标定输入文件： " + "; ".join(missing))
     request.update(pipeline_config=str(path),pipeline_base_dir=str(path.parent),
                    pipeline_document=pipeline.config,stage=stage,input_mode=mode)
     return request
@@ -279,7 +279,7 @@ class CalibrationJobs:
 
     def start(self, store, request):
         if self.running:
-            raise ValueError("A calibration job is already running")
+            raise ValueError("已有标定任务正在运行")
         if getattr(store,"_inflight",False) or getattr(store,"_queue",None) or getattr(store,"_poses",None):
             raise ValueError("请等待 ROS 编辑回传确认（acknowledged）后再开始标定")
         revision,scene=store.snapshot()
@@ -291,7 +291,7 @@ class CalibrationJobs:
             raise ValueError("实验名称请使用英文字母/数字/下划线，不得包含路径分隔符")
         directory=self.experiments/name
         if directory.exists():
-            raise ValueError(f"Experiment exists; choose a new ID: {directory}")
+            raise ValueError(f"实验目录已存在，请使用新名称：{directory}")
         request.update(algorithm=request.get("algorithm",BASELINE),scene_revision=revision)
         truth=GroundTruth.capture(scene,revision)
         request["scene_snapshot"]=truth.scene.to_dict()
@@ -325,7 +325,7 @@ class CalibrationJobs:
             self.log.close();self.log=None
         if code is not None and not result:
             from avm_bringup.experiments import finish_experiment
-            finish_experiment(self.directory,{"status":"failed","error":f"Worker exited {code}; see logs/calibration.log"})
+            finish_experiment(self.directory,{"status":"failed","error":f"标定进程退出（代码 {code}），详情见实验日志"})
             result=read_json(self.directory/"result.json")
         progress=read_json(self.directory/"progress.json",{})
         # The original pipeline already publishes atomic-enough stage state.
@@ -350,7 +350,7 @@ class CalibrationJobs:
         if self.log:self.log.close();self.log=None
         from avm_bringup.experiments import finish_experiment
         finish_experiment(self.directory,{"status":"cancelled","calibration_accepted":False,
-            "scene_parameters_applied":False,"error":"Cancelled by user or editor shutdown"})
+            "scene_parameters_applied":False,"error":"用户取消或编辑器关闭"})
         job_progress(self.directory,"已取消",status="cancelled")
 
     close=cancel

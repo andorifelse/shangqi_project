@@ -86,9 +86,9 @@ def main(args=None) -> None:
                 stamp, self.images = ready
                 self.preview.update(self.images)
                 self.displayed_revision = self.store.revision
-                self.preview.status.content = f"ROS cameras | revision {self.displayed_revision} | stamp {stamp[0]}.{stamp[1]:09d}"
+                self.preview.status.content = f"相机图像 · 场景版本 {self.displayed_revision} · 时间戳 {stamp[0]}.{stamp[1]:09d}"
             elif self.displayed_revision != self.store.revision or self.store._poses:
-                self.preview.status.content = f"Waiting for images at revision {self.store.revision}; displayed revision {self.displayed_revision}"
+                self.preview.status.content = f"等待场景版本 {self.store.revision} 的图像；当前显示版本 {self.displayed_revision}"
 
     rclpy.init(args=args)
     node=EditorNode()

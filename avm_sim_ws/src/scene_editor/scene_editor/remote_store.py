@@ -3,6 +3,7 @@ from collections import deque
 from copy import deepcopy
 import json
 from scene_manager.models import Scene
+from .ui_text import error_text
 from scene_manager.transforms import pose_matrix
 
 
@@ -32,7 +33,7 @@ class RemoteStore:
 
     def command(self, command, expected_revision=-1):
         if not self.client.service_is_ready():
-            raise ValueError("Scene manager is not ready")
+            raise ValueError("场景管理器尚未就绪")
         command = deepcopy(command)
         self._serial += 1
         serial = self._serial
@@ -66,11 +67,11 @@ class RemoteStore:
                             del self._poses[command["id"]]
                         else:
                             self._poses[command["id"]] = (serial, current[1], response.revision)
-                self.report("Ready" if response.success else f"**Edit rejected:** {response.error}")
+                self.report("就绪" if response.success else f"**修改未生效：** {error_text(response.error)}")
             except Exception as exc:
                 if command["action"] == "pose" and self._poses.get(command["id"], (None,))[0] == serial:
                     self._poses.pop(command["id"], None)
-                self.report(f"**Service failure:** {exc}")
+                self.report(f"**场景通信失败：** {error_text(exc)}")
             finally:
                 self._inflight = False
                 self._dispatch()

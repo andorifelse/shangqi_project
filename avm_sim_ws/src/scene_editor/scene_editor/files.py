@@ -3,6 +3,7 @@ from queue import SimpleQueue
 from pathlib import Path
 import numpy as np
 from gs_renderer.gaussian import GaussianScene
+from .ui_text import error_text
 
 
 class SceneFiles:
@@ -11,17 +12,17 @@ class SceneFiles:
         self.events = SimpleQueue()
         self.gaussian_key = None
         self.gaussian_handle = None
-        with server.gui.add_folder("Scene files", expand_by_default=False):
-            self.path = server.gui.add_text("Scene YAML", str(default_path))
-            server.gui.add_button("Save Scene").on_click(lambda _: self.events.put({"action":"save","path":self.path.value}))
-            server.gui.add_button("Load Scene").on_click(lambda _: self.events.put({"action":"load","path":self.path.value}))
-            self.truth_path = server.gui.add_text("Ground Truth YAML", str(default_path.parent / "ground_truth.yaml"))
-            server.gui.add_button("Export Ground Truth").on_click(lambda _: self.events.put({
+        with server.gui.add_folder("场景文件", expand_by_default=False):
+            self.path = server.gui.add_text("场景配置文件（YAML）", str(default_path))
+            server.gui.add_button("保存场景").on_click(lambda _: self.events.put({"action":"save","path":self.path.value}))
+            server.gui.add_button("加载场景").on_click(lambda _: self.events.put({"action":"load","path":self.path.value}))
+            self.truth_path = server.gui.add_text("真值配置文件（YAML）", str(default_path.parent / "ground_truth.yaml"))
+            server.gui.add_button("导出真值").on_click(lambda _: self.events.put({
                 "action":"export_ground_truth", "path":self.truth_path.value}))
-            self.ply = server.gui.add_text("Gaussian PLY path", "")
-            server.gui.add_button("Load Gaussian PLY").on_click(lambda _: self.events.put({"action":"gaussian","path":self.ply.value}))
-            self.glb = server.gui.add_text("Vehicle GLB / GLTF / 3DGS PLY path", "")
-            server.gui.add_button("Set vehicle asset").on_click(lambda _: self.events.put({
+            self.ply = server.gui.add_text("环境高斯 PLY 路径", "")
+            server.gui.add_button("加载环境高斯模型").on_click(lambda _: self.events.put({"action":"gaussian","path":self.ply.value}))
+            self.glb = server.gui.add_text("车辆模型路径（GLB／GLTF／PLY）", "")
+            server.gui.add_button("应用车辆模型").on_click(lambda _: self.events.put({
                 "action":"properties","id":"base_link","properties":{"asset":str(Path(self.glb.value).expanduser().resolve())}}))
         self.tick()
 
@@ -40,9 +41,9 @@ class SceneFiles:
                     command["path"] = str(Path(command["path"]).expanduser().resolve())
                     GaussianScene.load(command["path"])
                 self.store.command(command)
-                self.status.content = f"Scene {command['action']} completed"
+                self.status.content = "场景操作已完成"
             except (OSError, ValueError, KeyError, TypeError) as exc:
-                self.status.content = f"**Scene action failed:** {exc}"
+                self.status.content = f"**场景操作失败：** {error_text(exc)}"
         _, scene = self.store.snapshot()
         key = (scene.gaussian_file, repr(scene.coordinate))
         if key != self.gaussian_key:
@@ -60,5 +61,5 @@ class SceneFiles:
                     self.gaussian_handle = None
                 self.gaussian_key = key
             except (OSError, ValueError) as exc:
-                self.status.content = f"**Gaussian load failed:** {exc}"
+                self.status.content = f"**高斯模型加载失败：** {error_text(exc)}"
                 self.gaussian_key = key  # Do not flood errors; retry after next asset change.

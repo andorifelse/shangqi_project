@@ -5,6 +5,7 @@ import numpy as np
 from scene_manager.transforms import (pose_matrix, matrix_pose, inverse,
     wxyz_from_matrix, matrix_from_wxyz_position)
 from .objects import ObjectView
+from .ui_text import error_text, MODEL_LABELS, MODEL_VALUES, object_label, object_id
 
 
 class Editor:
@@ -19,22 +20,22 @@ class Editor:
         self._gizmo_generation = 0
         self._dragging = False
         self.objects = ObjectView(server, lambda name: self.events.put(("select", name)))
-        server.gui.add_markdown("# AVM Simulation\nMeters  |  Z up  |  RPY in degrees\n\nOrbit: left drag  |  Pan: right drag  |  Zoom: wheel")
-        self.status = server.gui.add_markdown("Ready")
-        with server.gui.add_folder("Scene Objects"):
-            self.tree = server.gui.add_dropdown("Selected", options=("base_link",), initial_value="base_link")
-            self.tree.on_update(lambda e: self.events.put(("select", self.tree.value)) if e.client else None)
-            for label, kind in [("Add Vehicle", "vehicle"), ("Add Camera", "camera"), ("Add Board", "board")]:
+        server.gui.add_markdown("# 环视标定仿真\n位置：米 · 角度：度 · Z 轴向上\n左键旋转 · 右键平移 · 滚轮缩放")
+        self.status = server.gui.add_markdown("就绪")
+        with server.gui.add_folder("场景对象"):
+            self.tree = server.gui.add_dropdown("当前对象", options=(object_label("base_link"),))
+            self.tree.on_update(lambda e: self.events.put(("select", object_id(self.tree.value))) if e.client else None)
+            for label, kind in [("添加车辆", "vehicle"), ("添加相机", "camera"), ("添加标定板", "board")]:
                 btn = server.gui.add_button(label)
                 btn.on_click(lambda _, k=kind: self.events.put(("add", k)))
-            server.gui.add_button("Delete selected").on_click(lambda _: self.events.put(("delete", None)))
-        with server.gui.add_folder("Transform"):
-            self.parent_label = server.gui.add_markdown("Parent: world")
+            server.gui.add_button("删除当前对象").on_click(lambda _: self.events.put(("delete", None)))
+        with server.gui.add_folder("位姿调整"):
+            self.parent_label = server.gui.add_markdown("参考坐标系：世界")
             self.position = [server.gui.add_number(a, 0., step=.05) for a in ("X", "Y", "Z")]
-            self.rotation = [server.gui.add_number(a, 0., step=1.) for a in ("Roll", "Pitch", "Yaw")]
+            self.rotation = [server.gui.add_number(a, 0., step=1.) for a in ("横滚角", "俯仰角", "偏航角")]
             for handle in self.position + self.rotation:
                 handle.on_update(self._numeric)
-            self.mode = server.gui.add_dropdown("Gizmo", options=("Translate + Rotate", "Translate", "Rotate"))
+            self.mode = server.gui.add_dropdown("拖拽模式", options=("平移与旋转", "平移", "旋转"))
             self.mode.on_update(lambda e: self.events.put(("select", self.selected)) if e.client else None)
         self._build_properties()
         self.tick()
@@ -45,29 +46,28 @@ class Editor:
             self.events.put(("command", {"action":"pose", "id":self.selected, "pose":values}))
 
     def _build_properties(self) -> None:
-        with self.server.gui.add_folder("Camera parameters", expand_by_default=False):
-            self.cam_model = self.server.gui.add_dropdown("Model", options=("fisheye","pinhole","ftheta"))
-            self.cam_width = self.server.gui.add_number("Width", 320, min=16, max=4096, step=1)
-            self.cam_height = self.server.gui.add_number("Height", 240, min=16, max=4096, step=1)
+        with self.server.gui.add_folder("相机参数", expand_by_default=False):
+            self.cam_model = self.server.gui.add_dropdown("镜头模型", options=("鱼眼","针孔","等距多项式"))
+            self.cam_width = self.server.gui.add_number("图像宽度（像素）", 320, min=16, max=4096, step=1)
+            self.cam_height = self.server.gui.add_number("图像高度（像素）", 240, min=16, max=4096, step=1)
             self.intrinsic = [self.server.gui.add_number(k, v, step=1.) for k,v in
                               zip(("fx","fy","cx","cy"), (110.,110.,159.5,119.5))]
-            self.distortion = self.server.gui.add_text("D (comma separated)", "0,0,0,0")
-            self.max_angle = self.server.gui.add_number("Max ray angle (deg)", 88.8, step=.1)
-            self.server.gui.add_button("Apply camera parameters").on_click(lambda _: self.events.put(("camera", None)))
-        with self.server.gui.add_folder("Board parameters", expand_by_default=False):
-            self.rows = self.server.gui.add_number("Rows (squares)", 6, min=1, max=100, step=1)
-            self.columns = self.server.gui.add_number("Columns (squares)", 8, min=1, max=100, step=1)
-            self.square = self.server.gui.add_number("Square size (m)", .15, min=.001, step=.01)
-            self.board_size = self.server.gui.add_markdown("Physical size = columns/rows x square size")
-            self.server.gui.add_button("Apply board parameters").on_click(lambda _: self.events.put(("board", None)))
-            self.board_asset = self.server.gui.add_text("Board Gaussian PLY path (empty = virtual)", "")
-            self.board_asset_scale = self.server.gui.add_number("Board asset scale", 1., min=.000001, step=.01)
-            self.board_asset_position = [self.server.gui.add_number(f"Asset {a} (m)", 0., step=.01) for a in ("X","Y","Z")]
-            self.board_asset_rotation = [self.server.gui.add_number(f"Asset {a} (deg)", 0., step=1.) for a in ("Roll","Pitch","Yaw")]
-            self.server.gui.add_markdown("Asset alignment maps scaled PLY into the centered XY board frame. "
-                "Transform controls move the whole board; square size describes the physical pattern, not PLY scale.")
-            self.server.gui.add_button("Apply board asset").on_click(lambda _: self.events.put(("board_asset", None)))
-            self.server.gui.add_button("Use virtual board").on_click(lambda _: self.events.put(("board_virtual", None)))
+            self.distortion = self.server.gui.add_text("畸变系数（逗号分隔）", "0,0,0,0")
+            self.max_angle = self.server.gui.add_number("最大光线半角（度）", 88.8, step=.1)
+            self.server.gui.add_button("应用相机参数").on_click(lambda _: self.events.put(("camera", None)))
+        with self.server.gui.add_folder("标定板参数", expand_by_default=False):
+            self.rows = self.server.gui.add_number("方格行数", 6, min=1, max=100, step=1)
+            self.columns = self.server.gui.add_number("方格列数", 8, min=1, max=100, step=1)
+            self.square = self.server.gui.add_number("方格边长（米）", .15, min=.001, step=.01)
+            self.board_size = self.server.gui.add_markdown("物理尺寸由行列数和格长确定")
+            self.server.gui.add_button("应用棋盘参数").on_click(lambda _: self.events.put(("board", None)))
+            self.board_asset = self.server.gui.add_text("高斯板 PLY 路径（留空为虚拟板）", "")
+            self.board_asset_scale = self.server.gui.add_number("高斯板缩放倍数", 1., min=.000001, step=.01)
+            self.board_asset_position = [self.server.gui.add_number(f"模型局部 {a}（米）", 0., step=.01) for a in ("X","Y","Z")]
+            self.board_asset_rotation = [self.server.gui.add_number(f"模型局部 {a}（度）", 0., step=1.) for a in ("横滚角","俯仰角","偏航角")]
+            self.server.gui.add_markdown("局部对齐校正模型原点和方向；高斯板大小由缩放控制，格长须与实际模型一致。")
+            self.server.gui.add_button("应用标定板模型").on_click(lambda _: self.events.put(("board_asset", None)))
+            self.server.gui.add_button("切换为虚拟棋盘").on_click(lambda _: self.events.put(("board_virtual", None)))
 
     def _select(self, scene) -> None:
         if self.gizmo:
@@ -80,13 +80,13 @@ class Editor:
         if not self.selected:
             return
         obj = scene.object(self.selected)
-        self.tree.value = self.selected
-        self.parent_label.content = f"Parent: {getattr(obj, 'parent', 'world')}  |  camera values are relative to parent"
+        self.tree.value = object_label(self.selected)
+        self.parent_label.content = f"参考坐标系：{'车体' if getattr(obj, 'parent', 'world') == 'base_link' else '世界'}（相机位姿相对于参考系）"
         for h,v in zip(self.position + self.rotation, obj.pose[:3]+np.rad2deg(obj.pose[3:]).tolist()):
             h.value = float(v)
         if self.selected in scene.cameras:
             c = scene.cameras[self.selected]
-            self.cam_model.value, self.cam_width.value, self.cam_height.value = c.model, c.width, c.height
+            self.cam_model.value, self.cam_width.value, self.cam_height.value = MODEL_LABELS[c.model], c.width, c.height
             for h,v in zip(self.intrinsic, [c.K[0],c.K[4],c.K[2],c.K[5]]):
                 h.value = float(v)
             self.distortion.value = ",".join(str(d) for d in c.D)
@@ -100,8 +100,8 @@ class Editor:
         self._gizmo_generation += 1
         self.gizmo = self.server.scene.add_transform_controls(f"/gizmo/{self._gizmo_generation}", scale=115., fixed=True, line_width=5.,
             position=t[:3,3]+self.gizmo_offset, wxyz=wxyz_from_matrix(t),
-            disable_axes=self.mode.value == "Rotate", disable_sliders=self.mode.value == "Rotate",
-            disable_rotations=self.mode.value == "Translate", depth_test=True)
+            disable_axes=self.mode.value == "旋转", disable_sliders=self.mode.value == "旋转",
+            disable_rotations=self.mode.value == "平移", depth_test=True)
         self.gizmo.on_update(self._drag)
 
     def _sync_board_fields(self, board) -> None:
@@ -152,7 +152,7 @@ class Editor:
                     names = ["front","rear","left","right","extra_left","extra_right"]
                     name = next((n for n in names if n not in scene.object_ids()), None)
                     if name is None:
-                        raise ValueError("Six camera limit reached")
+                        raise ValueError("最多支持六个相机")
                     props = {"parent":"base_link" if scene.vehicle else "world"}
                 else:
                     idx = 1
@@ -166,20 +166,20 @@ class Editor:
             self.selected = ""
         elif kind == "camera":
             if self.selected not in scene.cameras:
-                raise ValueError("Select a camera first")
+                raise ValueError("请先选择相机")
             fx,fy,cx,cy = [h.value for h in self.intrinsic]
             self.store.command({"action":"properties","id":self.selected,"properties":{
-                "model":self.cam_model.value, "width":int(self.cam_width.value), "height":int(self.cam_height.value),
+                "model":MODEL_VALUES[self.cam_model.value], "width":int(self.cam_width.value), "height":int(self.cam_height.value),
                 "K":[fx,0,cx,0,fy,cy,0,0,1], "D":[float(v.strip()) for v in self.distortion.value.split(",")],
                 "max_angle":float(np.deg2rad(self.max_angle.value))}})
         elif kind == "board":
             if self.selected not in scene.boards:
-                raise ValueError("Select a board first")
+                raise ValueError("请先选择标定板")
             self.store.command({"action":"properties","id":self.selected,"properties":{
                 "rows":int(self.rows.value),"columns":int(self.columns.value),"square_size":self.square.value}})
         elif kind in ("board_asset", "board_virtual"):
             if self.selected not in scene.boards:
-                raise ValueError("Select a board first")
+                raise ValueError("请先选择标定板")
             from pathlib import Path
             from gs_renderer.gaussian import GaussianScene
             raw_path = self.board_asset.value.strip() if kind == "board_asset" else ""
@@ -196,9 +196,9 @@ class Editor:
         while not self.events.empty():
             try:
                 self._handle(*self.events.get())
-                self.status.content = "Ready"
+                self.status.content = "就绪"
             except (ValueError, KeyError, OSError) as exc:
-                self.status.content = f"**Edit rejected:** {exc}"
+                self.status.content = f"**修改未生效：** {error_text(exc)}"
         revision, scene = self.store.snapshot()
         view_key = (revision, tuple((name, tuple(scene.object(name).pose)) for name in scene.object_ids()))
         if view_key == self._view_key:
@@ -206,11 +206,11 @@ class Editor:
         try:
             self.objects.sync(scene)
         except (ValueError, OSError) as exc:
-            self.status.content = f"**Object display error:** {exc}"
+            self.status.content = f"**对象显示失败：** {error_text(exc)}"
             self.revision = revision
             self._view_key = view_key
             return
-        self.tree.options = tuple(scene.object_ids()) or ("(empty)",)
+        self.tree.options = tuple(object_label(n) for n in scene.object_ids()) or ("（空场景）",)
         # Reuse gizmo while dragging; recreating it breaks continuous mouse capture.
         ids_changed = self.selected not in scene.object_ids()
         if self.gizmo is None or ids_changed or getattr(self, "_shown_selection", None) != self.selected:

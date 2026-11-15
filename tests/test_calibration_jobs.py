@@ -38,7 +38,7 @@ def test_gui_baseline_runs_with_immutable_snapshot_and_no_parameter_apply(tmp_pa
     try:
         output=jobs.start(store,{'algorithm':BASELINE,'cameras':['left'],'board_id':'board_001',
             'views':24,'seed':20261020,'supersample':2,'backend':'cpu'})
-        with pytest.raises(ValueError,match='already running'):jobs.start(store,{})
+        with pytest.raises(ValueError,match='正在运行'):jobs.start(store,{})
         # A concurrent scene edit is deliberately NOT part of this job.
         store.command({'action':'pose','id':'left','pose':[0,1,1,0,0,0]})
         state=wait_job(jobs)
@@ -87,7 +87,7 @@ def test_invalid_inputs_do_not_create_experiments(tmp_path):
         with pytest.raises(ValueError):jobs.start(store,payload)
     assert not jobs.experiments.exists()
     s=store.snapshot()[1];s.boards['board_001'].asset=s.gaussian_file
-    with pytest.raises(ValueError,match='Gaussian'):
+    with pytest.raises(ValueError,match='高斯板'):
         normalize_request({'algorithm':BASELINE},s,project_root())
     pending=SimpleNamespace(_inflight=True)
     with pytest.raises(ValueError,match='acknowledged'):jobs.start(pending,{})
@@ -107,7 +107,7 @@ def test_failure_records_and_cancel_are_not_marked_complete(tmp_path):
         jobs.cancel()
         assert jobs.poll()['result']['status']=='cancelled'
         assert not jobs.running
-        with pytest.raises(ValueError,match='exists'):jobs.start(store,{'experiment_id':'cancelled'})
+        with pytest.raises(ValueError,match='已存在'):jobs.start(store,{'experiment_id':'cancelled'})
     finally:jobs.close()
 
 
@@ -120,7 +120,7 @@ def test_viser_dropdown_button_and_result_widgets(tmp_path):
         panel=CalibrationPanel(server,store,jobs=jobs)
         assert len(panel.algorithm.options)==3
         assert panel.board.value=='board_001'
-        panel.camera.value='left';panel.views.value=24
+        panel.camera.value='左相机（left）';panel.views.value=24
         # Same queued action as the browser's Start button.
         panel.events.put('start');panel.tick()
         assert jobs.running and panel.start_button.disabled
@@ -129,7 +129,7 @@ def test_viser_dropdown_button_and_result_widgets(tmp_path):
             panel.tick();time.sleep(.05)
         panel._last_poll=0;panel.tick()
         assert not jobs.running and not panel.start_button.disabled
-        assert 'ESTIMATED' in panel.results.content and 'K=' in panel.results.content
+        assert '已估计' in panel.results.content and 'K=' in panel.results.content
         assert not panel.download_button.disabled
         downloads=[]
         client=SimpleNamespace(send_file_download=lambda name,content:downloads.append((name,content)))
